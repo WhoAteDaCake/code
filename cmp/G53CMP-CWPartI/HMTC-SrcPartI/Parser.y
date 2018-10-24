@@ -69,6 +69,8 @@ import Scanner
     THEN        { (Then, $$) }
     VAR         { (Var, $$) }
     WHILE       { (While, $$) }
+    REPEAT      { (Repeat, $$) }
+    UNTIL       { (Until, $$) }
     LITINT      { (LitInt {}, _) }
     ID          { (Id {}, _) }
     '+'         { (Op {opName="+"},   _) }
