@@ -64,7 +64,10 @@ ppCommand n (CmdLet {clDecls = ds, clBody = c, cmdSrcPos = sp}) =
     indent n . showString "CmdLet" . spc . ppSrcPos sp . nl
     . ppSeq (n+1) ppDeclaration ds
     . ppCommand (n+1) c
-
+ppCommand n (CmdRepeat {crCmd = cmd, crCond = cond, cmdSrcPos = sp}) =
+    indent n . showString "CmdRepeat" . spc . ppSrcPos sp . nl
+    . ppCommand (n+1) cmd 
+    . ppExpression (n+1) cond
 
 ------------------------------------------------------------------------------
 -- Pretty printing of expressions

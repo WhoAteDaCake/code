@@ -119,7 +119,7 @@ command
     | LET declarations IN command
         { CmdLet {clDecls = $2, clBody = $4, cmdSrcPos = $1} }
     | REPEAT command UNTIL expression
-        { CmdLet {crCmds = $2, crCond = $4, cmdSrcPos = $1} }
+        { CmdLet {crCmd = $2, crCond = $4, cmdSrcPos = $1} }
     | BEGIN commands END
         { if length $2 == 1 then
               head $2

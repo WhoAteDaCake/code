@@ -111,7 +111,7 @@ data Command
       }
     -- repeat until
     | CmdRepeat {
-          crCmds    :: Command,         -- ^ Action
+          crCmd     :: Command,         -- ^ Action
           crCond    :: Expression,      -- ^ Condition
           cmdSrcPos :: SrcPos 
       }
