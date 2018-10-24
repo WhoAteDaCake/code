@@ -109,7 +109,7 @@ data Command
           clBody    :: Command,         -- ^ Let-body
           cmdSrcPos :: SrcPos
       }
-    -- 
+    -- repeat until
     | CmdRepeat {
           crCmds    :: Command,         -- ^ Action
           crCond    :: Expression,      -- ^ Condition
