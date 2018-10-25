@@ -138,20 +138,20 @@ scanner cont = P $ scan
                 c'         = c + 1 + length tail
 
         mkIdOrKwd :: String -> Token
-        mkIdOrKwd "begin" = Begin
-        mkIdOrKwd "const" = Const
-        mkIdOrKwd "do"    = Do
-        mkIdOrKwd "else"  = Else
-        mkIdOrKwd "end"   = End
-        mkIdOrKwd "if"    = If
-        mkIdOrKwd "in"    = In
-        mkIdOrKwd "let"   = Let
-        mkIdOrKwd "then"  = Then
-        mkIdOrKwd "var"   = Var
-        mkIdOrKwd "while" = While
+        mkIdOrKwd "begin"  = Begin
+        mkIdOrKwd "const"  = Const
+        mkIdOrKwd "do"     = Do
+        mkIdOrKwd "end"    =  End
+        mkIdOrKwd "else"   = Else
+        mkIdOrKwd "if"     = If
+        mkIdOrKwd "in"     = In
+        mkIdOrKwd "let"    = Let
+        mkIdOrKwd "then"   = Then
+        mkIdOrKwd "var"    = Var
+        mkIdOrKwd "while"  = While
         mkIdOrKwd "repeat" = Repeat
-        mkIdOrKwd "until" = Until
-        mkIdOrKwd name    = Id {idName = name}
+        mkIdOrKwd "until"  = Until
+        mkIdOrKwd name     = Id {idName = name}
 
         -- Return token, position of token, updated position, and remaning
         -- input. We assume tnat no MiniTriangle token span multiple
