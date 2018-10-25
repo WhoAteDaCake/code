@@ -139,6 +139,14 @@ data Expression
           eaArgs    :: [Expression],    -- ^ Arguments
           expSrcPos :: SrcPos
       }
+    -- | Conditional expression
+    | ExpCond {
+        ecCond      :: Expression,      -- ^ Condition
+        ecLeft      :: Expression,      -- ^ Return value when evaluation is true
+        ecRight     :: Expression,      -- ^ Return value when evaluation is false
+        expSrcPos   :: SrcPos
+      }
+
 
 
 instance HasSrcPos Expression where
