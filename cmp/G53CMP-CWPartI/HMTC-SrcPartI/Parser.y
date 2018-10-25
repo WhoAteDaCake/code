@@ -56,6 +56,7 @@ import Scanner
     ','         { (Comma, $$) }
     ';'         { (Semicol, $$) }
     ':'         { (Colon, $$) }
+    '?'         { (QMark, $$) }
     ':='        { (ColEq, $$) }
     '='         { (Equals, $$) }
     BEGIN       { (Begin, $$) }
@@ -94,7 +95,6 @@ import Scanner
 %left '+' '-'
 %left '*' '/'
 %right '^'
-
 %%
 
 program :: { AST }
@@ -173,6 +173,11 @@ expression
         { ExpApp {eaFun     = $2,
                   eaArgs    = [$1,$3],
                   expSrcPos = srcPos $1} }
+    | expression '?' expression ':' expression
+        { ExpCond {ecCond    = $1,
+                   ecLeft    = $3,
+                   ecRight   = $5,
+                   expSrcPos = srcPos $1} }
 
 
 primary_expression :: { Expression }
