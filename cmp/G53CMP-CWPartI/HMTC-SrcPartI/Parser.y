@@ -63,6 +63,7 @@ import Scanner
     CONST       { (Const, $$) }
     DO          { (Do, $$) }
     ELSE        { (Else, $$) }
+    ELSEIF      { (ElseIf, $$) }
     END         { (End, $$) }
     IF          { (If, $$) }
     IN          { (In, $$) }
@@ -112,8 +113,8 @@ command
         { CmdAssign {caVar = $1, caVal=$3, cmdSrcPos = srcPos $1} }
     | var_expression '(' expressions ')'
         { CmdCall {ccProc = $1, ccArgs = $3, cmdSrcPos = srcPos $1} }
-    | IF expression THEN command ELSE command
-        { CmdIf {ciCond = $2, ciThen = $4, ciElse = $6, cmdSrcPos = $1} }
+    | IF expression THEN command ifElseBranch
+        { CmdIf {ciCond = $2, ciThen = $4, ciElse = $5, cmdSrcPos = $1} }
     | WHILE expression DO command
         { CmdWhile {cwCond = $2, cwBody = $4, cmdSrcPos = $1} }
     | LET declarations IN command
@@ -127,6 +128,12 @@ command
               CmdSeq {csCmds = $2, cmdSrcPos = srcPos $2}
         }
 
+ifElseBranch :: { Maybe Command }
+ifElseBranch
+    : ELSEIF expression THEN command ifElseBranch
+      { Just (CmdIf {ciCond = $2, ciThen = $4, ciElse = $5, cmdSrcPos = $1})   }
+    | ELSE command { Just $2 }
+    | {- empty -} { Nothing }
 
 expressions :: { [Expression] }
 expressions : expression { [$1] }
