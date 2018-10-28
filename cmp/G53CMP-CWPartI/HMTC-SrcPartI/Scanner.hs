@@ -144,6 +144,7 @@ scanner cont = P $ scan
         mkIdOrKwd "do"     = Do
         mkIdOrKwd "end"    = End
         mkIdOrKwd "else"   = Else
+        mkIdOrKwd "elsif"  = ElseIf
         mkIdOrKwd "if"     = If
         mkIdOrKwd "in"     = In
         mkIdOrKwd "let"    = Let
