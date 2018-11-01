@@ -69,10 +69,32 @@ isOpChr '|'  = True
 isOpChr '~'  = True
 isOpChr _    = False
 
+isSQuote :: Char -> Bool
+isSQuote '\'' = True
+isSQuote _   = False
 
 -- Tab stop separation
 tabWidth :: Int
 tabWidth = 8
+
+canEscape :: Char -> Bool
+canEscape 'n'  = True
+canEscape 'r'  = True
+canEscape 't'  = True
+canEscape '\\' = True
+canEscape '\'' = True
+canEscape _    = False
+
+tillQuote :: Bool -> String -> Maybe String
+-- Should never hit end of string, this means char wasn't closed
+tillQuote _ "" = Nothing
+tillQuote escaped ('\\':ss)
+    | escaped = Nothing
+    | otherwise = (:) <$> (Just '\\') <*> (tillQuote True ss)
+tillQuote escaped ('\'':ss)
+    | escaped = Just ('\'':[])
+    | otherwise = Just []
+tillQuote escaped (c:ss) = (:) <$> (Just c) <*> (tillQuote escaped ss)
 
 
 nextTabStop :: Int -> Int
@@ -101,10 +123,11 @@ scanner cont = P $ scan
         scan l c (';' : s)  = retTkn Semicol l c (c + 1) s
         scan l c ('?' : s)  = retTkn QMark l c (c + 1) s
         -- Scan numeric literals, operators, identifiers, and keywords
-        scan l c (x : s) | isDigit x = scanLitInt l c x s
-                         | isAlpha x = scanIdOrKwd l c x s
-                         | isOpChr x = scanOperator l c x s
-                         | otherwise = do
+        scan l c (x : s) | isDigit  x = scanLitInt l c x s
+                         | isAlpha  x = scanIdOrKwd l c x s
+                         | isOpChr  x = scanOperator l c x s
+                         | isSQuote x = scanLitChar l c x s
+                         | otherwise  = do
                                            emitErrD (SrcPos l c)
                                                     ("Lexical error: Illegal \
                                                      \character "
@@ -118,6 +141,32 @@ scanner cont = P $ scan
             where
                 (tail, s') = span isDigit s
                 c'         = c + 1 + length tail
+
+        -- scanLitInt :: Int -> Int -> Char -> String -> D a
+        scanLitChar l c x s =
+            case ss of
+                Nothing -> failD pos "Mallformed character"
+                Just ss -> parseChar ss
+            where
+                ss = tillQuote False s
+
+                -- Utility function, so that we can use pure type
+                parseChar ss
+                    | length ss < 1 || length ss > 2 = failD pos "Mallformed character"
+                    | otherwise = 
+
+
+        -- scanLitChar l c x (es:ch:qt:s)
+        --     | escaped && not (canEscape ch) = failD pos "Incorrect character escape"
+        --     | escaped && not (isSQuote qt) = failD pos "Mallformed character"
+        --     | not escaped && not (isSQuote ch) = failD pos "Mallformed character"
+        --     | otherwise = retTkn (LitChar (read quoted :: Char)) l c c' s'
+        --     where
+        --         pos       = (SrcPos l c)
+        --         escaped   = es == '\\'
+        --         (val, s') = if escaped then (es:ch:[], s) else (es:[], qt:s)
+        --         c'        = c + 1 + length val
+        --         quoted    = ('\'':val) ++ ('\'':[])
 
         -- Allows multi-character operators.
         -- scanOperator :: Int -> Int -> Char -> String -> D a

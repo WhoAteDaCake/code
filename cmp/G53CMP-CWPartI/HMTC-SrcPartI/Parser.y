@@ -74,6 +74,7 @@ import Scanner
     REPEAT      { (Repeat, $$) }
     UNTIL       { (Until, $$) }
     LITINT      { (LitInt {}, _) }
+    LITCHAR     { (ExpLitChar {}, _) }
     ID          { (Id {}, _) }
     '+'         { (Op {opName="+"},   _) }
     '-'         { (Op {opName="-"},   _) }
