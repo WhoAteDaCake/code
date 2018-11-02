@@ -1,5 +1,5 @@
 let
-	var c : Character := 'a'
+	var c : Character := '\\'
 in
 	begin
 		c := '?';
