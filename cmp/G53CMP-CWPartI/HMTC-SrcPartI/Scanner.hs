@@ -31,6 +31,7 @@ module Scanner (
 
 -- Standard library imports
 import Data.Char (isDigit, isAlpha, isAlphaNum)
+import Data.Either
 
 -- HMTC module imports
 import SrcPos
@@ -69,13 +70,14 @@ isOpChr '|'  = True
 isOpChr '~'  = True
 isOpChr _    = False
 
-isSQuote :: Char -> Bool
-isSQuote '\'' = True
-isSQuote _   = False
 
--- Tab stop separation
-tabWidth :: Int
-tabWidth = 8
+isGrChr :: Char -> Bool
+isGrChr '\'' = False
+isGrChr '\\' = False
+isGrChr '\n' = False
+isGrChr '\r' = False
+isGrChr '\t' = False
+isGrChr _    = True
 
 canEscape :: Char -> Bool
 canEscape 'n'  = True
@@ -85,17 +87,9 @@ canEscape '\\' = True
 canEscape '\'' = True
 canEscape _    = False
 
-tillQuote :: Bool -> String -> Maybe String
--- Should never hit end of string, this means char wasn't closed
-tillQuote _ "" = Nothing
-tillQuote escaped ('\\':ss)
-    | escaped = Nothing
-    | otherwise = (:) <$> (Just '\\') <*> (tillQuote True ss)
-tillQuote escaped ('\'':ss)
-    | escaped = Just ('\'':[])
-    | otherwise = Just []
-tillQuote escaped (c:ss) = (:) <$> (Just c) <*> (tillQuote escaped ss)
-
+-- Tab stop separation
+tabWidth :: Int
+tabWidth = 8
 
 nextTabStop :: Int -> Int
 nextTabStop n = n + (tabWidth - (n-1) `mod` tabWidth)
@@ -126,7 +120,7 @@ scanner cont = P $ scan
         scan l c (x : s) | isDigit  x = scanLitInt l c x s
                          | isAlpha  x = scanIdOrKwd l c x s
                          | isOpChr  x = scanOperator l c x s
-                         | isSQuote x = scanLitChar l c x s
+                         | x == '\'' = scanLitChar l c x s
                          | otherwise  = do
                                            emitErrD (SrcPos l c)
                                                     ("Lexical error: Illegal \
@@ -142,32 +136,24 @@ scanner cont = P $ scan
                 (tail, s') = span isDigit s
                 c'         = c + 1 + length tail
 
-        -- scanLitInt :: Int -> Int -> Char -> String -> D a
-        scanLitChar l c x s =
-            case ss of
-                Nothing -> failD pos "Mallformed character"
-                Just ss -> parseChar ss
+        --scanLitChar :: Int -> Int -> Char -> String -> D a
+        scanLitChar l c x s 
+            -- Assume that less than 2 length means missing quote
+            | length s < 2 = failD (SrcPos l c) "Character not closed"
+            -- Single character character have to be graphical
+            | sc == '\'' && isGrChr fc = retTkn (LitChar fc) l c (c + 3) (drop 2 s)
+            | canEscape sc &&
+                length ss >= 1 && -- Sanity check, so we don't throw during runtime
+                head ss == '\'' = retTkn (escape sc) l c (c + 4) (drop 3 s)
+            | otherwise    = failD (SrcPos l c) "Could not parse the character"
             where
-                ss = tillQuote False s
-
-                -- Utility function, so that we can use pure type
-                parseChar ss
-                    | length ss < 1 || length ss > 2 = failD pos "Mallformed character"
-                    | otherwise = 
-
-
-        -- scanLitChar l c x (es:ch:qt:s)
-        --     | escaped && not (canEscape ch) = failD pos "Incorrect character escape"
-        --     | escaped && not (isSQuote qt) = failD pos "Mallformed character"
-        --     | not escaped && not (isSQuote ch) = failD pos "Mallformed character"
-        --     | otherwise = retTkn (LitChar (read quoted :: Char)) l c c' s'
-        --     where
-        --         pos       = (SrcPos l c)
-        --         escaped   = es == '\\'
-        --         (val, s') = if escaped then (es:ch:[], s) else (es:[], qt:s)
-        --         c'        = c + 1 + length val
-        --         quoted    = ('\'':val) ++ ('\'':[])
-
+                (fc:sc:ss) = s
+                escape 'n'  = LitChar '\n'
+                escape 'r'  = LitChar '\r'
+                escape 't'  = LitChar '\t'
+                escape '\\' = LitChar '\\'
+                escape '\'' = LitChar '\''
+                escape c    = LitChar c
         -- Allows multi-character operators.
         -- scanOperator :: Int -> Int -> Char -> String -> D a
         scanOperator l c x s = retTkn (mkOpOrSpecial (x:tail)) l c c' s'
