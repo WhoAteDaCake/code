@@ -1,12 +1,14 @@
 #OBJS specifies which files to compile as part of the project
-OBJS = src/MyScene.cpp src/MyScene.h
+SRC_DIR := ./src
+
+OBJS := $(wildcard $(SRC_DIR)/*.cpp)
 
 #CC specifies which compiler we're using
 CC = g++
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
-COMPILER_FLAGS = 
+COMPILER_FLAGS = -I./src -g
 
 #LINKER_FLAGS specifies the libraries we're linking against
 LINKER_FLAGS = -lGL -lGLU -lglut

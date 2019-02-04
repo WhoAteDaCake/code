@@ -1,0 +1,35 @@
+SRC_DIR := ./src
+OBJ_DIR := ./obj
+
+SRC_FILES := $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_FILES := $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC_FILES))
+
+#OBJS specifies which files to compile as part of the project
+# OBJS = src/MyScene.cpp src/MyScene.h
+
+#CC specifies which compiler we're using
+CC = g++
+
+#COMPILER_FLAGS specifies the additional compilation options we're using
+# -w suppresses all warnings
+COMPILER_FLAGS = -I./src -Wall
+
+#LINKER_FLAGS specifies the libraries we're linking against
+LINKER_FLAGS = -lGL -lGLU -lglut -I./src
+
+#OBJ_NAME specifies the name of our exectuable
+OBJ_NAME = program.exe
+
+$(OBJ_NAME) : $(OBJ_FILES)
+	$(CC) $(LINKER_FLAGS) -o $@ $^
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp src/MyScene.h
+	$(CC) -c $(COMPILER_FLAGS) $(LINKER_FLAGS) $< -o $@
+
+.PHONY : clean
+clean :
+	-rm edit $(OBJ_FILES)
+
+#This is the target that compiles our executable
+# all : $(OBJS)
+# 	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)

@@ -1,7 +1,6 @@
 #ifndef ___MyScene__
 #define ___MyScene__
 #include <GL/glut.h>
-
 #include <stdio.h>
 
 void setup();
