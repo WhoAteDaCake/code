@@ -20,27 +20,56 @@ void draw()
   glMatrixMode(GL_MODELVIEW);                         // set for model and viewing operations
   glLoadIdentity();                                   // reset drawing
 
-  glTranslatef(0.f, 0.f, -100.f); // move drawing further back in the scene
-  glColor3f(0.f, 0.f, 0.f);       // set draw colour to black
-  glutWireCube(10.f);             // draw outlined cube
+  glTranslatef(0.f, 10.f, -200.f); // move drawing further back in the scene
+  glColor3f(0.5, 0.5, 0.f);        // set draw colour to black
+  exercise_2();
+  // glutWireCube(10.f);              // draw outlined cube
 
   checkGLError();
   glutSwapBuffers(); // execute all commands, swap buffers
 }
 
-// void draw()
-// {
-//   glMatrixMode(GL_MODELVIEW);
-//   glLoadIdentity();
-//   glTranslatef(0.f, 0.f, -100.f);
-//   glClearColor(0.f, 0.f, 1.f, 1.f);
-//   glClear(GL_COLOR_BUFFER_BIT);
-//   glColor3f(0.f, 0.f, 0.f);
-//   glutSolidCube(10);
+void exercise_2()
+{
+}
 
-//   checkGLError();
-//   glColor3f(0.f, 0.f, 0.f);
-// }
+void exercise_1_2()
+{
+  float s = 50.f;
+  glBegin(GL_POLYGON);
+  glVertex3f(s, s, 0);
+  // glVertex3f(-s, s, 0);
+
+  glVertex3f(-s, s, 0);
+  // glVertex3f(-s, -s, 0);
+
+  glVertex3f(-s, -s, 0);
+  // glVertex3f(s, -s, 0);
+
+  glVertex3f(s, -s, 0);
+  // glVertex3f(s, s, 0);
+
+  glEnd();
+}
+
+void exercise_1()
+{
+  float s = 50.f;
+  glBegin(GL_LINES);
+  glVertex3f(s, s, 0);
+  glVertex3f(-s, s, 0);
+
+  glVertex3f(-s, s, 0);
+  glVertex3f(-s, -s, 0);
+
+  glVertex3f(-s, -s, 0);
+  glVertex3f(s, -s, 0);
+
+  glVertex3f(s, -s, 0);
+  glVertex3f(s, s, 0);
+
+  glEnd();
+}
 
 void reshape(int _width, int _height)
 {
