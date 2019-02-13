@@ -5,7 +5,7 @@ int width;
 int height;
 double rotate_y = 0;
 double rotate_x = 0;
-double ratio = 50;
+double ratio = 100;
 
 typedef struct Point
 {
@@ -132,7 +132,7 @@ void draw()
   glRotatef(rotate_x, 1.0, 0.0, 0.0);
   glRotatef(rotate_y, 0.0, 1.0, 0.0);
   glClearColor(1.f, 1.f, 1.f, 1.f); // set background colour
-  glTranslatef(0.f, 0.f, -200.f);   // move drawing further back in the scene
+  glTranslatef(0.f, 0.f, -300.f);   // move drawing further back in the scene
 
   draw_octahedron();
 
