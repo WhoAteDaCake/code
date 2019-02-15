@@ -20,7 +20,12 @@ Point curved_middle_point(Point p1, Point p2)
   mp.x = (p1.x + p2.x) * 0.5;
   mp.y = (p1.y + p2.y) * 0.5;
   mp.z = (p1.z + p2.z) * 0.5;
-  float md = ratio / sqrt(mp.x * mp.x + mp.y * mp.y + mp.z * mp.z);
+  // Distance to center point (0, 0, 0)
+  float dtc = sqrt(mp.x * mp.x + mp.y * mp.y + mp.z * mp.z);
+  // The ratio of sphere radius divided by distance to the center
+  // Helps us to calculate how much shift is needed for the coordinate to be 
+  // part of the sphere surface
+  float md = ratio / dtc;
   mp.x *= md;
   mp.y *= md;
   mp.z *= md;
