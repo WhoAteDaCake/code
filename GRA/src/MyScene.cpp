@@ -1,8 +1,9 @@
 #include "MyScene.h"
 #include "math.h"
+#include<iostream>
 
-int width;
-int height;
+int width = 200;
+int height = 200;
 double rotate_y = 0;
 double rotate_x = 0;
 double ratio = 100;
@@ -26,14 +27,15 @@ Point curved_middle_point(Point p1, Point p2)
   // Helps us to calculate how much shift is needed for the coordinate to be 
   // part of the sphere surface
   float md = ratio / dtc;
-  mp.x *= md;
-  mp.y *= md;
-  mp.z *= md;
+  // mp.x *= md;
+  // mp.y *= md;
+  // mp.z *= md;
   return mp;
 }
 
 void draw_point(Point p)
 {
+  // std::cout << p.x << "," << p.y << "," << p.z << std::endl;
   glVertex3f(p.x, p.y, p.z);
 }
 
@@ -41,9 +43,14 @@ void subdivide(int level, Point p1, Point p2, Point p3)
 {
   if (level == 0)
   {
+    // draw ccw
     draw_point(p1);
     draw_point(p2);
     draw_point(p3);
+    // draw cw
+    // draw_point(p1);
+    // draw_point(p3);
+    // draw_point(p2);
     return;
   }
   Point lp = curved_middle_point(p1, p2);
@@ -66,55 +73,66 @@ void draw_octahedron()
   float size = ratio;
   int level = 5;
   glBegin(GL_TRIANGLES);
+  // std::cout << "draw_octahedron" << std::endl;
   // Set color to green
-  glColor4f(0, 1, 0, 0.2);
+  // glColor4f(0, 1, 0, 0.2);
 
   Point p1, p2, p3;
+  glColor3f(1.0, 0, 0);
   // Front up face
   p1 = {.x = 0.f, .y = size, .z = 0.f};
   p2 = {.x = 0.f, .y = 0.f, .z = size};
   p3 = {.x = size, .y = 0.f, .z = 0.f};
   subdivide(level, p1, p2, p3);
 
+  glColor3f(0.0, 1.0, 0.0);
   // Left up face
+  // p1 = Point(0.f, size, 0.f);
   p1 = {.x = 0.f, .y = size, .z = 0.f};
   p2 = {.x = -size, .y = 0.f, .z = 0.f};
   p3 = {.x = 0.f, .y = 0.f, .z = size};
   subdivide(level, p1, p2, p3);
+
+  glColor3f(0.0, 0.0, 1.0);
   // Right up Face
   p1 = {.x = 0.f, .y = size, .z = 0.f};
   p2 = {.x = size, .y = 0.f, .z = 0.f};
-  p3 = {.x = 0, .y = 0.f, .z = -size};
+  p3 = {.x = 0.0, .y = 0.f, .z = -size};
   subdivide(level, p1, p2, p3);
 
+  glColor3f(0.0, 0.0, 0.0);
   // Back up Face
   p1 = {.x = 0.f, .y = size, .z = 0.f};
-  p2 = {.x = -size, .y = 0.f, .z = 0.f};
-  p3 = {.x = 0.f, .y = 0.f, .z = -size};
+  p2 = {.x = 0.f, .y = 0.f, .z = -size};
+  p3 = {.x = -size, .y = 0.f, .z = 0.f};
   subdivide(level, p1, p2, p3);
 
+  glColor3f(0.0, 0.0, 0.0);
   // Front down Face
   p1 = {.x = 0.f, .y = 0.f, .z = size};
   p2 = {.x = 0.f, .y = -size, .z = 0.f};
   p3 = {.x = size, .y = 0.f, .z = 0.f};
   subdivide(level, p1, p2, p3);
 
+  glColor3f(0.0, 0.0, 1.0);
   // Left down Point
   p1 = {.x = 0.f, .y = 0.f, .z = size};
   p2 = {.x = -size, .y = 0.f, .z = 0.f};
   p3 = {.x = 0.f, .y = -size, .z = 0.f};
   subdivide(level, p1, p2, p3);
 
+  glColor3f(0.0, 1.0, 0.0);
   // Right down Point
   p1 = {.x = size, .y = 0.f, .z = 0.f};
-  p2 = {.x = 0.f, .y = 0.f, .z = -size};
-  p3 = {.x = 0.f, .y = -size, .z = 0.f};
+  p3 = {.x = 0.f, .y = 0.f, .z = -size};
+  p2 = {.x = 0.f, .y = -size, .z = 0.f};
   subdivide(level, p1, p2, p3);
 
+  glColor3f(1.0, 0.0, 0.0);
   // Back down Point
   p1 = {.x = 0.f, .y = 0.f, .z = -size};
-  p2 = {.x = -size, .y = 0.f, .z = 0.f};
-  p3 = {.x = 0.f, .y = -size, .z = 0.f};
+  p3 = {.x = -size, .y = 0.f, .z = 0.f};
+  p2 = {.x = 0.f, .y = -size, .z = 0.f};
   subdivide(level, p1, p2, p3);
   glEnd();
 }
@@ -132,12 +150,17 @@ void draw()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear buffers
   glMatrixMode(GL_MODELVIEW);                         // set for model and viewing operations
-  glLoadIdentity();                                   // reset drawing
-  // Rotate when user changes rotate_x and rotate_y
-  glRotatef(rotate_x, 1.0, 0.0, 0.0);
-  glRotatef(rotate_y, 0.0, 1.0, 0.0);
+  glLoadIdentity();
+
   glClearColor(1.f, 1.f, 1.f, 1.f); // set background colour
   glTranslatef(0.f, 0.f, -300.f);   // move drawing further back in the scene
+
+  glRotatef(rotate_x, 0.0, 1.0, 0.0);
+  glRotatef(rotate_y, 1.0, 0.0, 0.0);
+
+  // Rotate when user changes rotate_x and rotate_y
+  // glRotatef(rotate_x, 1.0, 0.0, 0.0);
+  // glRotatef(rotate_y, 0.0, 1.0, 0.0);
 
   draw_octahedron();
 
@@ -196,13 +219,16 @@ void specialKeys(int key, int x, int y)
 int main(int argc, char **argv)
 {
   glutInit(&argc, argv); // Initialise GL environment
-  glEnable(GL_DEPTH_TEST);
   setup(); // Call additional initialisation commands
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   glutDisplayFunc(draw); // Register scene to render contents of draw() function
   checkGLError();        // Check any OpenGL errors in initialisation
   glutReshapeFunc(reshape);
   glutSpecialFunc(specialKeys);
+  // glEnable(GL_DEPTH_TEST);
+  glEnable(GL_DEPTH_TEST);  // Enable depth testing
+glDepthMask(GL_TRUE);     // Enable depth write
+glDepthFunc(GL_LEQUAL);   // Choose the depth comparison function
   glutMainLoop(); // Begin rendering sequence
   setup();
   return 0;
