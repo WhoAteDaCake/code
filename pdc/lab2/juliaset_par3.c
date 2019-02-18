@@ -18,13 +18,14 @@ int t; /* number of threads */
 #define MAX_THREADS 1000
 
 /* small - for demo purposes */
-int width = 100;
-int height = 100;
+int width = 1000;
+int height = 1000;
 /* memory for image */
 unsigned char *image;
 
 /* shared job "queue", actually a single-place buffer, similar to the circular buffer in lecture 7 */
-typedef struct buffer {
+typedef struct buffer
+{
 	int item;
 	int hasItem;
 	pthread_mutex_t lock;
@@ -35,8 +36,9 @@ typedef struct buffer {
 /* create buffer.
  * like a constructor. 
  */
-buffer_t* buffer_new() {
-	buffer_t *buf = (buffer_t*)malloc(sizeof(buffer_t));
+buffer_t *buffer_new()
+{
+	buffer_t *buf = (buffer_t *)malloc(sizeof(buffer_t));
 	pthread_mutex_init(&(buf->lock), NULL);
 	pthread_cond_init(&(buf->notfull), NULL);
 	pthread_cond_init(&(buf->notempty), NULL);
@@ -48,9 +50,11 @@ buffer_t* buffer_new() {
  * blocks if buffer is full (i.e. occupied).
  * buffer to use is fist argument (like a method call).
  */
-void buffer_put(buffer_t *buf, int item) {
+void buffer_put(buffer_t *buf, int item)
+{
 	pthread_mutex_lock(&(buf->lock));
-	while(buf->hasItem) {
+	while (buf->hasItem)
+	{
 		pthread_cond_wait(&(buf->notfull), &(buf->lock));
 	}
 	buf->item = item;
@@ -63,10 +67,12 @@ void buffer_put(buffer_t *buf, int item) {
  * blocks if buffer is empty.
  * buffer to use is fist argument (like a method call).
  */
-int buffer_get(buffer_t *buf) {
+int buffer_get(buffer_t *buf)
+{
 	int item;
 	pthread_mutex_lock(&(buf->lock));
-	while(!buf->hasItem) {
+	while (!buf->hasItem)
+	{
 		pthread_cond_wait(&(buf->notempty), &(buf->lock));
 	}
 	item = buf->item;
@@ -81,12 +87,14 @@ buffer_t *newJobs;
 /* one buffer for completed tasks (rows) */
 buffer_t *completedJobs;
 
-void* drawJuliaset_worker_thread(void *arg) {
+void *drawJuliaset_worker_thread(void *arg)
+{
 	int id = (int)arg;
 	/* get new job = next row, generate, post to completed jobs. Exit on -1 */
-	while(1) {
+	while (1)
+	{
 		int row = buffer_get(newJobs);
-		if (row<0)
+		if (row < 0)
 			break;
 		juliaset(width, height, image, row, row);
 		printf("worker %d completed row %d\n", id, row);
@@ -95,25 +103,30 @@ void* drawJuliaset_worker_thread(void *arg) {
 }
 
 /* thread to create all new jobs */
-void *drawJuliaset_newJobs_thread(void *arg) {
+void *drawJuliaset_newJobs_thread(void *arg)
+{
 	int row;
-	for (row=0; row<height; row++) {
+	for (row = 0; row < height; row++)
+	{
 		printf("newJob %d\n", row);
 		buffer_put(newJobs, row);
 	}
 }
 
 /* thread to collect all completed jobs  */
-void *drawJuliaset_completedJobs_thread(void *arg) {
+void *drawJuliaset_completedJobs_thread(void *arg)
+{
 	int row;
-	for (row=0; row<height; row++) {
+	for (row = 0; row < height; row++)
+	{
 		/* just assuming they are all ok */
 		int item = buffer_get(completedJobs);
 		printf("completedJob %d (%d)\n", row, item);
 	}
 }
 
-void drawJuliaset() {
+void drawJuliaset()
+{
 	int i;
 	/* handle for each thread */
 	pthread_t worker_threads[MAX_THREADS], newJobs_thread, completedJobs_thread;
@@ -127,35 +140,40 @@ void drawJuliaset() {
 	pthread_create(&completedJobs_thread, NULL, drawJuliaset_completedJobs_thread, NULL);
 
 	/* start t worker threads */
-	for (i=0; i<t; i++) {
-		pthread_create(&(worker_threads[i]), NULL, drawJuliaset_worker_thread, (void*)i);
+	for (i = 0; i < t; i++)
+	{
+		pthread_create(&(worker_threads[i]), NULL, drawJuliaset_worker_thread, (void *)i);
 	}
 
 	/* wait until completed jobs thread finishes */
 	pthread_join(completedJobs_thread, NULL);
 }
 
-int main(int argc, char**argv) {
+int main(int argc, char **argv)
+{
 	struct timeval start, end;
 	/* threads as an argument (required) */
-	if (argc<2) {
-		fprintf(stderr,"Usage: %s NTHREADS\n", argv[0]);
+	if (argc < 2)
+	{
+		fprintf(stderr, "Usage: %s NTHREADS\n", argv[0]);
 		exit(-1);
 	}
 	t = atoi(argv[1]);
 	/* memory for image */
-	image = (unsigned char*)malloc(width*height*4);
-	memset((void*)image, 0, width*height*4);
+	image = (unsigned char *)malloc(width * height * 4);
+	memset((void *)image, 0, width * height * 4);
 	printf("Call juliaset\n");
 	gettimeofday(&start, NULL);
 	/* whole juliaset image */
 	drawJuliaset();
 	/* and the answer is... */
-	if (gettimeofday(&end, NULL)==0) {
-		double elapsed = (end.tv_sec-start.tv_sec)+0.000001*(end.tv_usec-start.tv_usec);
+	if (gettimeofday(&end, NULL) == 0)
+	{
+		double elapsed = (end.tv_sec - start.tv_sec) + 0.000001 * (end.tv_usec - start.tv_usec);
 		printf("Elapsed time %lf seconds\n", elapsed);
 	}
-	else {
+	else
+	{
 		printf("Could not get time using clock_gettime\n");
 	}
 	/* write file */
