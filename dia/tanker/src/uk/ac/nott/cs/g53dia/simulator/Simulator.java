@@ -1,8 +1,16 @@
 package uk.ac.nott.cs.g53dia.simulator;
 
-import uk.ac.nott.cs.g53dia.agent.*;
-import uk.ac.nott.cs.g53dia.library.*;
 import java.util.Random;
+
+import uk.ac.nott.cs.g53dia.agent.DemoTanker;
+import uk.ac.nott.cs.g53dia.agent.IntelligentTanker;
+import uk.ac.nott.cs.g53dia.library.Action;
+import uk.ac.nott.cs.g53dia.library.Cell;
+import uk.ac.nott.cs.g53dia.library.Environment;
+import uk.ac.nott.cs.g53dia.library.IllegalActionException;
+import uk.ac.nott.cs.g53dia.library.OutOfFuelException;
+import uk.ac.nott.cs.g53dia.library.Tanker;
+import uk.ac.nott.cs.g53dia.library.TankerViewer;
 
 /**
  * An example of how to simulate execution of a tanker agent in the sample
@@ -26,8 +34,8 @@ import java.util.Random;
 public class Simulator {
 
 	/**
-	 * Time for which execution pauses so that GUI can update. Reducing this
-	 * value causes the simulation to run faster.
+	 * Time for which execution pauses so that GUI can update. Reducing this value
+	 * causes the simulation to run faster.
 	 */
 	private static int DELAY = 100;
 
@@ -36,16 +44,16 @@ public class Simulator {
 	 */
 	private static int DURATION = 10000;
 
-    /**
-     * Whether the action attempted at the last timestep failed.
-     */
-    private static boolean actionFailed = false;
+	/**
+	 * Whether the action attempted at the last timestep failed.
+	 */
+	private static boolean actionFailed = false;
 
 	public static void main(String[] args) {
 		// Note: to obtain reproducible behaviour, you can set the Random seed
-		Random r = new Random();
+		Random r = new Random(500);
 		// Create an environment
-		Environment env = new Environment(Tanker.MAX_FUEL/2, r);
+		Environment env = new Environment(Tanker.MAX_FUEL / 2, r);
 		// Create a tanker
 		Tanker tank = new IntelligentTanker(r);
 		// Create a GUI window to show the tanker

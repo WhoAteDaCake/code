@@ -13,7 +13,7 @@ public class Path {
 		int x = 0;
 		int y = 0;
 
-		// Taken from MoveAction class
+		// Modified from MoveAction class
 		switch (direction) {
 		case MoveAction.NORTH:
 			y++;
@@ -22,25 +22,25 @@ public class Path {
 			y--;
 			break;
 		case MoveAction.EAST:
-			x++;
-			break;
-		case MoveAction.WEST:
 			x--;
 			break;
-		case MoveAction.NORTHEAST:
+		case MoveAction.WEST:
 			x++;
+			break;
+		case MoveAction.NORTHEAST:
+			x--;
 			y++;
 			break;
 		case MoveAction.NORTHWEST:
-			x--;
+			x++;
 			y++;
 			break;
 		case MoveAction.SOUTHEAST:
-			x++;
+			x--;
 			y--;
 			break;
 		case MoveAction.SOUTHWEST:
-			x--;
+			x++;
 			y--;
 			break;
 		}
@@ -72,31 +72,47 @@ public class Path {
 
 	// Calculates the best sequence of moves from one point to other
 	// Assumes a 2d grid.
-	private static ArrayList<Integer> movesToPointAux(int fromX, int fromY, int toX, int toY,
-			ArrayList<Integer> current) {
+	private static Path movesToPointAux(int fromX, int fromY, int toX, int toY, Path path) {
 		if (fromX == toX && fromY == toY) {
-			return current;
+			return path;
 		}
 		int nextMove = bestMove(fromX, fromY, toX, toY);
-		current.add(nextMove);
+		path.addMove(nextMove);
 		Pair<Integer, Integer> move = moveChange(nextMove);
-		return movesToPointAux(fromX + move.first, fromY + move.second, toX, toY, current);
+		return movesToPointAux(fromX + move.first, fromY + move.second, toX, toY, path);
 	}
 
-	static ArrayList<Integer> movesToPoint(int fromX, int fromY, int toX, int toY) {
-		return movesToPointAux(fromX, fromY, toX, toY, new ArrayList<>());
+	public static Path movesToPoint(int fromX, int fromY, int toX, int toY) {
+		return movesToPointAux(fromX, fromY, toX, toY, new Path());
 	}
 
-	ArrayList<Integer> path;
+	public static Path combine(Path p1, Path p2) {
+		Path p3 = new Path();
+		p3.addMoves(p1.path);
+		p3.addMoves(p2.path);
+		return p3;
+	}
+
+	public ArrayList<Integer> path;
 	int x = 0;
 	int y = 0;
 
-	static Path make() {
-		return new Path(new ArrayList<>());
+	public Path() {
+		this(new ArrayList<>(), 0, 0);
 	}
 
 	public Path(ArrayList<Integer> path) {
+		this(path, 0, 0);
+	}
+
+	public Path(Path path, int x, int y) {
+		this(path.path, x, y);
+	}
+
+	public Path(ArrayList<Integer> path, int x, int y) {
 		this.path = path;
+		this.x = x;
+		this.y = y;
 	}
 
 	public void addMove(int move) {
