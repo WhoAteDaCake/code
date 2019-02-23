@@ -47,7 +47,7 @@ public class Simulator {
 		// Create an environment
 		Environment env = new Environment(Tanker.MAX_FUEL/2, r);
 		// Create a tanker
-		Tanker tank = new DemoTanker(r);
+		Tanker tank = new IntelligentTanker(r);
 		// Create a GUI window to show the tanker
 		TankerViewer tv = new TankerViewer(tank);
 		tv.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
