@@ -1,0 +1,78 @@
+                G53DIA Tanker Environment
+                =========================
+
+Getting Started
+---------------
+
+You can use the Makefile in the top-level directory to (re)build the project. 
+
+To compile the environment, on UNIX/Linux/Mac OS X or any other system
+using GNUMake simply use the command:
+           
+make                 
+
+Other make targets:
+ make classes           -- Just builds the class files (no jar)
+ make docs               -- Builds javadoc in docs/
+ make tags              -- Builds ctags file (for vi users)
+ make clean             -- Removes class files and jar
+ make distclean         -- Removes docs and tags too
+ make test              -- Runs the demo
+ make demo              -- Makes the demo
+
+For Windows - you can download GNUMake from:
+
+http://gnuwin32.sourceforge.net/packages/make.htm (not tested, but
+should work ...)
+
+Alternatively a simple MS-DOS file is provided to automate common
+tasks, it's usage is:
+
+ dosmake env		-- Builds the environment
+ dosmake demo		-- Builds the demo tanker
+ dosmake jar		-- Builds an executable jar file (of everything)
+ dosmake test		-- Runs the demo
+
+
+To begin, run these commands *in the order listed above*.
+
+
+Overview
+--------
+
+The package contains a basic environment, consisting of a grid of
+cells, some stations and wells, a tanker interface, and some graphical
+user interface components. In addition, there is sample implementation
+of the tanker interface which picks actions at random and a sample
+wrapper class which creates a GUI window (so that you can see what the
+tanker is doing) and executes the tanker in the environment. The
+sample tanker picks actions at random, and so is not very successful.
+The easiest way to get started is to simply edit the file
+src/uk/ac/nott/cs/g53dia/demo/DemoTanker.java and write your own bee
+code in there. To implement the abstract Tanker class, you provide an
+implementation of the single senseAndAct method. This method is called
+on each time-step with what the tanker can currently sense nearby in
+the environment, and it should return a single Action object
+representing the action that the tanker wants to carry out in this
+cycle. The GUI component is also quite primitive, so you'll probably
+want to print debug messages to the console as well (or improve the
+component).
+
+There are various ways you can extend the environment to provide more
+sophisticated capabilities for your tanker:
+
+
+
+LIMITATIONS
+===========
+
+The GUI components are rather limited in the information they display.
+If you need more information, then System.out.println is the easiest
+way for now.
+
+
+-----------------------------------------------------------
+Copyright (c) 2005 Neil Madden, 2009-2011 Julian Zappala
+See the file "license.terms" for BSD-style license.
+The images used in the demo are public domain, from
+http://www.openclipart.org/
