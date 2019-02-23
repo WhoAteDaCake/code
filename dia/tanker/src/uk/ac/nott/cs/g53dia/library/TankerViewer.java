@@ -48,11 +48,11 @@ public class TankerViewer extends JFrame {
 			}
 		}
 
-		lp.add(p, new Integer(0));
+		lp.add(p, Integer.valueOf(0));
 		p.setBounds(0, 0, PSIZE, PSIZE);
 		// Create a Tanker label
 		JLabel Tankerlabel = new JLabel(iconfactory.getIconForTanker(Tanker));
-		lp.add(Tankerlabel, new Integer(1)); // Add above the background
+		lp.add(Tankerlabel, Integer.valueOf(1)); // Add above the background
 		lp.setSize(new Dimension(PSIZE, PSIZE));
 		Tankerlabel.setBounds(PSIZE / 2 - ICON_SIZE / 2, PSIZE / 2 - ICON_SIZE / 2, ICON_SIZE, ICON_SIZE);
 		c.add(lp, BorderLayout.CENTER);
