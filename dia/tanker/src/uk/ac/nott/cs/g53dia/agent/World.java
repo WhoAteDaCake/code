@@ -6,11 +6,10 @@ import uk.ac.nott.cs.g53dia.library.Cell;
 
 // TODO reset should periodically clean up moves.
 public class World {
-	private int viewSize = 1;
-	private ArrayList<Pair<Cell, Pair<Integer, Integer>>> cells = new ArrayList<>();
+	private ArrayList<Group.Group3<Cell, Integer, Integer>> cells = new ArrayList<>();
 	private Path tankerPath = new Path();
 
-	// Centre coordinates of the world view
+	// Centre coordinates of the grid view
 	private int cx;
 	private int cy;
 
@@ -18,13 +17,12 @@ public class World {
 	public int tankerY = 0;
 
 	World(int size) {
-		this.viewSize = size;
 		// Because indices start at 0
 		cy = cx = size;
 	}
 
-	public Pair<Integer, Integer> viewIndicesToCoords(int row, int col) {
-		return Pair.make(cx - col, cy - row);
+	public Group.Group2<Integer, Integer> viewIndicesToCoords(int row, int col) {
+		return Group.make2(cx - col, cy - row);
 	}
 
 	/*
@@ -38,10 +36,12 @@ public class World {
 	 * move towards.
 	 */
 	int registerCell(Cell cell, int row, int col) {
-		Pair<Integer, Integer> coords = viewIndicesToCoords(row, col);
+		Group.Group2<Integer, Integer> coords = viewIndicesToCoords(row, col);
 		Path toCoord = Path.movesToPoint(0, 0, coords.first, coords.second);
-		Pair<Integer, Integer> globalCoords = new Path(toCoord, tankerX, tankerY).walk();
-		cells.add(Pair.make(cell, globalCoords));
+
+		Group.Group2<Integer, Integer> globalCoords = new Path(toCoord, tankerX, tankerY).walk();
+		cells.add(Group.Group3.from2(cell, globalCoords));
+
 		return Path.bestMove(tankerX, tankerY, globalCoords.first, globalCoords.second);
 	}
 
@@ -50,7 +50,7 @@ public class World {
 	 */
 	int registerMove(int direction) {
 		tankerPath.addMove(direction);
-		Pair<Integer, Integer> change = Path.moveChange(direction);
+		Group.Group2<Integer, Integer> change = Path.moveChange(direction);
 
 		this.tankerX += change.first;
 		this.tankerY += change.second;

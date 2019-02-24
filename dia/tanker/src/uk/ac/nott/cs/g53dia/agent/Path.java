@@ -9,7 +9,7 @@ public class Path {
 	 * Calculates modifications to global state after move is made Used to track
 	 * positions of
 	 */
-	static Pair<Integer, Integer> moveChange(int direction) {
+	static Group.Group2<Integer, Integer> moveChange(int direction) {
 		int x = 0;
 		int y = 0;
 
@@ -44,7 +44,7 @@ public class Path {
 			y--;
 			break;
 		}
-		return Pair.make(x, y);
+		return Group.make2(x, y);
 	}
 
 	// Calculates the best move towards a specific point
@@ -78,7 +78,7 @@ public class Path {
 		}
 		int nextMove = bestMove(fromX, fromY, toX, toY);
 		path.addMove(nextMove);
-		Pair<Integer, Integer> move = moveChange(nextMove);
+		Group.Group2<Integer, Integer> move = moveChange(nextMove);
 		return movesToPointAux(fromX + move.first, fromY + move.second, toX, toY, path);
 	}
 
@@ -123,15 +123,15 @@ public class Path {
 		this.path.addAll(moves);
 	}
 
-	public Pair<Integer, Integer> walk() {
+	public Group.Group2<Integer, Integer> walk() {
 		int x = this.x;
 		int y = this.y;
 		for (int move : path) {
-			Pair<Integer, Integer> modifier = moveChange(move);
+			Group.Group2<Integer, Integer> modifier = moveChange(move);
 			x += modifier.first;
 			y += modifier.second;
 		}
-		return Pair.make(x, y);
+		return Group.make2(x, y);
 	}
 
 }
