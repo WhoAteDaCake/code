@@ -9,6 +9,7 @@ import uk.ac.nott.cs.g53dia.library.DisposeWasteAction;
 import uk.ac.nott.cs.g53dia.library.EmptyCell;
 import uk.ac.nott.cs.g53dia.library.LoadWasteAction;
 import uk.ac.nott.cs.g53dia.library.MoveAction;
+import uk.ac.nott.cs.g53dia.library.RefuelAction;
 import uk.ac.nott.cs.g53dia.library.Station;
 import uk.ac.nott.cs.g53dia.library.Tanker;
 import uk.ac.nott.cs.g53dia.library.Task;
@@ -72,8 +73,12 @@ public class IntelligentTanker extends Tanker {
 	// TODO check distance to nearest fuelling station as well
 	public boolean canAfford(Path path) {
 		// Each move costs 2 fuel and car should be able to go there and back
-		int pathPrice = (path.stepCount() * 2) * 2;
-		return pathPrice < getFuelLevel();
+		int pathPrice = path.stepCount() * 2;
+		Group.Group2<Integer, Integer> pathCoords = new Path(path, world.tankerX, world.tankerY).walk();
+		Group.Group2<Integer, Integer> pump = world.getNearestPump();
+		int toPumpPrice = Path.distance(pathCoords, pump);
+		int fuel = getFuelLevel();
+		return pathPrice + toPumpPrice < fuel;
 	}
 
 	public MoveAction registeredMove(int direction) {
@@ -86,7 +91,7 @@ public class IntelligentTanker extends Tanker {
 		// If we are looking to fill some waste up
 		State nextState = null;
 		CellType lookFor = null;
-		if (this.prevState == State.SCOUTING) {
+		if (this.prevState == State.SCOUTING || this.prevState == State.MOVING_TO_WELL) {
 			nextState = State.MOVING_TO_STATION;
 			lookFor = CellType.STATION;
 		} else if (this.prevState == State.LOADING_WASTE) {
@@ -100,6 +105,8 @@ public class IntelligentTanker extends Tanker {
 			activePath = result.second;
 			nextMove = activePath.step();
 			this.state = nextState;
+			// If we found the cell, reset scouting paths
+			scoutePath = null;
 		} else {
 			// TODO check for refueling
 			// Check if we are weakly moving towards a station
@@ -121,6 +128,8 @@ public class IntelligentTanker extends Tanker {
 					activePath = world.getPathTo(world.getNearestPump());
 					// TODO maybe not needed?
 					this.savedState = this.state;
+					this.state = State.REFUELING;
+					return this.registeredMove(activePath.step());
 				}
 			}
 			return this.registeredMove(scoutePath.step());
@@ -140,12 +149,15 @@ public class IntelligentTanker extends Tanker {
 			return this.registeredMove(activePath.step());
 		}
 
-		if (this.savedState != null) {
-			this.state = this.savedState;
-			this.savedState = null;
-		}
+//		if (this.savedState != null) {
+//			this.state = this.savedState;
+//			this.savedState = null;
+//		}
 
-		if (this.state == State.SCOUTING) {
+		if (this.state == State.REFUELING) {
+			this.state = this.savedState;
+			return new RefuelAction();
+		} else if (this.state == State.SCOUTING) {
 			return this.scout();
 		} else if (this.state == State.MOVING_TO_STATION) {
 			// Begin loading

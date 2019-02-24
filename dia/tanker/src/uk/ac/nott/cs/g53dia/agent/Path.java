@@ -47,8 +47,17 @@ public class Path {
 		return Group.make2(x, y);
 	}
 
+	// Distance in the world
+	public static int pointDist(int p1, int p2) {
+		return (int) Math.sqrt(Math.pow(p2 - p1, 2));
+	}
+
 	public static int distance(int x1, int y1, int x2, int y2) {
-		return Math.max(Math.abs(x1) + Math.abs(x2), Math.abs(y1) + Math.abs(y2));
+		return Math.max(pointDist(x1, x2), pointDist(y1, y2));
+	}
+
+	public static int distance(Group.Group2<Integer, Integer> p1, Group.Group2<Integer, Integer> p2) {
+		return distance(p1.first, p1.second, p2.first, p2.second);
 	}
 
 	// Calculates the best move towards a specific point

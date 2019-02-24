@@ -51,7 +51,7 @@ public class Simulator {
 
 	public static void main(String[] args) {
 		// Note: to obtain reproducible behaviour, you can set the Random seed
-		Random r = new Random(3);
+		Random r = new Random();
 		// Create an environment
 		Environment env = new Environment(Tanker.MAX_FUEL / 2, r);
 		// Create a tanker

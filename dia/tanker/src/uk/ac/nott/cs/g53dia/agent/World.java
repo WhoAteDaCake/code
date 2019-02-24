@@ -1,6 +1,7 @@
 package uk.ac.nott.cs.g53dia.agent;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import uk.ac.nott.cs.g53dia.library.Cell;
@@ -30,6 +31,10 @@ public class World {
 		return Group.make2(cx - col, cy - row);
 	}
 
+	public int distanceTo(Group.Group2<Integer, Integer> g) {
+		return Path.distance(tankerX, tankerY, g.first, g.second);
+	}
+
 	public boolean hasSeenCell(Group.Group2<Integer, Integer> coords) {
 		return cells.containsKey(coords);
 	}
@@ -41,7 +46,7 @@ public class World {
 		for (Group.Group2<Integer, Integer> coords : cells.keySet()) {
 			Cell cell = cells.get(coords);
 			if (cell instanceof FuelPump) {
-				int newDist = Path.distance(tankerX, tankerY, coords.first, coords.second);
+				int newDist = distanceTo(coords);
 				if (newDist < distance) {
 					distance = newDist;
 					pump = coords;
@@ -63,6 +68,12 @@ public class World {
 				stations.add(coords);
 			}
 		}
+		// Sort stations by how close they are
+		stations.sort(new Comparator<Group.Group2<Integer, Integer>>() {
+			public int compare(Group.Group2<Integer, Integer> c1, Group.Group2<Integer, Integer> c2) {
+				return distanceTo(c1) - distanceTo(c2);
+			}
+		});
 		return stations;
 	}
 
@@ -83,7 +94,7 @@ public class World {
 					&& ((Station) cell).getTask() != null;
 
 			if (isPump || isWell || isTaskStation) {
-				int newDist = Path.distance(tankerX, tankerY, coords.first, coords.second);
+				int newDist = distanceTo(coords);
 				if (distance > newDist) {
 					selected = coords;
 					distance = newDist;
