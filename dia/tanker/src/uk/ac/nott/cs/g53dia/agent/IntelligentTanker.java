@@ -6,6 +6,7 @@ import uk.ac.nott.cs.g53dia.library.Action;
 import uk.ac.nott.cs.g53dia.library.Cell;
 import uk.ac.nott.cs.g53dia.library.EmptyCell;
 import uk.ac.nott.cs.g53dia.library.MoveAction;
+import uk.ac.nott.cs.g53dia.library.Station;
 import uk.ac.nott.cs.g53dia.library.Tanker;
 
 public class IntelligentTanker extends Tanker {
@@ -28,36 +29,6 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	/*
-	 * Looks for the most "relevant" cell. Depending on current state it might be a
-	 * well, refuelling station or a waste station. Will return the cell as well as
-	 * it's coordinates in the view array
-	 */
-//	private Pair<Cell, Pair<Integer, Integer>> findRelevantCell(Cell[][] view) {
-//		Cell found = null;
-//		int lastDist = Integer.MAX_VALUE;
-//		int row = -1;
-//		int col = -1;
-//
-//		for (int x = 0; x < view.length; x += 1) {
-//			for (int y = 0; y < view[x].length; y += 1) {
-//				Cell current = view[x][y];
-//				if (!(current instanceof Station) && state == State.SCOUTING) {
-//					continue;
-//				}
-//				// TODO Account for other states.
-//				// Manhattan distance
-//				int newDist = Math.abs(Tanker.VIEW_RANGE - y) + Math.abs(Tanker.VIEW_RANGE - x);
-//				if (newDist < lastDist) {
-//					found = current;
-//					lastDist = newDist;
-//					row = y;
-//					col = x;
-//				}
-//			}
-//		}
-//		return Pair.make(found, Pair.make(row, col));
-//	}
-	/*
 	 * Find all cells nearby that are special (well/station/pump) TODO: in the
 	 * future probably don't need to run it every single move
 	 */
@@ -66,30 +37,53 @@ public class IntelligentTanker extends Tanker {
 			for (int y = 0; y < view[x].length; y += 1) {
 				Cell current = view[x][y];
 
-				if (current instanceof EmptyCell && !world.hasSeenCell(current)) {
+				if (current instanceof EmptyCell) {
 					continue;
 				}
+				Group.Group2<Integer, Integer> coords = world.getGlobalCoords(x, y);
+				if (world.hasSeenCell(coords)) {
+					// If it's a station, it should be updated in order to make sure any new tasks
+					// are retrieved
+					if (current instanceof Station) {
+						world.updateCell(current, coords);
+					}
+
+				} else {
+					world.registerCell(current, coords);
+				}
+
 				// This means that it's a special cell
-				world.registerCell(current, x, y);
+//				world.registerCell(current, x, y);
 			}
 		}
 	}
 
 	@Override
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
+		// Because we have no resource restrictions, it's best to just analyse every
+		// time we move
 		analyseView(view);
-//		return 0;
-		// TODO Auto-generated method stub
-//		Pair<Cell, Pair<Integer, Integer>> result = findRelevantCell(view);
-//
-//		int nextMove;
-//		// Means we didn't find a relevant cell
-//		if (result.first == null) {
-//			nextMove = this.r.nextInt(8);
-//		} else {
-//			nextMove = world.registerCell(result.first, result.second.first, result.second.second);
-//		}
-		return new MoveAction(0);
+
+		// If we have a path, should always complete it.
+		if (this.activePath != null && this.activePath.hasSteps()) {
+			return new MoveAction(activePath.step());
+		}
+
+		int nextMove = this.r.nextInt(8);
+
+		if (this.state == State.SCOUTING) {
+			Group.Group2<Integer, Path> result = world.findClosestCell(CellType.STATION);
+			if (result != null) {
+				activePath = result.second;
+				nextMove = activePath.step();
+				this.state = State.MOVING_TO_STATION;
+			}
+			return new MoveAction(nextMove);
+		} else if (this.state == State.MOVING_TO_STATION) {
+			return new MoveAction(0);
+		}
+
+		return null;
 	}
 
 }

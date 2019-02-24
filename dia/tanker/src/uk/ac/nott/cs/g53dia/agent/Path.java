@@ -119,6 +119,16 @@ public class Path {
 		this.y = y;
 	}
 
+	public boolean hasSteps() {
+		return this.path.size() != 0;
+	}
+
+	public int step() {
+		int move = this.path.get(0);
+		this.path.remove(0);
+		return move;
+	}
+
 	public void addMove(int move) {
 		this.path.add(move);
 	}
