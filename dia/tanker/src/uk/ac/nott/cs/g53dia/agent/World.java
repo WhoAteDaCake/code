@@ -3,6 +3,7 @@ package uk.ac.nott.cs.g53dia.agent;
 import java.util.ArrayList;
 
 import uk.ac.nott.cs.g53dia.library.Cell;
+import uk.ac.nott.cs.g53dia.library.Point;
 
 // TODO reset should periodically clean up moves.
 public class World {
@@ -25,6 +26,16 @@ public class World {
 		return Group.make2(cx - col, cy - row);
 	}
 
+	boolean hasSeenCell(Cell cell) {
+		Point cellP = cell.getPoint();
+		for (Group.Group3<Cell, Integer, Integer> g3 : cells) {
+			if (cellP.equals(g3.first.getPoint())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/*
 	 * Helps to register new special cells Should be used when scouting the
 	 * surrounding cells Because it should be used in nested for loops, we can pass
@@ -35,7 +46,7 @@ public class World {
 	 * coordinates relative to the centre. 4. Return the direction that we should
 	 * move towards.
 	 */
-	int registerCell(Cell cell, int row, int col) {
+	int registerCell(Cell cell, int col, int row) {
 		Group.Group2<Integer, Integer> coords = viewIndicesToCoords(row, col);
 		Path toCoord = Path.movesToPoint(0, 0, coords.first, coords.second);
 

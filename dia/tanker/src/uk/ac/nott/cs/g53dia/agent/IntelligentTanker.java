@@ -4,13 +4,14 @@ import java.util.Random;
 
 import uk.ac.nott.cs.g53dia.library.Action;
 import uk.ac.nott.cs.g53dia.library.Cell;
+import uk.ac.nott.cs.g53dia.library.EmptyCell;
 import uk.ac.nott.cs.g53dia.library.MoveAction;
-import uk.ac.nott.cs.g53dia.library.Station;
 import uk.ac.nott.cs.g53dia.library.Tanker;
 
 public class IntelligentTanker extends Tanker {
 	State state = State.SCOUTING;
 	World world = new World(Tanker.VIEW_RANGE);
+	Path activePath;
 
 	public IntelligentTanker() {
 		this(new Random(50));
@@ -56,31 +57,27 @@ public class IntelligentTanker extends Tanker {
 //		}
 //		return Pair.make(found, Pair.make(row, col));
 //	}
-
+	/*
+	 * Find all cells nearby that are special (well/station/pump) TODO: in the
+	 * future probably don't need to run it every single move
+	 */
 	private void analyseView(Cell[][] view) {
-
 		for (int x = 0; x < view.length; x += 1) {
 			for (int y = 0; y < view[x].length; y += 1) {
 				Cell current = view[x][y];
-				if (current instanceof Station) {
+
+				if (current instanceof EmptyCell && !world.hasSeenCell(current)) {
 					continue;
 				}
-				// TODO Account for other states.
-				// Manhattan distance
-//				int newDist = Math.abs(Tanker.VIEW_RANGE - y) + Math.abs(Tanker.VIEW_RANGE - x);
-//				if (newDist < lastDist) {
-//					found = current;
-//					lastDist = newDist;
-//					row = y;
-//					col = x;
-//				}
+				// This means that it's a special cell
+				world.registerCell(current, x, y);
 			}
 		}
 	}
 
 	@Override
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
-
+		analyseView(view);
 //		return 0;
 		// TODO Auto-generated method stub
 //		Pair<Cell, Pair<Integer, Integer>> result = findRelevantCell(view);

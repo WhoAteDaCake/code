@@ -47,6 +47,10 @@ public class Path {
 		return Group.make2(x, y);
 	}
 
+	public static int distance(int x1, int y1, int x2, int y2) {
+		return Math.max(Math.abs(x1) + Math.abs(x2), Math.abs(y1) + Math.abs(y2));
+	}
+
 	// Calculates the best move towards a specific point
 	public static int bestMove(int fromX, int fromY, int toX, int toY) {
 		// Check diagonals first
