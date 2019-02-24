@@ -18,6 +18,23 @@ public class Group {
 			this.first = first;
 			this.second = second;
 		}
+
+		public int hashCode() {
+			return first.hashCode() + second.hashCode();
+		}
+
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			} else if (o == null) {
+				return false;
+			} else if (this.getClass() != o.getClass()) {
+				return false;
+			}
+			@SuppressWarnings("unchecked")
+			Group2<K, V> g2 = (Group2<K, V>) o;
+			return first.equals(g2.first) && second.equals(g2.second);
+		}
 	}
 
 	static public class Group3<K, V, S> {
@@ -34,6 +51,22 @@ public class Group {
 			this.second = second;
 			this.third = third;
 		}
-	}
 
+		public int hashCode() {
+			return first.hashCode() + second.hashCode() + third.hashCode();
+		}
+
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			} else if (o == null) {
+				return false;
+			} else if (this.getClass() != o.getClass()) {
+				return false;
+			}
+			@SuppressWarnings("unchecked")
+			Group3<K, V, S> g = (Group3<K, V, S>) o;
+			return first.equals(g.first) && second.equals(g.second) && third.equals(g.third);
+		}
+	}
 }

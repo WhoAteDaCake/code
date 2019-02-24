@@ -119,8 +119,12 @@ public class Path {
 		this.y = y;
 	}
 
+	public int stepCount() {
+		return this.path.size();
+	}
+
 	public boolean hasSteps() {
-		return this.path.size() != 0;
+		return this.stepCount() != 0;
 	}
 
 	public int step() {

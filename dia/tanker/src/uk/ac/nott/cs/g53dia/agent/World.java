@@ -1,5 +1,6 @@
 package uk.ac.nott.cs.g53dia.agent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import uk.ac.nott.cs.g53dia.library.Cell;
@@ -31,6 +32,38 @@ public class World {
 
 	public boolean hasSeenCell(Group.Group2<Integer, Integer> coords) {
 		return cells.containsKey(coords);
+	}
+
+	public Group.Group2<Integer, Integer> getNearestPump() {
+		Group.Group2<Integer, Integer> pump = null;
+		int distance = Integer.MAX_VALUE;
+
+		for (Group.Group2<Integer, Integer> coords : cells.keySet()) {
+			Cell cell = cells.get(coords);
+			if (cell instanceof FuelPump) {
+				int newDist = Path.distance(tankerX, tankerY, coords.first, coords.second);
+				if (newDist < distance) {
+					distance = newDist;
+					pump = coords;
+				}
+			}
+		}
+		return pump;
+	}
+
+	public Path getPathTo(Group.Group2<Integer, Integer> coords) {
+		return Path.movesToPoint(tankerX, tankerY, coords.first, coords.second);
+	}
+
+	public ArrayList<Group.Group2<Integer, Integer>> getStations() {
+		ArrayList<Group.Group2<Integer, Integer>> stations = new ArrayList<>();
+		for (Group.Group2<Integer, Integer> coords : cells.keySet()) {
+			Cell cell = cells.get(coords);
+			if (cell instanceof Station) {
+				stations.add(coords);
+			}
+		}
+		return stations;
 	}
 
 	/*
