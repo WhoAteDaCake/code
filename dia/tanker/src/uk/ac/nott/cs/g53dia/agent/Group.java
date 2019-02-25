@@ -52,6 +52,14 @@ public class Group {
 			this.third = third;
 		}
 
+		public Group2<K, V> head() {
+			return new Group2<K, V>(this.first, this.second);
+		}
+
+		public Group2<V, S> tail() {
+			return new Group2<V, S>(this.second, this.third);
+		}
+
 		public int hashCode() {
 			return first.hashCode() + second.hashCode() + third.hashCode();
 		}

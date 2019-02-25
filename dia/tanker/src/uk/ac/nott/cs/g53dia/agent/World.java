@@ -35,25 +35,12 @@ public class World {
 		return Path.distance(tankerX, tankerY, g.first, g.second);
 	}
 
-	public boolean hasSeenCell(Group.Group2<Integer, Integer> coords) {
-		return cells.containsKey(coords);
+	public boolean standingOn(Group.Group2<Integer, Integer> coords) {
+		return coords.first == tankerX && coords.second == tankerY;
 	}
 
-	public Group.Group2<Integer, Integer> getNearestPump() {
-		Group.Group2<Integer, Integer> pump = null;
-		int distance = Integer.MAX_VALUE;
-
-		for (Group.Group2<Integer, Integer> coords : cells.keySet()) {
-			Cell cell = cells.get(coords);
-			if (cell instanceof FuelPump) {
-				int newDist = distanceTo(coords);
-				if (newDist < distance) {
-					distance = newDist;
-					pump = coords;
-				}
-			}
-		}
-		return pump;
+	public boolean hasSeenCell(Group.Group2<Integer, Integer> coords) {
+		return cells.containsKey(coords);
 	}
 
 	public Path getPathTo(Group.Group2<Integer, Integer> coords) {
@@ -80,7 +67,7 @@ public class World {
 	/*
 	 * Will return the distance and the path that should be followed to get there
 	 */
-	public Group.Group2<Integer, Path> findClosestCell(CellType type) {
+	public Group.Group2<Integer, Integer> findClosestCell(CellType type) {
 		// Coordinate
 		Group.Group2<Integer, Integer> selected = null;
 		int distance = Integer.MAX_VALUE;
@@ -101,11 +88,7 @@ public class World {
 				}
 			}
 		}
-		// If nothing was found return null
-		if (selected == null) {
-			return null;
-		}
-		return Group.make2(distance, Path.movesToPoint(tankerX, tankerY, selected.first, selected.second));
+		return selected;
 	}
 
 	/*

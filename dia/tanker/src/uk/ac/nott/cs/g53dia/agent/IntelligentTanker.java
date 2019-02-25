@@ -13,18 +13,17 @@ import uk.ac.nott.cs.g53dia.library.RefuelAction;
 import uk.ac.nott.cs.g53dia.library.Station;
 import uk.ac.nott.cs.g53dia.library.Tanker;
 import uk.ac.nott.cs.g53dia.library.Task;
+import uk.ac.nott.cs.g53dia.library.Well;
 
 public class IntelligentTanker extends Tanker {
-	State state = State.SCOUTING;
-	State prevState = State.SCOUTING;
-	State savedState = null;
+	State state = State.ROAMING;
+	State savedState = State.ROAMING;
 	World world = new World(Tanker.VIEW_RANGE);
+	Task task;
 
 	Path activePath;
-
-	ArrayList<Group.Group2<Integer, Integer>> scoutedStations = new ArrayList<>();
-	Path scoutePath;
-	Task task;
+	Group.Group2<Integer, Integer> roamCoords = null;
+	Group.Group2<Integer, Integer> prevRoam = null;
 
 	public IntelligentTanker() {
 		this(new Random(50));
@@ -55,7 +54,8 @@ public class IntelligentTanker extends Tanker {
 				Group.Group2<Integer, Integer> coords = world.getGlobalCoords(x, y);
 				if (world.hasSeenCell(coords)) {
 					// If it's a station, it should be updated in order to make sure any new tasks
-					// are retrieved
+					// are retrieved (Environment does a deep clone, so our reference becomes
+					// invalid)
 					if (current instanceof Station) {
 						world.updateCell(current, coords);
 					}
@@ -63,121 +63,155 @@ public class IntelligentTanker extends Tanker {
 				} else {
 					world.registerCell(current, coords);
 				}
-
-				// This means that it's a special cell
-//				world.registerCell(current, x, y);
 			}
 		}
 	}
 
-	// TODO check distance to nearest fuelling station as well
 	public boolean canAfford(Path path) {
 		// Each move costs 2 fuel and car should be able to go there and back
 		int pathPrice = path.stepCount() * 2;
 		Group.Group2<Integer, Integer> pathCoords = new Path(path, world.tankerX, world.tankerY).walk();
-		Group.Group2<Integer, Integer> pump = world.getNearestPump();
+		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP);
+		// Make sure we can reach a pump after said point
 		int toPumpPrice = Path.distance(pathCoords, pump);
-		int fuel = getFuelLevel();
-		return pathPrice + toPumpPrice < fuel;
+		return pathPrice + toPumpPrice < getFuelLevel();
 	}
 
 	public MoveAction registeredMove(int direction) {
-		return new MoveAction(this.world.registerMove(direction));
+		return new MoveAction(world.registerMove(direction));
 	}
 
-	public MoveAction scout() {
-		int randMove = this.r.nextInt(8);
-		int nextMove = -1;
-		// If we are looking to fill some waste up
-		State nextState = null;
-		CellType lookFor = null;
-		if (this.prevState == State.SCOUTING || this.prevState == State.MOVING_TO_WELL) {
-			nextState = State.MOVING_TO_STATION;
-			lookFor = CellType.STATION;
-		} else if (this.prevState == State.LOADING_WASTE) {
-			nextState = State.MOVING_TO_WELL;
-			lookFor = CellType.WELL;
-		}
-
-		Group.Group2<Integer, Path> result = world.findClosestCell(lookFor);
-		if (result != null) {
-			scoutePath = null;
-			activePath = result.second;
-			nextMove = activePath.step();
-			this.state = nextState;
-			// If we found the cell, reset scouting paths
-			scoutePath = null;
-		} else {
-			// TODO check for refueling
-			// Check if we are weakly moving towards a station
-			if (scoutePath == null || !scoutePath.hasSteps()) {
-				// If not check if we have a list of stations to check
-				if (scoutedStations.size() == 0) {
-					scoutedStations = world.getStations();
-				}
-				// If we still have to stations registered, just move randomly
-				if (scoutedStations.size() == 0) {
-					return this.registeredMove(randMove);
-				}
-				// Otherwise set the sourcePath to the first station
-				Group.Group2<Integer, Integer> head = scoutedStations.get(0);
-				scoutedStations.remove(0);
-				scoutePath = Path.movesToPoint(world.tankerX, world.tankerY, head.first, head.second);
-				// If we can't afford the scoutePath we need to refuel
-				if (!this.canAfford(scoutePath)) {
-					activePath = world.getPathTo(world.getNearestPump());
-					// TODO maybe not needed?
-					this.savedState = this.state;
-					this.state = State.REFUELING;
-					return this.registeredMove(activePath.step());
-				}
+	// Try to find a station that can be reached for roaming
+	// TODO check if we need to maintain the coordinates of last visited station
+	public Group.Group2<Integer, Integer> getReachableStation() {
+		Group.Group2<Integer, Integer> coords;
+		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations();
+		// Want to maintain positive bounds
+		while (stations.size() > 1) {
+			int index = r.nextInt(stations.size() - 1);
+			coords = stations.get(index);
+			if (prevRoam != coords && canAfford(world.getPathTo(coords))) {
+				return coords;
+			} else {
+				stations.remove(index);
 			}
-			return this.registeredMove(scoutePath.step());
 		}
+		return null;
+	}
 
-		return this.registeredMove(nextMove < 0 ? randMove : nextMove);
+	public Action followPath() {
+		return registeredMove(activePath.step());
+	}
+
+	public Action refuel() {
+		state = State.MOVING_TO_FUEL;
+		activePath = world.getPathTo(world.findClosestCell(CellType.PUMP));
+		return followPath();
+	}
+
+	// Used for wells and stations
+	public Action moveTo(Group.Group2<Integer, Integer> coords, State nextState) {
+		// When we find something with a task, we don't care about previous roaming
+		if (nextState == State.MOVING_TO_WELL) {
+			prevRoam = null;
+			roamCoords = null;
+		}
+		if (!canAfford(world.getPathTo(coords))) {
+			savedState = nextState;
+			return refuel();
+		}
+		activePath = world.getPathTo(coords);
+		state = nextState;
+		return followPath();
+	}
+
+	public Action roam() {
+		Group.Group2<Integer, Integer> result = world.findClosestCell(CellType.STATION);
+		// Station with a task found
+		// TODO maybe use supplied distance?
+		if (result != null) {
+			return moveTo(result, State.MOVING_TO_STATION);
+		}
+		// Make sure we have a roam target
+		if (roamCoords == null) {
+			roamCoords = getReachableStation();
+			// If no reachable station exists, refuel
+			if (roamCoords == null) {
+				return refuel();
+			}
+			// If we are already here, find another station
+		} else if (world.standingOn(roamCoords)) {
+			prevRoam = roamCoords;
+			roamCoords = null;
+			return roam();
+		}
+		state = State.ROAMING;
+		return registeredMove(Path.bestMove(world.tankerX, world.tankerY, roamCoords.first, roamCoords.second));
 	}
 
 	@Override
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
-		// Because we have no resource restrictions, it's best to just analyse every
-		// time we move
+		// Because we have no resource restrictions, it's best to just analyse the
+		// surrounding area every time we move
 		analyseView(view);
+		Cell cell = getCurrentCell(view);
 
+		// TODO in the future check if we are standing on fuel pump, if so, refuel
 		// If we have a path, should always complete it.
-		if (this.activePath != null && this.activePath.hasSteps()) {
-			return this.registeredMove(activePath.step());
+		if (activePath != null && activePath.hasSteps()) {
+			followPath();
 		}
 
-//		if (this.savedState != null) {
-//			this.state = this.savedState;
-//			this.savedState = null;
-//		}
-
-		if (this.state == State.REFUELING) {
-			this.state = this.savedState;
-			return new RefuelAction();
-		} else if (this.state == State.SCOUTING) {
-			return this.scout();
-		} else if (this.state == State.MOVING_TO_STATION) {
-			// Begin loading
-			this.prevState = state;
-			this.state = State.LOADING_WASTE;
-			this.task = ((Station) getCurrentCell(view)).getTask();
-			return new LoadWasteAction(this.task);
-		} else if (this.state == State.MOVING_TO_WELL) {
-			this.prevState = this.state;
-			this.state = State.SCOUTING;
-			return new DisposeWasteAction();
-		} else if (this.state == State.LOADING_WASTE) {
-			// Means we still have some waste left
-			if (!this.task.isComplete()) {
-				return new LoadWasteAction(this.task);
+		// Safe to assume that at this point we stand on the needed cell
+		if (state == State.ROAMING) {
+			return roam();
+		} else if (state == State.MOVING_TO_STATION) {
+			// Means we got interrupted
+			if (!(cell instanceof Station)) {
+				return roam();
 			}
-			this.task = null;
-			this.prevState = this.state;
-			this.state = State.SCOUTING;
-			return this.scout();
+			// If not start consuming
+			task = ((Station) cell).getTask();
+			state = State.CONSUMING;
+			return new LoadWasteAction(task);
+		} else if (state == State.CONSUMING) {
+			// Means we still have some waste left
+			if (!task.isComplete()) {
+				return new LoadWasteAction(task);
+			} else {
+				return this.moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+			}
+		} else if (state == State.MOVING_TO_WELL) {
+			// We got interrupted
+			if (!(cell instanceof Well)) {
+				return this.moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+			}
+			// Otherwise start disposing
+			state = State.DISPOSING;
+			return new DisposeWasteAction();
+		} else if (state == State.DISPOSING) {
+			if (getWasteLevel() != 0) {
+				return new DisposeWasteAction();
+			}
+			// When disposed, go back to roaming
+			return roam();
+		} else if (state == State.MOVING_TO_FUEL) {
+			state = State.REFUELING;
+			return new RefuelAction();
+		} else if (state == State.REFUELING) {
+			if (!(getFuelLevel() == MAX_FUEL)) {
+				return new RefuelAction();
+			}
+			state = savedState;
+			savedState = null;
+			// No saved state means we were not interrupted
+			if (state == null) {
+				state = State.ROAMING;
+			}
+			;
+
+			return senseAndAct(view, actionFailed, timestep);
+
 		}
 
 		return null;
