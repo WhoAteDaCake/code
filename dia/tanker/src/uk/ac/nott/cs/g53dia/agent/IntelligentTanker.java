@@ -67,15 +67,15 @@ public class IntelligentTanker extends Tanker {
 		}
 	}
 
-	public boolean canAfford(Group.Group2<Integer, Integer> coords) {
-		// Each move costs 2 fuel and car should be able to go there and back
-		int pathPrice = Path.distance(Group.make2(world.tankerX, world.tankerY), coords) * 2;
-		// From path, walk to pump
-		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, coords);
-		// Make sure we can reach a pump after said point
-		int toPumpPrice = Path.distance(coords, pump) * 2;
-		return pathPrice + toPumpPrice < getFuelLevel();
-	}
+//	public boolean canAfford(Group.Group2<Integer, Integer> coords) {
+//		// Each move costs 2 fuel and car should be able to go there and back
+//		int pathPrice = Path.distance(Group.make2(world.tankerX, world.tankerY), coords) * 2;
+//		// From path, walk to pump
+//		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, coords);
+//		// Make sure we can reach a pump after said point
+//		int toPumpPrice = Path.distance(coords, pump) * 2;
+//		return pathPrice + toPumpPrice < getFuelLevel();
+//	}
 
 	// Some point's can't be reached due to limit on max fuel
 	// This will return <canReach, possibleToReach>
@@ -95,7 +95,7 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	// Try to find a station that can be reached for roaming
-	// TODO check if we need to maintain the coordinates of last visited station
+	// Chosen at random
 	public Group.Group2<Integer, Integer> getReachableStation() {
 		Group.Group2<Integer, Integer> coords;
 		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations();
@@ -103,7 +103,7 @@ public class IntelligentTanker extends Tanker {
 		while (stations.size() > 1) {
 			int index = r.nextInt(stations.size() - 1);
 			coords = stations.get(index);
-			if (prevRoam != coords && canAfford(coords)) {
+			if (prevRoam != coords && isReachable(coords).first) {
 				return coords;
 			} else {
 				stations.remove(index);
@@ -142,6 +142,27 @@ public class IntelligentTanker extends Tanker {
 		activePath = world.getPathTo(coords);
 		state = nextState;
 		return followPath();
+	}
+
+	public Action tryToPickupTask() {
+		// See if there any stations nearby that we can pick up waste from
+		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations();
+		ArrayList<Group.Group2<Integer, Integer>> selected = new ArrayList<>();
+		Group.Group2<Integer, Integer> myCoords = Group.make2(world.tankerX, world.tankerY);
+
+		for (Group.Group2<Integer, Integer> coords : stations) {
+			Task task = world.getTask(coords);
+			if (!coords.equals(myCoords) && task != null && !isReachable(coords).first
+					&& task.getWasteRemaining() < getWasteCapacity()) {
+				selected.add(coords);
+			}
+		}
+		// Can't pick up any more
+		if (selected.size() < 1) {
+			return moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+		}
+
+		return moveTo(selected.get(0), State.MOVING_TO_STATION);
 	}
 
 	public Action roam() {
@@ -206,12 +227,12 @@ public class IntelligentTanker extends Tanker {
 			if (!task.isComplete()) {
 				return new LoadWasteAction(task);
 			} else {
-				return this.moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+				return tryToPickupTask();
 			}
 		} else if (state == State.MOVING_TO_WELL) {
 			// We got interrupted
 			if (!(cell instanceof Well)) {
-				return this.moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+				return moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
 			}
 			// Otherwise start disposing
 			state = State.DISPOSING;

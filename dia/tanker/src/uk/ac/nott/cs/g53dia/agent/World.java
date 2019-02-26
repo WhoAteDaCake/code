@@ -7,6 +7,7 @@ import java.util.HashMap;
 import uk.ac.nott.cs.g53dia.library.Cell;
 import uk.ac.nott.cs.g53dia.library.FuelPump;
 import uk.ac.nott.cs.g53dia.library.Station;
+import uk.ac.nott.cs.g53dia.library.Task;
 import uk.ac.nott.cs.g53dia.library.Well;
 
 // TODO reset should periodically clean up moves.
@@ -81,6 +82,16 @@ public class World {
 		return stations;
 	}
 
+	public Cell getCell(Group.Group2<Integer, Integer> coords) {
+		return cells.get(coords);
+	}
+
+	// Assumes a station is passed
+	public Task getTask(Group.Group2<Integer, Integer> coords) {
+		Station cell = (Station) cells.get(coords);
+		return cell.getTask();
+	}
+
 	/*
 	 * Will return the distance and the path that should be followed to get there
 	 */
@@ -94,8 +105,7 @@ public class World {
 
 			boolean isPump = cell instanceof FuelPump && type == CellType.PUMP;
 			boolean isWell = cell instanceof Well && type == CellType.WELL;
-			boolean isTaskStation = cell instanceof Station && type == CellType.STATION
-					&& ((Station) cell).getTask() != null;
+			boolean isTaskStation = cell instanceof Station && type == CellType.STATION && getTask(coords) != null;
 
 			if (isPump || isWell || isTaskStation) {
 				int newDist = Path.distance(from, coords);
