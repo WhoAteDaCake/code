@@ -145,6 +145,11 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action tryToPickupTask() {
+		// If we are already at max waste no point checking
+		if (getWasteCapacity() == 0) {
+			return moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+		}
+
 		// See if there any stations nearby that we can pick up waste from
 		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations();
 		ArrayList<Group.Group2<Integer, Integer>> selected = new ArrayList<>();
@@ -152,7 +157,7 @@ public class IntelligentTanker extends Tanker {
 
 		for (Group.Group2<Integer, Integer> coords : stations) {
 			Task task = world.getTask(coords);
-			if (!coords.equals(myCoords) && task != null && !isReachable(coords).first
+			if (!coords.equals(myCoords) && task != null && isReachable(coords).first
 					&& task.getWasteRemaining() < getWasteCapacity()) {
 				selected.add(coords);
 			}
@@ -199,7 +204,7 @@ public class IntelligentTanker extends Tanker {
 		Cell cell = getCurrentCell(view);
 
 		// TEMP
-		if (timestep > 840) {
+		if (timestep > 350) {
 			int b = 2;
 			int c = b + b;
 		}
