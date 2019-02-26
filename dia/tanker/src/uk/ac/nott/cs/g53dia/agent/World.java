@@ -67,7 +67,7 @@ public class World {
 	/*
 	 * Will return the distance and the path that should be followed to get there
 	 */
-	public Group.Group2<Integer, Integer> findClosestCell(CellType type) {
+	public Group.Group2<Integer, Integer> findClosestCell(CellType type, Group.Group2<Integer, Integer> from) {
 		// Coordinate
 		Group.Group2<Integer, Integer> selected = null;
 		int distance = Integer.MAX_VALUE;
@@ -81,7 +81,7 @@ public class World {
 					&& ((Station) cell).getTask() != null;
 
 			if (isPump || isWell || isTaskStation) {
-				int newDist = distanceTo(coords);
+				int newDist = Path.distance(from, coords);
 				if (distance > newDist) {
 					selected = coords;
 					distance = newDist;
@@ -89,6 +89,10 @@ public class World {
 			}
 		}
 		return selected;
+	}
+
+	public Group.Group2<Integer, Integer> findClosestCell(CellType type) {
+		return findClosestCell(type, Group.make2(tankerX, tankerY));
 	}
 
 	/*

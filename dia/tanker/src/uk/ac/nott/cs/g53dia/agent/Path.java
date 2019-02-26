@@ -99,6 +99,10 @@ public class Path {
 		return movesToPointAux(fromX, fromY, toX, toY, new Path());
 	}
 
+	public static Path movesToPoint(Group.Group2<Integer, Integer> p1, Group.Group2<Integer, Integer> p2) {
+		return movesToPoint(p1.first, p1.second, p2.first, p2.second);
+	}
+
 	public static Path combine(Path p1, Path p2) {
 		Path p3 = new Path();
 		p3.addMoves(p1.path);

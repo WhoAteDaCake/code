@@ -17,7 +17,7 @@ import uk.ac.nott.cs.g53dia.library.Well;
 
 public class IntelligentTanker extends Tanker {
 	State state = State.ROAMING;
-	State savedState = State.ROAMING;
+	State savedState = null;
 	World world = new World(Tanker.VIEW_RANGE);
 	Task task;
 
@@ -71,9 +71,10 @@ public class IntelligentTanker extends Tanker {
 		// Each move costs 2 fuel and car should be able to go there and back
 		int pathPrice = path.stepCount() * 2;
 		Group.Group2<Integer, Integer> pathCoords = new Path(path, world.tankerX, world.tankerY).walk();
-		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP);
+		// From path, walk to pump
+		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, pathCoords);
 		// Make sure we can reach a pump after said point
-		int toPumpPrice = Path.distance(pathCoords, pump);
+		int toPumpPrice = Path.distance(pathCoords, pump) * 2;
 		return pathPrice + toPumpPrice < getFuelLevel();
 	}
 
@@ -112,7 +113,7 @@ public class IntelligentTanker extends Tanker {
 	// Used for wells and stations
 	public Action moveTo(Group.Group2<Integer, Integer> coords, State nextState) {
 		// When we find something with a task, we don't care about previous roaming
-		if (nextState == State.MOVING_TO_WELL) {
+		if (nextState == State.MOVING_TO_STATION) {
 			prevRoam = null;
 			roamCoords = null;
 		}
@@ -156,10 +157,16 @@ public class IntelligentTanker extends Tanker {
 		analyseView(view);
 		Cell cell = getCurrentCell(view);
 
+		// TEMP
+		if (timestep > 50) {
+			int b = 2;
+			int c = b + b;
+		}
+
 		// TODO in the future check if we are standing on fuel pump, if so, refuel
 		// If we have a path, should always complete it.
 		if (activePath != null && activePath.hasSteps()) {
-			followPath();
+			return followPath();
 		}
 
 		// Safe to assume that at this point we stand on the needed cell
@@ -208,7 +215,6 @@ public class IntelligentTanker extends Tanker {
 			if (state == null) {
 				state = State.ROAMING;
 			}
-			;
 
 			return senseAndAct(view, actionFailed, timestep);
 
