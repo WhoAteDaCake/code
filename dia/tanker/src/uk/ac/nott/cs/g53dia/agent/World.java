@@ -12,7 +12,7 @@ import uk.ac.nott.cs.g53dia.library.Well;
 // TODO reset should periodically clean up moves.
 public class World {
 	private HashMap<Group.Group2<Integer, Integer>, Cell> cells = new HashMap<>();
-//	private ArrayList<Group.Group3<Cell, Integer, Integer>> cells = new ArrayList<>();
+	private ArrayList<Group.Group2<Integer, Integer>> unreachable = new ArrayList<>();
 	private Path tankerPath = new Path();
 
 	// Centre coordinates of the grid view
@@ -47,9 +47,26 @@ public class World {
 		return Path.movesToPoint(tankerX, tankerY, coords.first, coords.second);
 	}
 
+	public void setUnreachable(Group.Group2<Integer, Integer> coords) {
+		unreachable.add(coords);
+	}
+
+	// Filters out unreachable objects
+	public ArrayList<Group.Group2<Integer, Integer>> getCellKeys() {
+		ArrayList<Group.Group2<Integer, Integer>> keys = new ArrayList<>(cells.keySet());
+
+		for (Group.Group2<Integer, Integer> coords : unreachable) {
+			if (keys.contains(coords)) {
+				keys.remove(coords);
+			}
+		}
+
+		return keys;
+	}
+
 	public ArrayList<Group.Group2<Integer, Integer>> getStations() {
 		ArrayList<Group.Group2<Integer, Integer>> stations = new ArrayList<>();
-		for (Group.Group2<Integer, Integer> coords : cells.keySet()) {
+		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
 			Cell cell = cells.get(coords);
 			if (cell instanceof Station) {
 				stations.add(coords);
@@ -72,7 +89,7 @@ public class World {
 		Group.Group2<Integer, Integer> selected = null;
 		int distance = Integer.MAX_VALUE;
 
-		for (Group.Group2<Integer, Integer> coords : cells.keySet()) {
+		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
 			Cell cell = cells.get(coords);
 
 			boolean isPump = cell instanceof FuelPump && type == CellType.PUMP;

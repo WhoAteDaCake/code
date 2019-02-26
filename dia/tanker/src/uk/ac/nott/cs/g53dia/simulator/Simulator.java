@@ -1,5 +1,7 @@
 package uk.ac.nott.cs.g53dia.simulator;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 import uk.ac.nott.cs.g53dia.agent.DemoTanker;
@@ -37,7 +39,7 @@ public class Simulator {
 	 * Time for which execution pauses so that GUI can update. Reducing this value
 	 * causes the simulation to run faster.
 	 */
-	private static int DELAY = 100;
+	private static int DELAY = 10;
 
 	/**
 	 * Number of timesteps to execute.
@@ -49,9 +51,49 @@ public class Simulator {
 	 */
 	private static boolean actionFailed = false;
 
-	public static void main(String[] args) {
+	public static ArrayList<Integer> iterate(int level, ArrayList<Integer> saved) {
+		if (level == 0) {
+			return saved;
+		}
+		System.out.println("Running iteration " + level);
 		// Note: to obtain reproducible behaviour, you can set the Random seed
-		Random r = new Random(10);
+//		Random r = new Random(10);
+		Random r = new Random(level);
+		// Create an environment
+		Environment env = new Environment(Tanker.MAX_FUEL / 2, r);
+		// Create a tanker
+		Tanker tank = new IntelligentTanker(r);
+		// Create a GUI window to show the tanker
+//		TankerViewer tv = new TankerViewer(tank);
+//		tv.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
+		// Start executing the Tanker
+		while (env.getTimestep() < DURATION) {
+			// Advance the environment timestep
+			env.tick();
+			// Update the GUI
+//					tv.tick(env);
+			// Get the current view of the tanker
+			Cell[][] view = env.getView(tank.getPosition(), Tanker.VIEW_RANGE);
+			// Let the tanker choose an action
+			Action act = tank.senseAndAct(view, actionFailed, env.getTimestep());
+			// Try to execute the action
+			try {
+				actionFailed = act.execute(env, tank);
+			} catch (OutOfFuelException ofe) {
+				System.err.println(ofe.getMessage());
+				System.exit(-1);
+			} catch (IllegalActionException afe) {
+				System.err.println(afe.getMessage());
+				actionFailed = false;
+			}
+		}
+		saved.add(tank.getScore());
+		return iterate(level - 1, saved);
+	}
+
+	public static void regular(int seed, int delay) {
+		// Note: to obtain reproducible behaviour, you can set the Random seed
+		Random r = new Random(seed);
 		// Create an environment
 		Environment env = new Environment(Tanker.MAX_FUEL / 2, r);
 		// Create a tanker
@@ -80,10 +122,24 @@ public class Simulator {
 				actionFailed = false;
 			}
 			try {
-				Thread.sleep(DELAY);
+				Thread.sleep(delay);
 			} catch (Exception e) {
 			}
 		}
-		System.out.println("Simulation completed at timestep " + env.getTimestep() + " , score: " + tank.getScore());
+	}
+
+	public static void main(String[] args) {
+//		regular(9, DELAY);
+
+		int level = 10;
+		ArrayList<Integer> results = Simulator.iterate(level, new ArrayList<>());
+		float sum = 0;
+		for (int score : results) {
+			sum += score;
+		}
+		sum /= results.size();
+
+		System.out.printf("Ran %d iterations. MIN: %d MAX: %d AVG: %f", level, Collections.min(results),
+				Collections.max(results), sum);
 	}
 }

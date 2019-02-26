@@ -67,15 +67,27 @@ public class IntelligentTanker extends Tanker {
 		}
 	}
 
-	public boolean canAfford(Path path) {
+	public boolean canAfford(Group.Group2<Integer, Integer> coords) {
 		// Each move costs 2 fuel and car should be able to go there and back
-		int pathPrice = path.stepCount() * 2;
-		Group.Group2<Integer, Integer> pathCoords = new Path(path, world.tankerX, world.tankerY).walk();
+		int pathPrice = Path.distance(Group.make2(world.tankerX, world.tankerY), coords) * 2;
 		// From path, walk to pump
-		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, pathCoords);
+		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, coords);
 		// Make sure we can reach a pump after said point
-		int toPumpPrice = Path.distance(pathCoords, pump) * 2;
+		int toPumpPrice = Path.distance(coords, pump) * 2;
 		return pathPrice + toPumpPrice < getFuelLevel();
+	}
+
+	// Some point's can't be reached due to limit on max fuel
+	// This will return <canReach, possibleToReach>
+	public Group.Group2<Boolean, Boolean> isReachable(Group.Group2<Integer, Integer> coords) {
+		// Each move costs 2 fuel and car should be able to go there and back
+		int pathPrice = Path.distance(Group.make2(world.tankerX, world.tankerY), coords) * 2;
+		// From path, walk to pump
+		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, coords);
+		// Make sure we can reach a pump after said point
+		int toPumpPrice = Path.distance(coords, pump) * 2;
+		int fullPrice = pathPrice + toPumpPrice;
+		return Group.make2(fullPrice < getFuelLevel(), fullPrice < MAX_FUEL);
 	}
 
 	public MoveAction registeredMove(int direction) {
@@ -91,7 +103,7 @@ public class IntelligentTanker extends Tanker {
 		while (stations.size() > 1) {
 			int index = r.nextInt(stations.size() - 1);
 			coords = stations.get(index);
-			if (prevRoam != coords && canAfford(world.getPathTo(coords))) {
+			if (prevRoam != coords && canAfford(coords)) {
 				return coords;
 			} else {
 				stations.remove(index);
@@ -107,6 +119,7 @@ public class IntelligentTanker extends Tanker {
 	public Action refuel() {
 		state = State.MOVING_TO_FUEL;
 		activePath = world.getPathTo(world.findClosestCell(CellType.PUMP));
+
 		return followPath();
 	}
 
@@ -117,9 +130,14 @@ public class IntelligentTanker extends Tanker {
 			prevRoam = null;
 			roamCoords = null;
 		}
-		if (!canAfford(world.getPathTo(coords))) {
+		Group.Group2<Boolean, Boolean> result = isReachable(coords);
+		if (!result.first && result.second) {
 			savedState = nextState;
 			return refuel();
+		} else if (!result.second) {
+			// If the coordinates are unreachable
+			world.setUnreachable(coords);
+			return roam();
 		}
 		activePath = world.getPathTo(coords);
 		state = nextState;
@@ -150,15 +168,17 @@ public class IntelligentTanker extends Tanker {
 		return registeredMove(Path.bestMove(world.tankerX, world.tankerY, roamCoords.first, roamCoords.second));
 	}
 
-	@Override
-	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
+	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep, boolean repeating) {
 		// Because we have no resource restrictions, it's best to just analyse the
 		// surrounding area every time we move
-		analyseView(view);
+		// The check here is added to make sure we don't scan again after refuelling
+		if (!repeating) {
+			analyseView(view);
+		}
 		Cell cell = getCurrentCell(view);
 
 		// TEMP
-		if (timestep > 50) {
+		if (timestep > 840) {
 			int b = 2;
 			int c = b + b;
 		}
@@ -222,5 +242,9 @@ public class IntelligentTanker extends Tanker {
 
 		return null;
 	}
-
+	@Override
+	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
+		senseAndAct(view, actionFailed, timestep, false);
+	}
+	}
 }
