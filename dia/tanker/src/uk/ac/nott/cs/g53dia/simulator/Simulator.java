@@ -35,11 +35,13 @@ import uk.ac.nott.cs.g53dia.library.TankerViewer;
 
 public class Simulator {
 
+	private static boolean REGULAR = true;
+	private static int LEVEL = 20;
 	/**
 	 * Time for which execution pauses so that GUI can update. Reducing this value
 	 * causes the simulation to run faster.
 	 */
-	private static int DELAY = 10;
+	private static int DELAY = 50;
 
 	/**
 	 * Number of timesteps to execute.
@@ -129,17 +131,18 @@ public class Simulator {
 	}
 
 	public static void main(String[] args) {
-//		regular(9, DELAY);
+		if (REGULAR) {
+			regular(9, DELAY);
+		} else {
+			ArrayList<Integer> results = Simulator.iterate(LEVEL, new ArrayList<>());
+			float sum = 0;
+			for (int score : results) {
+				sum += score;
+			}
+			sum /= results.size();
 
-		int level = 10;
-		ArrayList<Integer> results = Simulator.iterate(level, new ArrayList<>());
-		float sum = 0;
-		for (int score : results) {
-			sum += score;
+			System.out.printf("Ran %d iterations. MIN: %d MAX: %d AVG: %f", LEVEL, Collections.min(results),
+					Collections.max(results), sum);
 		}
-		sum /= results.size();
-
-		System.out.printf("Ran %d iterations. MIN: %d MAX: %d AVG: %f", level, Collections.min(results),
-				Collections.max(results), sum);
 	}
 }
