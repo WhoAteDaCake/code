@@ -242,9 +242,9 @@ public class IntelligentTanker extends Tanker {
 
 		return null;
 	}
+
 	@Override
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
-		senseAndAct(view, actionFailed, timestep, false);
-	}
+		return senseAndAct(view, actionFailed, timestep, false);
 	}
 }
