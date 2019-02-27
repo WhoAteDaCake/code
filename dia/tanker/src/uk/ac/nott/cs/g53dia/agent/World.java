@@ -55,6 +55,10 @@ public class World {
 		unreachable.add(coords);
 	}
 
+	public void resetUnreachable() {
+		unreachable = new ArrayList<>();
+	}
+
 	public Cell getCell(Group.Group2<Integer, Integer> coords) {
 		return cells.get(coords);
 	}

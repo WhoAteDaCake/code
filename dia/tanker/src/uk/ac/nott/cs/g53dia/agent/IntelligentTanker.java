@@ -145,6 +145,8 @@ public class IntelligentTanker extends Tanker {
 		if (!result.first && result.second) {
 			savedState = nextState;
 			return refuel();
+			// It's easier to save the coordinates as unreachable, rather than to manually
+			// recalculate
 		} else if (!result.second) {
 			// If the coordinates are unreachable
 			world.setUnreachable(coords);
@@ -216,6 +218,7 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep, boolean repeating) {
+		// Cache results
 		savedView = view;
 		savedActionFailed = actionFailed;
 		savedTimestep = timestep;
