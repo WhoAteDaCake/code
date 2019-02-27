@@ -20,6 +20,7 @@ public class IntelligentTanker extends Tanker {
 	Cell[][] savedView;
 	boolean savedActionFailed;
 	long savedTimestep;
+	boolean pumpLoaded = false;
 
 	State state = State.ROAMING;
 	State savedState = null;
@@ -50,6 +51,11 @@ public class IntelligentTanker extends Tanker {
 	 * future probably don't need to run it every single move
 	 */
 	private void analyseView(Cell[][] view) {
+		// Make sure pump is loaded to allow for distance calculations
+		if (!pumpLoaded) {
+			pumpLoaded = true;
+			world.registerCell(getCurrentCell(view), Group.make2(0, 0));
+		}
 		for (int x = 0; x < view.length; x += 1) {
 			for (int y = 0; y < view[x].length; y += 1) {
 				Cell current = view[x][y];
@@ -65,8 +71,8 @@ public class IntelligentTanker extends Tanker {
 					if (current instanceof Station) {
 						world.updateCell(current, coords);
 					}
-
-				} else {
+					// Only register reachable cells
+				} else if (isReachable(coords).second) {
 					world.registerCell(current, coords);
 				}
 			}
@@ -80,7 +86,7 @@ public class IntelligentTanker extends Tanker {
 		// Each move costs 2 fuel and car should be able to go there and back
 		int pathPrice = Path.distance(from, coords) * 2;
 		// From path, walk to pump
-		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, coords);
+		Group.Group2<Integer, Integer> pump = world.getBestCell(CellType.PUMP, coords);
 		// Make sure we can reach a pump after said point
 		int toPumpPrice = Path.distance(coords, pump) * 2;
 		int fullPrice = pathPrice + toPumpPrice;
@@ -123,7 +129,7 @@ public class IntelligentTanker extends Tanker {
 
 	public Action refuel() {
 		state = State.MOVING_TO_FUEL;
-		activePath = world.getPathTo(world.findClosestCell(CellType.PUMP));
+		activePath = world.getPathTo(world.getBestCell(CellType.PUMP));
 		return followPath();
 	}
 
@@ -134,6 +140,7 @@ public class IntelligentTanker extends Tanker {
 			prevRoam = null;
 			roamCoords = null;
 		}
+
 		Group.Group2<Boolean, Boolean> result = isReachable(coords);
 		if (!result.first && result.second) {
 			savedState = nextState;
@@ -151,7 +158,7 @@ public class IntelligentTanker extends Tanker {
 	public Action tryToPickupTask() {
 		// If we are already at max waste no point checking
 		if (getWasteCapacity() == 0) {
-			return moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+			return moveTo(world.getBestCell(CellType.WELL), State.MOVING_TO_WELL);
 		}
 
 		// See if there any stations nearby that we can pick up waste from
@@ -166,7 +173,7 @@ public class IntelligentTanker extends Tanker {
 				selected.add(coords);
 			}
 		}
-		Group.Group2<Integer, Integer> wellCoords = world.findClosestCell(CellType.WELL);
+		Group.Group2<Integer, Integer> wellCoords = world.getBestCell(CellType.WELL);
 		// Can't pick up any more
 		if (selected.size() < 1) {
 			return moveTo(wellCoords, State.MOVING_TO_WELL);
@@ -185,7 +192,7 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action roam() {
-		Group.Group2<Integer, Integer> result = world.findClosestCell(CellType.STATION);
+		Group.Group2<Integer, Integer> result = world.getBestCell(CellType.STATION);
 		// Station with a task found
 		// TODO maybe use supplied distance?
 		if (result != null) {
@@ -220,16 +227,16 @@ public class IntelligentTanker extends Tanker {
 		}
 		Cell cell = getCurrentCell(view);
 
-		// TEMP
-		if (timestep > 2900) {
-			int b = 2;
-			int c = b + b;
-		}
-
 		// TODO in the future check if we are standing on fuel pump, if so, refuel
 		// If we have a path, should always complete it.
 		if (activePath != null && activePath.hasSteps()) {
 			return followPath();
+		}
+
+		// TEMP
+		if (timestep > 184) {
+			int b = 2;
+			int c = b + b;
 		}
 
 		// Safe to assume that at this point we stand on the needed cell
@@ -254,7 +261,7 @@ public class IntelligentTanker extends Tanker {
 		} else if (state == State.MOVING_TO_WELL) {
 			// We got interrupted
 			if (!(cell instanceof Well)) {
-				return moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+				return moveTo(world.getBestCell(CellType.WELL), State.MOVING_TO_WELL);
 			}
 			// Otherwise start disposing
 			state = State.DISPOSING;

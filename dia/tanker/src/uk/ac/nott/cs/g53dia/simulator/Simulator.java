@@ -35,14 +35,14 @@ import uk.ac.nott.cs.g53dia.library.TankerViewer;
 
 public class Simulator {
 
-	private static boolean REGULAR = false;
+	private static boolean REGULAR = true;
 	private static int SEED = 20;
 	private static int LEVEL = 30;
 	/**
 	 * Time for which execution pauses so that GUI can update. Reducing this value
 	 * causes the simulation to run faster.
 	 */
-	private static int DELAY = 20;
+	private static int DELAY = 5;
 	/**
 	 * Number of timesteps to execute.
 	 */

@@ -139,7 +139,7 @@ public class World {
 		double fuelMultiplier = tanker.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 0.25 : 0.5;
 		Group.Group2<Integer, Integer> selected = null;
 
-		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
+		for (Group.Group2<Integer, Integer> coords : list) {
 			// Check whether is reachable, otherwise we might get false paths
 			if (!tanker.isReachable(from, coords).first) {
 				continue;
@@ -159,7 +159,7 @@ public class World {
 			}
 		}
 
-		return selected;
+		return selected != null ? selected : findClosestCell(CellType.WELL, from);
 	}
 
 	// Runs scoring methods
