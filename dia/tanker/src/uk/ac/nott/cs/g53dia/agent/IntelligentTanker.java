@@ -16,6 +16,11 @@ import uk.ac.nott.cs.g53dia.library.Task;
 import uk.ac.nott.cs.g53dia.library.Well;
 
 public class IntelligentTanker extends Tanker {
+	// When we recursively call sense function
+	Cell[][] savedView;
+	boolean savedActionFailed;
+	long savedTimestep;
+
 	State state = State.ROAMING;
 	State savedState = null;
 	World world = new World(Tanker.VIEW_RANGE);
@@ -67,16 +72,6 @@ public class IntelligentTanker extends Tanker {
 		}
 	}
 
-//	public boolean canAfford(Group.Group2<Integer, Integer> coords) {
-//		// Each move costs 2 fuel and car should be able to go there and back
-//		int pathPrice = Path.distance(Group.make2(world.tankerX, world.tankerY), coords) * 2;
-//		// From path, walk to pump
-//		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, coords);
-//		// Make sure we can reach a pump after said point
-//		int toPumpPrice = Path.distance(coords, pump) * 2;
-//		return pathPrice + toPumpPrice < getFuelLevel();
-//	}
-
 	// Some point's can't be reached due to limit on max fuel
 	// This will return <canReach, possibleToReach>
 	public Group.Group2<Boolean, Boolean> isReachable(Group.Group2<Integer, Integer> coords) {
@@ -113,13 +108,16 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action followPath() {
-		return registeredMove(activePath.step());
+		if (activePath.hasSteps()) {
+			return registeredMove(activePath.step());
+		} else {
+			return senseAndAct();
+		}
 	}
 
 	public Action refuel() {
 		state = State.MOVING_TO_FUEL;
 		activePath = world.getPathTo(world.findClosestCell(CellType.PUMP));
-
 		return followPath();
 	}
 
@@ -162,12 +160,22 @@ public class IntelligentTanker extends Tanker {
 				selected.add(coords);
 			}
 		}
+		Group.Group2<Integer, Integer> wellCoords = world.findClosestCell(CellType.WELL);
 		// Can't pick up any more
 		if (selected.size() < 1) {
-			return moveTo(world.findClosestCell(CellType.WELL), State.MOVING_TO_WELL);
+			return moveTo(wellCoords, State.MOVING_TO_WELL);
+		}
+		// Make sure that not better to just deposit now
+		Group.Group2<Integer, Integer> coords = selected.get(0);
+
+		//
+		int scoreMultiplier = 2;
+
+		if (world.distanceTo(wellCoords) * scoreMultiplier < world.distanceTo(coords)) {
+			return moveTo(wellCoords, State.MOVING_TO_WELL);
 		}
 
-		return moveTo(selected.get(0), State.MOVING_TO_STATION);
+		return moveTo(coords, State.MOVING_TO_STATION);
 	}
 
 	public Action roam() {
@@ -195,6 +203,9 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep, boolean repeating) {
+		savedView = view;
+		savedActionFailed = actionFailed;
+		savedTimestep = timestep;
 		// Because we have no resource restrictions, it's best to just analyse the
 		// surrounding area every time we move
 		// The check here is added to make sure we don't scan again after refuelling
@@ -204,7 +215,7 @@ public class IntelligentTanker extends Tanker {
 		Cell cell = getCurrentCell(view);
 
 		// TEMP
-		if (timestep > 350) {
+		if (timestep > 2900) {
 			int b = 2;
 			int c = b + b;
 		}
@@ -262,11 +273,15 @@ public class IntelligentTanker extends Tanker {
 				state = State.ROAMING;
 			}
 
-			return senseAndAct(view, actionFailed, timestep);
+			return senseAndAct();
 
 		}
 
 		return null;
+	}
+
+	public Action senseAndAct() {
+		return senseAndAct(savedView, savedActionFailed, savedTimestep, true);
 	}
 
 	@Override
