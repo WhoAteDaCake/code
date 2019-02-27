@@ -15,6 +15,7 @@ public class World {
 	private HashMap<Group.Group2<Integer, Integer>, Cell> cells = new HashMap<>();
 	private ArrayList<Group.Group2<Integer, Integer>> unreachable = new ArrayList<>();
 	private Path tankerPath = new Path();
+	IntelligentTanker tanker;
 
 	// Centre coordinates of the grid view
 	private int cx;
@@ -23,9 +24,10 @@ public class World {
 	public int tankerX = 0;
 	public int tankerY = 0;
 
-	public World(int size) {
+	public World(int size, IntelligentTanker t) {
 		// Because indices start at 0
 		cy = cx = size;
+		tanker = t;
 	}
 
 	public Group.Group2<Integer, Integer> viewIndicesToCoords(int row, int col) {
@@ -127,6 +129,26 @@ public class World {
 
 	public Group.Group2<Integer, Integer> findClosestCell(CellType type) {
 		return findClosestCell(type, Group.make2(tankerX, tankerY));
+	}
+
+	public Group.Group2<Integer, Integer> getBestWell(Group.Group2<Integer, Integer> from) {
+		ArrayList<Group.Group2<Integer, Integer>> list = getCells(CellType.WELL, false);
+		double cost = Double.MAX_VALUE;
+		Group.Group2<Integer, Integer> selected;
+
+		return selected;
+	}
+
+	// Runs scoring methods
+	public Group.Group2<Integer, Integer> getBestCell(CellType type, Group.Group2<Integer, Integer> from) {
+		if (type == CellType.WELL) {
+			return getBestWell(from);
+		}
+		return findClosestCell(type, from);
+	}
+
+	public Group.Group2<Integer, Integer> getBestCell(CellType type) {
+		return getBestCell(type, Group.make2(tankerX, tankerY));
 	}
 
 	/*

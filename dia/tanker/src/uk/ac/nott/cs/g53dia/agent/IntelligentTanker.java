@@ -23,7 +23,7 @@ public class IntelligentTanker extends Tanker {
 
 	State state = State.ROAMING;
 	State savedState = null;
-	World world = new World(Tanker.VIEW_RANGE);
+	World world;
 	Task task;
 
 	Path activePath;
@@ -42,6 +42,7 @@ public class IntelligentTanker extends Tanker {
 	 */
 	public IntelligentTanker(Random r) {
 		this.r = r;
+		world = new World(Tanker.VIEW_RANGE, this);
 	}
 
 	/*
