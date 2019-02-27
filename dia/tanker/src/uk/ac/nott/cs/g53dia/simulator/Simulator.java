@@ -35,8 +35,9 @@ import uk.ac.nott.cs.g53dia.library.TankerViewer;
 
 public class Simulator {
 
-	private static boolean REGULAR = true;
-	private static int LEVEL = 20;
+	private static boolean REGULAR = false;
+	private static int SEED = 20;
+	private static int LEVEL = 30;
 	/**
 	 * Time for which execution pauses so that GUI can update. Reducing this value
 	 * causes the simulation to run faster.
@@ -131,7 +132,7 @@ public class Simulator {
 
 	public static void main(String[] args) {
 		if (REGULAR) {
-			regular(9, DELAY);
+			regular(SEED, DELAY);
 		} else {
 			ArrayList<Integer> results = Simulator.iterate(LEVEL, new ArrayList<>());
 			float sum = 0;
