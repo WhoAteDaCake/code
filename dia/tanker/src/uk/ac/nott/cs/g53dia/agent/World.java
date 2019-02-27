@@ -52,6 +52,25 @@ public class World {
 		unreachable.add(coords);
 	}
 
+	public Cell getCell(Group.Group2<Integer, Integer> coords) {
+		return cells.get(coords);
+	}
+
+	// Assumes a station is passed
+	public Task getTask(Group.Group2<Integer, Integer> coords) {
+		Station cell = (Station) cells.get(coords);
+		return cell.getTask();
+	}
+
+	public boolean validateCell(Group.Group2<Integer, Integer> coords, CellType type, boolean checkTask) {
+		Cell cell = cells.get(coords);
+		boolean isPump = cell instanceof FuelPump && type == CellType.PUMP;
+		boolean isWell = cell instanceof Well && type == CellType.WELL;
+		boolean isStation = cell instanceof Station && type == CellType.STATION
+				&& (checkTask ? getTask(coords) != null : true);
+		return isPump || isWell || isStation;
+	}
+
 	// Filters out unreachable objects
 	public ArrayList<Group.Group2<Integer, Integer>> getCellKeys() {
 		ArrayList<Group.Group2<Integer, Integer>> keys = new ArrayList<>(cells.keySet());
@@ -65,14 +84,18 @@ public class World {
 		return keys;
 	}
 
-	public ArrayList<Group.Group2<Integer, Integer>> getStations() {
-		ArrayList<Group.Group2<Integer, Integer>> stations = new ArrayList<>();
+	public ArrayList<Group.Group2<Integer, Integer>> getCells(CellType type, boolean checkTask) {
+		ArrayList<Group.Group2<Integer, Integer>> list = new ArrayList<>();
 		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
-			Cell cell = cells.get(coords);
-			if (cell instanceof Station) {
-				stations.add(coords);
+			if (validateCell(coords, type, checkTask)) {
+				list.add(coords);
 			}
 		}
+		return list;
+	}
+
+	public ArrayList<Group.Group2<Integer, Integer>> getStations() {
+		ArrayList<Group.Group2<Integer, Integer>> stations = getCells(CellType.STATION, false);
 		// Sort stations by how close they are
 		stations.sort(new Comparator<Group.Group2<Integer, Integer>>() {
 			public int compare(Group.Group2<Integer, Integer> c1, Group.Group2<Integer, Integer> c2) {
@@ -80,16 +103,6 @@ public class World {
 			}
 		});
 		return stations;
-	}
-
-	public Cell getCell(Group.Group2<Integer, Integer> coords) {
-		return cells.get(coords);
-	}
-
-	// Assumes a station is passed
-	public Task getTask(Group.Group2<Integer, Integer> coords) {
-		Station cell = (Station) cells.get(coords);
-		return cell.getTask();
 	}
 
 	/*
@@ -101,13 +114,7 @@ public class World {
 		int distance = Integer.MAX_VALUE;
 
 		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
-			Cell cell = cells.get(coords);
-
-			boolean isPump = cell instanceof FuelPump && type == CellType.PUMP;
-			boolean isWell = cell instanceof Well && type == CellType.WELL;
-			boolean isTaskStation = cell instanceof Station && type == CellType.STATION && getTask(coords) != null;
-
-			if (isPump || isWell || isTaskStation) {
+			if (validateCell(coords, type, true)) {
 				int newDist = Path.distance(from, coords);
 				if (distance > newDist) {
 					selected = coords;
