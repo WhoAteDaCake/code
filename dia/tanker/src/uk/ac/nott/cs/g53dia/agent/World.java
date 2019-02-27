@@ -7,6 +7,7 @@ import java.util.HashMap;
 import uk.ac.nott.cs.g53dia.library.Cell;
 import uk.ac.nott.cs.g53dia.library.FuelPump;
 import uk.ac.nott.cs.g53dia.library.Station;
+import uk.ac.nott.cs.g53dia.library.Tanker;
 import uk.ac.nott.cs.g53dia.library.Task;
 import uk.ac.nott.cs.g53dia.library.Well;
 
@@ -134,7 +135,29 @@ public class World {
 	public Group.Group2<Integer, Integer> getBestWell(Group.Group2<Integer, Integer> from) {
 		ArrayList<Group.Group2<Integer, Integer>> list = getCells(CellType.WELL, false);
 		double cost = Double.MAX_VALUE;
-		Group.Group2<Integer, Integer> selected;
+		double wasteMultiplier = tanker.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 0.5 : 0.75;
+		double fuelMultiplier = tanker.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 0.25 : 0.5;
+		Group.Group2<Integer, Integer> selected = null;
+
+		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
+			// Check whether is reachable, otherwise we might get false paths
+			if (!tanker.isReachable(from, coords).first) {
+				continue;
+			}
+			Group.Group2<Integer, Integer> pump = findClosestCell(CellType.PUMP, coords);
+			Group.Group2<Integer, Integer> station = findClosestCell(CellType.STATION, coords);
+			double pathCost = Path.distance(from, coords);
+			double pumpCost = Path.distance(coords, pump) * fuelMultiplier;
+			double stationCost = pumpCost * 2;
+			if (station != null) {
+				stationCost = Path.distance(coords, station) * wasteMultiplier;
+			}
+			double myCost = pathCost + pumpCost + stationCost;
+			if (cost > myCost) {
+				selected = coords;
+				cost = myCost;
+			}
+		}
 
 		return selected;
 	}

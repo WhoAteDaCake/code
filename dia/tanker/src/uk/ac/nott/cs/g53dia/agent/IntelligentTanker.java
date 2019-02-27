@@ -75,15 +75,20 @@ public class IntelligentTanker extends Tanker {
 
 	// Some point's can't be reached due to limit on max fuel
 	// This will return <canReach, possibleToReach>
-	public Group.Group2<Boolean, Boolean> isReachable(Group.Group2<Integer, Integer> coords) {
+	public Group.Group2<Boolean, Boolean> isReachable(Group.Group2<Integer, Integer> from,
+			Group.Group2<Integer, Integer> coords) {
 		// Each move costs 2 fuel and car should be able to go there and back
-		int pathPrice = Path.distance(Group.make2(world.tankerX, world.tankerY), coords) * 2;
+		int pathPrice = Path.distance(from, coords) * 2;
 		// From path, walk to pump
 		Group.Group2<Integer, Integer> pump = world.findClosestCell(CellType.PUMP, coords);
 		// Make sure we can reach a pump after said point
 		int toPumpPrice = Path.distance(coords, pump) * 2;
 		int fullPrice = pathPrice + toPumpPrice;
 		return Group.make2(fullPrice < getFuelLevel(), fullPrice < MAX_FUEL);
+	}
+
+	public Group.Group2<Boolean, Boolean> isReachable(Group.Group2<Integer, Integer> coords) {
+		return isReachable(Group.make2(world.tankerX, world.tankerY), coords);
 	}
 
 	public MoveAction registeredMove(int direction) {
