@@ -173,7 +173,6 @@ public class IntelligentTanker extends Tanker {
 		// See if there any stations nearby that we can pick up waste from
 		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations(true);
 		ArrayList<Group.Group2<Integer, Integer>> selected = new ArrayList<>();
-		Group.Group2<Integer, Integer> myCoords = Group.make2(world.tankerX, world.tankerY);
 
 		for (Group.Group2<Integer, Integer> coords : stations) {
 			if (canConsume(coords) && isReachable(coords).first) {
