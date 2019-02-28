@@ -35,7 +35,7 @@ import uk.ac.nott.cs.g53dia.library.TankerViewer;
 
 public class Simulator {
 
-	private static boolean REGULAR = true;
+	private static boolean REGULAR = false;
 	private static int SEED = 20;
 	private static int THREADS = 10;
 	private static int LEVEL = 50;

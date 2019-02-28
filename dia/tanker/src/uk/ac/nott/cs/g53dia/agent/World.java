@@ -139,7 +139,7 @@ public class World {
 		Group.Group2<Integer, Integer> selected = null;
 
 		double cost = Double.MAX_VALUE;
-		double wasteMultiplier = tanker.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 0.5 : 0.75;
+		double wasteMultiplier = tanker.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 0.25 : 0.5;
 		double fuelMultiplier = tanker.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 0.25 : 0.5;
 
 		for (Group.Group2<Integer, Integer> coords : list) {
