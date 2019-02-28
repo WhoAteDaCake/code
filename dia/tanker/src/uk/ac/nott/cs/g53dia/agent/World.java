@@ -13,9 +13,14 @@ import uk.ac.nott.cs.g53dia.library.Well;
 
 // TODO reset should periodically clean up moves.
 public class World {
+	@Deprecated
 	private HashMap<Group.Group2<Integer, Integer>, Cell> cells = new HashMap<>();
+
+	private HashMap<Group.Group2<Integer, Integer>, Cell> pumps = new HashMap<>();
+	private HashMap<Group.Group2<Integer, Integer>, Cell> wells = new HashMap<>();
+	private HashMap<Group.Group2<Integer, Integer>, Cell> stations = new HashMap<>();
 	private ArrayList<Group.Group2<Integer, Integer>> unreachable = new ArrayList<>();
-	private Path tankerPath = new Path();
+
 	IntelligentTanker tanker;
 
 	// Centre coordinates of the grid view
@@ -214,7 +219,6 @@ public class World {
 	 * Helps to track distance to global objects that were encountered
 	 */
 	int registerMove(int direction) {
-		tankerPath.addMove(direction);
 		Group.Group2<Integer, Integer> change = Path.moveChange(direction);
 
 		this.tankerX += change.first;
