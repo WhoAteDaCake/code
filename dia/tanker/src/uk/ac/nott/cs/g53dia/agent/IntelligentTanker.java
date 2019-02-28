@@ -130,6 +130,15 @@ public class IntelligentTanker extends Tanker {
 		return followPath();
 	}
 
+	// Checks we can consume task at coordinates
+	public boolean canConsume(Group.Group2<Integer, Integer> coords) {
+		Task task = world.getTask(coords);
+		if (task == null) {
+			return false;
+		}
+		return task.getWasteRemaining() < getWasteCapacity();
+	}
+
 	// Used for wells and stations
 	public Action moveTo(Group.Group2<Integer, Integer> coords, State nextState) {
 		// When we find something with a task, we don't care about previous roaming
@@ -167,9 +176,7 @@ public class IntelligentTanker extends Tanker {
 		Group.Group2<Integer, Integer> myCoords = Group.make2(world.tankerX, world.tankerY);
 
 		for (Group.Group2<Integer, Integer> coords : stations) {
-			Task task = world.getTask(coords);
-			if (!coords.equals(myCoords) && task != null && isReachable(coords).first
-					&& task.getWasteRemaining() < getWasteCapacity()) {
+			if (canConsume(coords) && isReachable(coords).first) {
 				selected.add(coords);
 			}
 		}
