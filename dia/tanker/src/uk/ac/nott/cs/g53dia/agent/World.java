@@ -5,16 +5,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 
 import uk.ac.nott.cs.g53dia.library.Cell;
-import uk.ac.nott.cs.g53dia.library.FuelPump;
 import uk.ac.nott.cs.g53dia.library.Station;
 import uk.ac.nott.cs.g53dia.library.Tanker;
 import uk.ac.nott.cs.g53dia.library.Task;
-import uk.ac.nott.cs.g53dia.library.Well;
 
 // TODO reset should periodically clean up moves.
 public class World {
-	@Deprecated
-	private HashMap<Group.Group2<Integer, Integer>, Cell> cells = new HashMap<>();
 
 	private HashMap<Group.Group2<Integer, Integer>, Cell> pumps = new HashMap<>();
 	private HashMap<Group.Group2<Integer, Integer>, Cell> wells = new HashMap<>();
@@ -65,36 +61,30 @@ public class World {
 		unreachable = new ArrayList<>();
 	}
 
-//	public Cell getCell(Group.Group2<Integer, Integer> coords) {
-//		return cells.get(coords);
-//	}
-
 	// Assumes a station is passed
 	public Task getTask(Group.Group2<Integer, Integer> coords) {
-		Station cell = (Station) stations.get(coords);
-		return cell.getTask();
-	}
-
-	@Deprecated
-	public boolean validateCell(Group.Group2<Integer, Integer> coords, CellType type, boolean checkTask) {
-		Cell cell = cells.get(coords);
-		boolean isPump = cell instanceof FuelPump && type == CellType.PUMP;
-		boolean isWell = cell instanceof Well && type == CellType.WELL;
-		boolean isStation = cell instanceof Station && type == CellType.STATION
-				&& (checkTask ? getTask(coords) != null : true);
-		return isPump || isWell || isStation;
+		Cell cell = stations.get(coords);
+		return cell == null ? null : ((Station) cell).getTask();
 	}
 
 	// Filters out unreachable objects
-	public ArrayList<Group.Group2<Integer, Integer>> getCoords(CellType type) {
-		ArrayList<Group.Group2<Integer, Integer>> keys;
+	public ArrayList<Group.Group2<Integer, Integer>> getCoords(CellType type, boolean needsTask) {
+		ArrayList<Group.Group2<Integer, Integer>> keys = new ArrayList<>();
 
 		if (type == CellType.PUMP) {
-			keys = new ArrayList<>(pumps.keySet());
+			keys.addAll(pumps.keySet());
 		} else if (type == CellType.STATION) {
-			keys = new ArrayList<>(stations.keySet());
+			if (!needsTask) {
+				keys.addAll(stations.keySet());
+			} else {
+				for (Group.Group2<Integer, Integer> coord : stations.keySet()) {
+					if (getTask(coord) != null) {
+						keys.add(coord);
+					}
+				}
+			}
 		} else {
-			keys = new ArrayList<>(wells.keySet());
+			keys.addAll(wells.keySet());
 		}
 
 		for (Group.Group2<Integer, Integer> coords : unreachable) {
@@ -106,15 +96,8 @@ public class World {
 		return keys;
 	}
 
-	@Deprecated
-	public ArrayList<Group.Group2<Integer, Integer>> getCells(CellType type, boolean checkTask) {
-		ArrayList<Group.Group2<Integer, Integer>> list = new ArrayList<>();
-		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
-			if (validateCell(coords, type, checkTask)) {
-				list.add(coords);
-			}
-		}
-		return list;
+	public ArrayList<Group.Group2<Integer, Integer>> getCoords(CellType type) {
+		return getCoords(type, false);
 	}
 
 	public ArrayList<Group.Group2<Integer, Integer>> getStations() {
@@ -135,7 +118,7 @@ public class World {
 		Group.Group2<Integer, Integer> selected = null;
 		int distance = Integer.MAX_VALUE;
 
-		for (Group.Group2<Integer, Integer> coords : getCoords(type)) {
+		for (Group.Group2<Integer, Integer> coords : getCoords(type, true)) {
 			if (!from.equals(coords)) {
 				int newDist = Path.distance(from, coords);
 				if (distance > newDist) {
@@ -152,11 +135,12 @@ public class World {
 	}
 
 	public Group.Group2<Integer, Integer> getBestWell(Group.Group2<Integer, Integer> from) {
-		ArrayList<Group.Group2<Integer, Integer>> list = getCells(CellType.WELL, false);
+		ArrayList<Group.Group2<Integer, Integer>> list = getCoords(CellType.WELL);
+		Group.Group2<Integer, Integer> selected = null;
+
 		double cost = Double.MAX_VALUE;
 		double wasteMultiplier = tanker.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 0.5 : 0.75;
 		double fuelMultiplier = tanker.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 0.25 : 0.5;
-		Group.Group2<Integer, Integer> selected = null;
 
 		for (Group.Group2<Integer, Integer> coords : list) {
 			// Check whether is reachable, otherwise we might get false paths
@@ -177,11 +161,12 @@ public class World {
 				cost = myCost;
 			}
 		}
-
-		return selected != null ? selected : findClosestCell(CellType.WELL, from);
+		// At this point there isn't any reachable wells so it doesn't matter which one
+		// we return
+		return selected != null ? selected : list.get(0);
 	}
 
-	// Runs scoring methods
+	// Runs scoring method on wells, otherwise returns the closest item
 	public Group.Group2<Integer, Integer> getBestCell(CellType type, Group.Group2<Integer, Integer> from) {
 		if (type == CellType.WELL) {
 			return getBestWell(from);
