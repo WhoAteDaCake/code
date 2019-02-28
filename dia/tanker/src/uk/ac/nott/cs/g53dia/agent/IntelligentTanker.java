@@ -102,7 +102,7 @@ public class IntelligentTanker extends Tanker {
 	// Chosen at random
 	public Group.Group2<Integer, Integer> getReachableStation() {
 		Group.Group2<Integer, Integer> coords;
-		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations();
+		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations(false);
 		// Want to maintain positive bounds
 		while (stations.size() > 1) {
 			int index = r.nextInt(stations.size() - 1);
@@ -155,13 +155,14 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action tryToPickupTask() {
+		Group.Group2<Integer, Integer> wellCoords = world.getBestCell(CellType.WELL);
 		// If we are already at max waste no point checking
 		if (getWasteCapacity() == 0) {
-			return moveTo(world.getBestCell(CellType.WELL), State.MOVING_TO_WELL);
+			return moveTo(wellCoords, State.MOVING_TO_WELL);
 		}
 
 		// See if there any stations nearby that we can pick up waste from
-		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations();
+		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations(true);
 		ArrayList<Group.Group2<Integer, Integer>> selected = new ArrayList<>();
 		Group.Group2<Integer, Integer> myCoords = Group.make2(world.tankerX, world.tankerY);
 
@@ -172,17 +173,13 @@ public class IntelligentTanker extends Tanker {
 				selected.add(coords);
 			}
 		}
-		Group.Group2<Integer, Integer> wellCoords = world.getBestCell(CellType.WELL);
 		// Can't pick up any more
 		if (selected.size() < 1) {
 			return moveTo(wellCoords, State.MOVING_TO_WELL);
 		}
-		// Make sure that not better to just deposit now
 		Group.Group2<Integer, Integer> coords = selected.get(0);
-
-		//
 		int scoreMultiplier = 2;
-
+		// Make sure that not better to just deposit now
 		if (world.distanceTo(wellCoords) * scoreMultiplier < world.distanceTo(coords)) {
 			return moveTo(wellCoords, State.MOVING_TO_WELL);
 		}
@@ -234,7 +231,7 @@ public class IntelligentTanker extends Tanker {
 		}
 
 		// TEMP
-		if (timestep > 184) {
+		if (timestep > 2134) {
 			int b = 2;
 			int c = b + b;
 		}

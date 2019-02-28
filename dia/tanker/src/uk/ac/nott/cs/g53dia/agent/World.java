@@ -100,8 +100,8 @@ public class World {
 		return getCoords(type, false);
 	}
 
-	public ArrayList<Group.Group2<Integer, Integer>> getStations() {
-		ArrayList<Group.Group2<Integer, Integer>> stations = getCoords(CellType.STATION);
+	public ArrayList<Group.Group2<Integer, Integer>> getStations(boolean needTask) {
+		ArrayList<Group.Group2<Integer, Integer>> stations = getCoords(CellType.STATION, needTask);
 		// Sort stations by how close they are
 		stations.sort(new Comparator<Group.Group2<Integer, Integer>>() {
 			public int compare(Group.Group2<Integer, Integer> c1, Group.Group2<Integer, Integer> c2) {
@@ -161,9 +161,7 @@ public class World {
 				cost = myCost;
 			}
 		}
-		// At this point there isn't any reachable wells so it doesn't matter which one
-		// we return
-		return selected != null ? selected : list.get(0);
+		return selected != null ? selected : findClosestCell(CellType.WELL, from);
 	}
 
 	// Runs scoring method on wells, otherwise returns the closest item
