@@ -161,7 +161,7 @@ public class Simulator {
 			}
 			sum /= results.size();
 
-			System.out.printf("Ran %d iterations. MIN: %d MAX: %d AVG: %f", LEVEL, Collections.min(results),
+			System.out.printf("Ran %d iterations. MIN: %d MAX: %d AVG: %f", results.size(), Collections.min(results),
 					Collections.max(results), sum);
 		}
 	}
