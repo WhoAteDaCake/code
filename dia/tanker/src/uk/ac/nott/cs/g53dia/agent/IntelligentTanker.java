@@ -7,6 +7,7 @@ import uk.ac.nott.cs.g53dia.library.Action;
 import uk.ac.nott.cs.g53dia.library.Cell;
 import uk.ac.nott.cs.g53dia.library.DisposeWasteAction;
 import uk.ac.nott.cs.g53dia.library.EmptyCell;
+import uk.ac.nott.cs.g53dia.library.FuelPump;
 import uk.ac.nott.cs.g53dia.library.LoadWasteAction;
 import uk.ac.nott.cs.g53dia.library.MoveAction;
 import uk.ac.nott.cs.g53dia.library.RefuelAction;
@@ -54,7 +55,7 @@ public class IntelligentTanker extends Tanker {
 		// Make sure pump is loaded to allow for distance calculations
 		if (!pumpLoaded) {
 			pumpLoaded = true;
-			world.registerCell(getCurrentCell(view), Group.make2(0, 0));
+			world.setCell(Group.make2(0, 0), getCurrentCell(view), CellType.PUMP);
 		}
 		for (int x = 0; x < view.length; x += 1) {
 			for (int y = 0; y < view[x].length; y += 1) {
@@ -63,18 +64,15 @@ public class IntelligentTanker extends Tanker {
 				if (current instanceof EmptyCell) {
 					continue;
 				}
-				Group.Group2<Integer, Integer> coords = world.getGlobalCoords(x, y);
-				if (world.hasSeenCell(coords)) {
-					// If it's a station, it should be updated in order to make sure any new tasks
-					// are retrieved (Environment does a deep clone, so our reference becomes
-					// invalid)
-					if (current instanceof Station) {
-						world.updateCell(current, coords);
-					}
-					// Only register reachable cells
-				} else if (isReachable(coords).second) {
-					world.registerCell(current, coords);
+				CellType type;
+				if (current instanceof Station) {
+					type = CellType.STATION;
+				} else if (current instanceof FuelPump) {
+					type = CellType.PUMP;
+				} else {
+					type = CellType.WELL;
 				}
+				world.setCell(world.getGlobalCoords(x, y), current, type);
 			}
 		}
 	}

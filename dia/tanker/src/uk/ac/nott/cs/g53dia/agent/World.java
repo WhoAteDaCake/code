@@ -19,6 +19,7 @@ public class World {
 	private HashMap<Group.Group2<Integer, Integer>, Cell> pumps = new HashMap<>();
 	private HashMap<Group.Group2<Integer, Integer>, Cell> wells = new HashMap<>();
 	private HashMap<Group.Group2<Integer, Integer>, Cell> stations = new HashMap<>();
+
 	private ArrayList<Group.Group2<Integer, Integer>> unreachable = new ArrayList<>();
 
 	IntelligentTanker tanker;
@@ -49,7 +50,7 @@ public class World {
 	}
 
 	public boolean hasSeenCell(Group.Group2<Integer, Integer> coords) {
-		return cells.containsKey(coords);
+		return wells.containsKey(coords) || stations.containsKey(coords) || pumps.containsKey(coords);
 	}
 
 	public Path getPathTo(Group.Group2<Integer, Integer> coords) {
@@ -193,26 +194,14 @@ public class World {
 		return new Path(toCoord, tankerX, tankerY).walk();
 	}
 
-	/*
-	 * Used to update stations
-	 */
-	public void updateCell(Cell cell, Group.Group2<Integer, Integer> coords) {
-		cells.put(coords, cell);
-	}
-
-	/*
-	 * Helps to register new special cells Should be used when scouting the
-	 * surrounding cells Because it should be used in nested for loops, we can pass
-	 * variables To help calculating absolute positions of these cells
-	 * 
-	 * Works by: 1. Calculating the moves from tanker to the point 2. Adding those
-	 * moves to the current tanker moves 3. Simulating the moves required to get
-	 * coordinates relative to the centre. 4. Return the direction that we should
-	 * move towards.
-	 */
-	int registerCell(Cell cell, Group.Group2<Integer, Integer> coords) {
-		updateCell(cell, coords);
-		return Path.bestMove(tankerX, tankerY, coords.first, coords.second);
+	public void setCell(Group.Group2<Integer, Integer> coords, Cell cell, CellType type) {
+		if (type == CellType.PUMP) {
+			pumps.put(coords, cell);
+		} else if (type == CellType.STATION) {
+			stations.put(coords, cell);
+		} else {
+			wells.put(coords, cell);
+		}
 	}
 
 	/*
