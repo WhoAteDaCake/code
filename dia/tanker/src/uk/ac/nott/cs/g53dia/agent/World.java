@@ -121,7 +121,7 @@ public class World {
 		int distance = Integer.MAX_VALUE;
 
 		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
-			if (validateCell(coords, type, true)) {
+			if (validateCell(coords, type, true) && !from.equals(coords)) {
 				int newDist = Path.distance(from, coords);
 				if (distance > newDist) {
 					selected = coords;

@@ -37,6 +37,7 @@ public class Simulator {
 
 	private static boolean REGULAR = false;
 	private static int SEED = 20;
+	private static int THREADS = 10;
 	private static int LEVEL = 50;
 	/**
 	 * Time for which execution pauses so that GUI can update. Reducing this value
@@ -53,27 +54,21 @@ public class Simulator {
 	 */
 	private static boolean actionFailed = false;
 
-	public static ArrayList<Integer> iterate(int level, ArrayList<Integer> saved) {
+	public static ArrayList<Integer> iterate(int level, int offset, ArrayList<Integer> saved) {
 		if (level == 0) {
 			return saved;
 		}
-		System.out.println("Running iteration " + level);
-		// Note: to obtain reproducible behaviour, you can set the Random seed
-//		Random r = new Random(10);
-		Random r = new Random(level);
-		// Create an environment
+		int actual = level + offset;
+
+		System.out.println("Running iteration " + actual);
+
+		Random r = new Random(actual);
 		Environment env = new Environment(Tanker.MAX_FUEL / 2, r);
-		// Create a tanker
 		Tanker tank = new IntelligentTanker(r);
-		// Create a GUI window to show the tanker
-//		TankerViewer tv = new TankerViewer(tank);
-//		tv.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-		// Start executing the Tanker
+
 		while (env.getTimestep() < DURATION) {
 			// Advance the environment timestep
 			env.tick();
-			// Update the GUI
-//					tv.tick(env);
 			// Get the current view of the tanker
 			Cell[][] view = env.getView(tank.getPosition(), Tanker.VIEW_RANGE);
 			// Let the tanker choose an action
@@ -90,7 +85,7 @@ public class Simulator {
 			}
 		}
 		saved.add(tank.getScore());
-		return iterate(level - 1, saved);
+		return iterate(level - 1, offset, saved);
 	}
 
 	public static void regular(int seed, int delay) {
@@ -134,7 +129,32 @@ public class Simulator {
 		if (REGULAR) {
 			regular(SEED, DELAY);
 		} else {
-			ArrayList<Integer> results = Simulator.iterate(LEVEL, new ArrayList<>());
+			ArrayList<Thread> threads = new ArrayList<>();
+			ArrayList<Simulate> runners = new ArrayList<>();
+			int batchSize = LEVEL / THREADS;
+//
+			for (int i = 0; i < THREADS; i += 1) {
+				final int index = i;
+				System.out.println("Batch: " + batchSize + " ,offset " + batchSize * index);
+				final Simulate runner = new Simulate(index, batchSize);
+				runners.add(runner);
+				Thread t = new Thread(runner);
+				runners.add(runner);
+				threads.add(t);
+				t.start();
+			}
+//
+			ArrayList<Integer> results = new ArrayList<>();
+			for (int i = 0; i < THREADS; i += 1) {
+				try {
+					threads.get(i).join();
+					results.addAll(runners.get(i).getResults());
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
 			float sum = 0;
 			for (int score : results) {
 				sum += score;
@@ -143,6 +163,26 @@ public class Simulator {
 
 			System.out.printf("Ran %d iterations. MIN: %d MAX: %d AVG: %f", LEVEL, Collections.min(results),
 					Collections.max(results), sum);
+		}
+	}
+
+	public static class Simulate implements Runnable {
+		private volatile ArrayList<Integer> results;
+		private volatile int index;
+		private volatile int batchSize;
+
+		public Simulate(int i, int b) {
+			index = i;
+			batchSize = b;
+		}
+
+		@Override
+		public void run() {
+			results = Simulator.iterate(batchSize, batchSize * index, new ArrayList<>());
+		}
+
+		public ArrayList<Integer> getResults() {
+			return results;
 		}
 	}
 }
