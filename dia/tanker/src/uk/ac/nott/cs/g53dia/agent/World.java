@@ -65,16 +65,17 @@ public class World {
 		unreachable = new ArrayList<>();
 	}
 
-	public Cell getCell(Group.Group2<Integer, Integer> coords) {
-		return cells.get(coords);
-	}
+//	public Cell getCell(Group.Group2<Integer, Integer> coords) {
+//		return cells.get(coords);
+//	}
 
 	// Assumes a station is passed
 	public Task getTask(Group.Group2<Integer, Integer> coords) {
-		Station cell = (Station) cells.get(coords);
+		Station cell = (Station) stations.get(coords);
 		return cell.getTask();
 	}
 
+	@Deprecated
 	public boolean validateCell(Group.Group2<Integer, Integer> coords, CellType type, boolean checkTask) {
 		Cell cell = cells.get(coords);
 		boolean isPump = cell instanceof FuelPump && type == CellType.PUMP;
@@ -85,8 +86,16 @@ public class World {
 	}
 
 	// Filters out unreachable objects
-	public ArrayList<Group.Group2<Integer, Integer>> getCellKeys() {
-		ArrayList<Group.Group2<Integer, Integer>> keys = new ArrayList<>(cells.keySet());
+	public ArrayList<Group.Group2<Integer, Integer>> getCoords(CellType type) {
+		ArrayList<Group.Group2<Integer, Integer>> keys;
+
+		if (type == CellType.PUMP) {
+			keys = new ArrayList<>(pumps.keySet());
+		} else if (type == CellType.STATION) {
+			keys = new ArrayList<>(stations.keySet());
+		} else {
+			keys = new ArrayList<>(wells.keySet());
+		}
 
 		for (Group.Group2<Integer, Integer> coords : unreachable) {
 			if (keys.contains(coords)) {
@@ -97,6 +106,7 @@ public class World {
 		return keys;
 	}
 
+	@Deprecated
 	public ArrayList<Group.Group2<Integer, Integer>> getCells(CellType type, boolean checkTask) {
 		ArrayList<Group.Group2<Integer, Integer>> list = new ArrayList<>();
 		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
@@ -108,7 +118,7 @@ public class World {
 	}
 
 	public ArrayList<Group.Group2<Integer, Integer>> getStations() {
-		ArrayList<Group.Group2<Integer, Integer>> stations = getCells(CellType.STATION, false);
+		ArrayList<Group.Group2<Integer, Integer>> stations = getCoords(CellType.STATION);
 		// Sort stations by how close they are
 		stations.sort(new Comparator<Group.Group2<Integer, Integer>>() {
 			public int compare(Group.Group2<Integer, Integer> c1, Group.Group2<Integer, Integer> c2) {
@@ -119,15 +129,14 @@ public class World {
 	}
 
 	/*
-	 * Will return the distance and the path that should be followed to get there
+	 * Will return the coordinates of the closest entity from given coordinates
 	 */
 	public Group.Group2<Integer, Integer> findClosestCell(CellType type, Group.Group2<Integer, Integer> from) {
-		// Coordinate
 		Group.Group2<Integer, Integer> selected = null;
 		int distance = Integer.MAX_VALUE;
 
-		for (Group.Group2<Integer, Integer> coords : getCellKeys()) {
-			if (validateCell(coords, type, true) && !from.equals(coords)) {
+		for (Group.Group2<Integer, Integer> coords : getCoords(type)) {
+			if (!from.equals(coords)) {
 				int newDist = Path.distance(from, coords);
 				if (distance > newDist) {
 					selected = coords;
