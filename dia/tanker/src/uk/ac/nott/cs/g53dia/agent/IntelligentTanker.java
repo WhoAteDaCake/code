@@ -60,12 +60,11 @@ public class IntelligentTanker extends Tanker {
 		for (int x = 0; x < view.length; x += 1) {
 			for (int y = 0; y < view[x].length; y += 1) {
 				Cell current = view[x][y];
+				CellType type;
 
 				if (current instanceof EmptyCell) {
 					continue;
-				}
-				CellType type;
-				if (current instanceof Station) {
+				} else if (current instanceof Station) {
 					type = CellType.STATION;
 				} else if (current instanceof FuelPump) {
 					type = CellType.PUMP;
