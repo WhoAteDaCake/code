@@ -117,17 +117,22 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action followPath() {
-		if (activePath.hasSteps()) {
-			return registeredMove(activePath.step());
-		} else {
+		return registeredMove(activePath.step());
+	}
+
+	public Action goTo(Group.Group2<Integer, Integer> coords) {
+		activePath = world.getPathTo(coords);
+		// Means we are already at the needed place
+		if (!activePath.hasSteps()) {
 			return senseAndAct();
 		}
+
+		return followPath();
 	}
 
 	public Action refuel() {
 		state = State.MOVING_TO_FUEL;
-		activePath = world.getPathTo(world.getBestCell(CellType.PUMP));
-		return followPath();
+		return goTo(world.getBestCell(CellType.PUMP));
 	}
 
 	// Checks we can consume task at coordinates
@@ -158,9 +163,8 @@ public class IntelligentTanker extends Tanker {
 			world.setUnreachable(coords);
 			return roam();
 		}
-		activePath = world.getPathTo(coords);
 		state = nextState;
-		return followPath();
+		return goTo(coords);
 	}
 
 	public Action tryToPickupTask() {
@@ -184,9 +188,8 @@ public class IntelligentTanker extends Tanker {
 			return moveTo(wellCoords, State.MOVING_TO_WELL);
 		}
 		Group.Group2<Integer, Integer> coords = selected.get(0);
-		int scoreMultiplier = 2;
 		// Make sure that not better to just deposit now
-		if (world.distanceTo(wellCoords) * scoreMultiplier < world.distanceTo(coords)) {
+		if (world.distanceTo(wellCoords) * 2 < world.distanceTo(coords)) {
 			return moveTo(wellCoords, State.MOVING_TO_WELL);
 		}
 
@@ -237,7 +240,7 @@ public class IntelligentTanker extends Tanker {
 		}
 
 		// TEMP
-		if (timestep > 2134) {
+		if (timestep > 1400) {
 			int b = 2;
 			int c = b + b;
 		}
@@ -279,9 +282,6 @@ public class IntelligentTanker extends Tanker {
 			state = State.REFUELING;
 			return new RefuelAction();
 		} else if (state == State.REFUELING) {
-			if (!(getFuelLevel() == MAX_FUEL)) {
-				return new RefuelAction();
-			}
 			state = savedState;
 			savedState = null;
 			// No saved state means we were not interrupted
