@@ -139,8 +139,8 @@ public class World {
 		Group.Group2<Integer, Integer> selected = null;
 
 		double cost = Double.MAX_VALUE;
-		double wasteMultiplier = tanker.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 0.25 : 0.5;
-		double fuelMultiplier = tanker.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 0.25 : 0.5;
+		double wasteMultiplier = tanker.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 4 : 2;
+		double fuelMultiplier = tanker.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 4 : 2;
 
 		for (Group.Group2<Integer, Integer> coords : list) {
 			// Check whether is reachable, otherwise we might get false paths
@@ -150,10 +150,10 @@ public class World {
 			Group.Group2<Integer, Integer> pump = findClosestCell(CellType.PUMP, coords);
 			Group.Group2<Integer, Integer> station = findClosestCell(CellType.STATION, coords);
 			double pathCost = Path.distance(from, coords);
-			double pumpCost = Path.distance(coords, pump) * fuelMultiplier;
+			double pumpCost = Path.distance(coords, pump) / fuelMultiplier;
 			double stationCost = pumpCost * 2;
 			if (station != null) {
-				stationCost = Path.distance(coords, station) * wasteMultiplier;
+				stationCost = Path.distance(coords, station) / wasteMultiplier;
 			}
 			double myCost = pathCost + pumpCost + stationCost;
 			if (cost > myCost) {
