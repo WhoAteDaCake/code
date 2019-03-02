@@ -22,6 +22,7 @@ public class IntelligentTanker extends Tanker {
 	boolean savedActionFailed;
 	long savedTimestep;
 	boolean pumpLoaded = false;
+	boolean refueled = false;
 
 	State state = State.ROAMING;
 	State savedState = null;
@@ -103,6 +104,14 @@ public class IntelligentTanker extends Tanker {
 	public Group.Group2<Integer, Integer> getReachableStation() {
 		Group.Group2<Integer, Integer> coords;
 		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations(false);
+
+		if (stations.size() == 1) {
+			if (stations.get(0).equals(prevRoam)) {
+				// Chose a random point somewhere
+				return Group.make2(world.tankerX + 20, world.tankerY + 20);
+			}
+			return stations.get(0);
+		}
 		// Want to maintain positive bounds
 		while (stations.size() > 1) {
 			int index = r.nextInt(stations.size() - 1);
@@ -131,6 +140,8 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action refuel() {
+		prevRoam = null;
+		roamCoords = null;
 		state = State.MOVING_TO_FUEL;
 		return goTo(world.getBestCell(CellType.PUMP));
 	}
@@ -169,6 +180,16 @@ public class IntelligentTanker extends Tanker {
 
 	public Action tryToPickupTask() {
 		Group.Group2<Integer, Integer> wellCoords = world.getBestCell(CellType.WELL);
+		// Verify that the well is reachable
+		if (wellCoords == null) {
+			return roam();
+		} else if (!isReachable(wellCoords).second) {
+			// Verify that the well is reachable
+			// This means we need to check for a nearest pump station to that well and try
+			// to move there
+			wellCoords = world.findClosestCell(CellType.PUMP, wellCoords);
+		}
+
 		// If we are already at max waste no point checking
 		if (getWasteCapacity() == 0) {
 			return moveTo(wellCoords, State.MOVING_TO_WELL);
@@ -207,7 +228,9 @@ public class IntelligentTanker extends Tanker {
 		if (roamCoords == null) {
 			roamCoords = getReachableStation();
 			// If no reachable station exists, refuel
-			if (roamCoords == null) {
+			if (roamCoords == null || world.distanceTo(roamCoords) * 2 > getFuelLevel()) {
+				// Need to make sure that we aren't just in a situation, where there aren't any
+				// reachable stations
 				return refuel();
 			}
 			// If we are already here, find another station
@@ -236,11 +259,16 @@ public class IntelligentTanker extends Tanker {
 		// TODO in the future check if we are standing on fuel pump, if so, refuel
 		// If we have a path, should always complete it.
 		if (activePath != null && activePath.hasSteps()) {
+			if (!refueled && cell instanceof FuelPump && getFuelLevel() != MAX_FUEL) {
+				refueled = true;
+				return new RefuelAction();
+			}
+			refueled = false;
 			return followPath();
 		}
 
 		// TEMP
-		if (timestep > 1400) {
+		if (timestep > 72) {
 			int b = 2;
 			int c = b + b;
 		}
@@ -258,12 +286,7 @@ public class IntelligentTanker extends Tanker {
 			state = State.CONSUMING;
 			return new LoadWasteAction(task);
 		} else if (state == State.CONSUMING) {
-			// Means we still have some waste left
-			if (!task.isComplete()) {
-				return new LoadWasteAction(task);
-			} else {
-				return tryToPickupTask();
-			}
+			return tryToPickupTask();
 		} else if (state == State.MOVING_TO_WELL) {
 			// We got interrupted
 			if (!(cell instanceof Well)) {
@@ -279,6 +302,10 @@ public class IntelligentTanker extends Tanker {
 			// When disposed, go back to roaming
 			return roam();
 		} else if (state == State.MOVING_TO_FUEL) {
+			if (getFuelLevel() == MAX_FUEL) {
+				state = State.REFUELING;
+				return senseAndAct();
+			}
 			state = State.REFUELING;
 			return new RefuelAction();
 		} else if (state == State.REFUELING) {

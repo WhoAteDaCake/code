@@ -119,13 +119,14 @@ public class World {
 		int distance = Integer.MAX_VALUE;
 
 		for (Group.Group2<Integer, Integer> coords : getCoords(type, true)) {
-			if (!from.equals(coords)) {
-				int newDist = Path.distance(from, coords);
-				if (distance > newDist) {
-					selected = coords;
-					distance = newDist;
-				}
+			// We should allow to refuel, while standing on a cell
+//			if (type == CellType.PUMP || !from.equals(coords)) {
+			int newDist = Path.distance(from, coords);
+			if (distance > newDist) {
+				selected = coords;
+				distance = newDist;
 			}
+//			}
 		}
 		return selected;
 	}
