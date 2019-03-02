@@ -34,17 +34,16 @@ import uk.ac.nott.cs.g53dia.library.TankerViewer;
  */
 
 public class Simulator {
-
-	private static boolean REGULAR = false;
-	private static int SEED = 20;
-	private static int THREADS = 10;
-	private static int LEVEL = 50;
+	private static boolean REGULAR = true;
+	private static int SEED = 88;
+	private static int THREADS = 20;
+	private static int LEVEL = 100;
 	private static int FAIL_DELAY = 3000;
 	/**
 	 * Time for which execution pauses so that GUI can update. Reducing this value
 	 * causes the simulation to run faster.
 	 */
-	private static int DELAY = 5;
+	private static int DELAY = 10;
 	/**
 	 * Number of timesteps to execute.
 	 */
@@ -72,17 +71,27 @@ public class Simulator {
 			env.tick();
 			// Get the current view of the tanker
 			Cell[][] view = env.getView(tank.getPosition(), Tanker.VIEW_RANGE);
-			// Let the tanker choose an action
-			Action act = tank.senseAndAct(view, actionFailed, env.getTimestep());
 			// Try to execute the action
 			try {
+				// Let the tanker choose an action
+				Action act = tank.senseAndAct(view, actionFailed, env.getTimestep());
 				actionFailed = act.execute(env, tank);
 			} catch (OutOfFuelException ofe) {
 				System.err.println(ofe.getMessage());
-				System.exit(-1);
+				System.err.println("Failed at level: " + actual + " timestep: " + env.getTimestep());
+				Thread.currentThread().interrupt();
+				return saved;
 			} catch (IllegalActionException afe) {
 				System.err.println(afe.getMessage());
+				System.err.println("Failed at level: " + actual + " timestep: " + env.getTimestep());
+				Thread.currentThread().interrupt();
 				actionFailed = false;
+				return saved;
+			} catch (NullPointerException e) {
+				System.err.println(e.getMessage());
+				System.err.println("Failed at level: " + actual + " timestep: " + env.getTimestep());
+				Thread.currentThread().interrupt();
+				return saved;
 			}
 		}
 		saved.add(tank.getScore());
@@ -140,7 +149,7 @@ public class Simulator {
 //
 			for (int i = 0; i < THREADS; i += 1) {
 				final int index = i;
-				System.out.println("Batch: " + batchSize + " ,offset " + batchSize * index);
+//				System.out.println("Batch: " + batchSize + " ,offset " + batchSize * index);
 				final Simulate runner = new Simulate(index, batchSize);
 				runners.add(runner);
 				Thread t = new Thread(runner);
