@@ -35,6 +35,10 @@ public class Group {
 			Group2<K, V> g2 = (Group2<K, V>) o;
 			return first.equals(g2.first) && second.equals(g2.second);
 		}
+
+		public String toString() {
+			return String.format("(%s,%s)", first.toString(), second.toString());
+		}
 	}
 
 	static public class Group3<K, V, S> {
@@ -75,6 +79,10 @@ public class Group {
 			@SuppressWarnings("unchecked")
 			Group3<K, V, S> g = (Group3<K, V, S>) o;
 			return first.equals(g.first) && second.equals(g.second) && third.equals(g.third);
+		}
+
+		public String toString() {
+			return String.format("(%s,%s, %s)", first.toString(), second.toString(), third.toString());
 		}
 	}
 }
