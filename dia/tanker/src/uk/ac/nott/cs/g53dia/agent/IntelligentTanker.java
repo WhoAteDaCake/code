@@ -79,12 +79,12 @@ public class IntelligentTanker extends Tanker {
 	public Group.Group2<Boolean, Boolean> isReachable(Group.Group2<Integer, Integer> from,
 			Group.Group2<Integer, Integer> coords) {
 		// Each move costs 2 fuel and car should be able to go there and back
-		int pathPrice = Path.distance(from, coords) * 2;
+		int pathPrice = Path.distance(from, coords);
 		// From path, walk to pump
 		Group.Group2<Integer, Integer> pump = world.getBestCell(CellType.PUMP, coords);
 		// Make sure we can reach a pump after said point
-		int toPumpPrice = Path.distance(coords, pump) * 2;
-		int fullPrice = pathPrice + toPumpPrice;
+		int toPumpPrice = Path.distance(coords, pump);
+		int fullPrice = (pathPrice + toPumpPrice) * 2;
 		return Group.make2(fullPrice < getFuelLevel(), fullPrice < MAX_FUEL);
 	}
 

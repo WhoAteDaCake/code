@@ -124,12 +124,10 @@ public class World {
 
 		for (Group.Group2<Integer, Integer> coords : getCoords(type, true)) {
 			// We should allow to refuel, while standing on a cell
-			if (type == CellType.PUMP || !from.equals(coords)) {
-				int newDist = Path.distance(from, coords);
-				if (distance > newDist) {
-					selected = coords;
-					distance = newDist;
-				}
+			int newDist = Path.distance(from, coords);
+			if (distance > newDist) {
+				selected = coords;
+				distance = newDist;
 			}
 		}
 		return selected;
