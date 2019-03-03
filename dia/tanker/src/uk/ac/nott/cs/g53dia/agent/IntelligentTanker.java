@@ -184,22 +184,9 @@ public class IntelligentTanker extends Tanker {
 			return moveTo(wellCoords, State.MOVING_TO_WELL);
 		}
 
-		// See if there any stations nearby that we can pick up waste from
-		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations(true);
-		ArrayList<Group.Group2<Integer, Integer>> selected = new ArrayList<>();
-
-		for (Group.Group2<Integer, Integer> coords : stations) {
-			if (canConsume(coords) && isReachable(coords).first) {
-				selected.add(coords);
-			}
-		}
-		// Can't pick up any more
-		if (selected.size() < 1) {
-			return moveTo(wellCoords, State.MOVING_TO_WELL);
-		}
-		Group.Group2<Integer, Integer> coords = selected.get(0);
+		Group.Group2<Integer, Integer> coords = world.getBestStation(world.tankerPos());
 		// Make sure that not better to just deposit now
-		if (world.distanceTo(wellCoords) * 2 < world.distanceTo(coords)) {
+		if (coords == null || world.distanceTo(wellCoords) * 2 < world.distanceTo(coords)) {
 			return moveTo(wellCoords, State.MOVING_TO_WELL);
 		}
 

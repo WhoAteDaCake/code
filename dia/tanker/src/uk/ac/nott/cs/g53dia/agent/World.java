@@ -3,6 +3,8 @@ package uk.ac.nott.cs.g53dia.agent;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import uk.ac.nott.cs.g53dia.library.Cell;
 import uk.ac.nott.cs.g53dia.library.Station;
@@ -167,11 +169,39 @@ public class World {
 		return selected != null ? selected : findClosestCell(CellType.WELL, from);
 	}
 
+	private int withinRadius(Group.Group2<Integer, Integer> coords, List<Group.Group2<Integer, Integer>> list,
+			int radius) {
+		return list.stream().reduce(1, (count, p) -> Path.distance(coords, p) <= radius ? count + 1 : count,
+				(p, q) -> p + 1);
+	}
+
+	public Group.Group2<Integer, Integer> getBestStation(Group.Group2<Integer, Integer> from) {
+		List<Group.Group2<Integer, Integer>> list = getCoords(CellType.STATION, true).stream()
+				.filter(c -> tanker.isReachable(c).first && tanker.canConsume(c)).collect(Collectors.toList());
+		Group.Group2<Integer, Integer> selected = null;
+		if (list.size() == 0) {
+			return null;
+		}
+
+		int score = Integer.MAX_VALUE;
+		for (Group.Group2<Integer, Integer> coords : list) {
+			int myScore = distanceTo(coords) - withinRadius(coords, list, 20);
+			if (myScore < score) {
+				selected = coords;
+				score = myScore;
+			}
+		}
+		return selected;
+	}
+
 	// Runs scoring method on wells, otherwise returns the closest item
 	public Group.Group2<Integer, Integer> getBestCell(CellType type, Group.Group2<Integer, Integer> from) {
 		if (type == CellType.WELL) {
 			return getBestWell(from);
 		}
+//		} else if (type == CellType.STATION) {
+//			return getBestStation(from);
+//		}
 		return findClosestCell(type, from);
 	}
 

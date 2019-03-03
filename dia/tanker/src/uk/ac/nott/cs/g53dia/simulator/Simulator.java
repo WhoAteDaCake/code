@@ -35,15 +35,16 @@ import uk.ac.nott.cs.g53dia.library.TankerViewer;
 
 public class Simulator {
 	private static boolean REGULAR = false;
-	private static int SEED = 5;
+//	private static int SEED = 5;
+	private static int SEED = new Random().nextInt();
 	private static int THREADS = 25;
-	private static int LEVEL = 50;
+	private static int LEVEL = 100;
 	private static int FAIL_DELAY = 3000;
 	/**
 	 * Time for which execution pauses so that GUI can update. Reducing this value
 	 * causes the simulation to run faster.
 	 */
-	private static int DELAY = 10;
+	private static int DELAY = 20;
 	/**
 	 * Number of timesteps to execute.
 	 */
