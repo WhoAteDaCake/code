@@ -14,7 +14,6 @@ import uk.ac.nott.cs.g53dia.library.RefuelAction;
 import uk.ac.nott.cs.g53dia.library.Station;
 import uk.ac.nott.cs.g53dia.library.Tanker;
 import uk.ac.nott.cs.g53dia.library.Task;
-import uk.ac.nott.cs.g53dia.library.Well;
 
 public class IntelligentTanker extends Tanker {
 	// When we recursively call sense function
@@ -25,9 +24,7 @@ public class IntelligentTanker extends Tanker {
 	boolean refueled = false;
 
 	State state = State.ROAMING;
-	State savedState = null;
 	World world;
-	Task task;
 
 	Path activePath;
 	Group.Group2<Integer, Integer> roamCoords = null;
@@ -101,28 +98,23 @@ public class IntelligentTanker extends Tanker {
 
 	// Try to find a station that can be reached for roaming
 	// Chosen at random
-	public Group.Group2<Integer, Integer> getReachableStation() {
+	public Group.Group2<Integer, Integer> getRoamingPoint() {
 		Group.Group2<Integer, Integer> coords;
 		ArrayList<Group.Group2<Integer, Integer>> stations = world.getStations(false);
 
-		if (stations.size() == 1) {
-			if (stations.get(0).equals(prevRoam)) {
-				// Chose a random point somewhere
-				return Group.make2(world.tankerX + 20, world.tankerY + 20);
-			}
-			return stations.get(0);
-		}
 		// Want to maintain positive bounds
 		while (stations.size() > 1) {
 			int index = r.nextInt(stations.size() - 1);
 			coords = stations.get(index);
-			if (prevRoam != coords && isReachable(coords).first) {
+			if (!coords.equals(prevRoam) && isReachable(coords).first) {
 				return coords;
 			} else {
 				stations.remove(index);
 			}
 		}
-		return null;
+
+		int modifier = r.nextInt(10) > 5 ? -20 : 20;
+		return Group.make2(world.tankerX + modifier, world.tankerY + modifier);
 	}
 
 	public Action followPath() {
@@ -140,8 +132,6 @@ public class IntelligentTanker extends Tanker {
 	}
 
 	public Action refuel() {
-		prevRoam = null;
-		roamCoords = null;
 		state = State.MOVING_TO_FUEL;
 		return goTo(world.getBestCell(CellType.PUMP));
 	}
@@ -165,7 +155,6 @@ public class IntelligentTanker extends Tanker {
 
 		Group.Group2<Boolean, Boolean> result = isReachable(coords);
 		if (!result.first && result.second) {
-			savedState = nextState;
 			return refuel();
 			// It's easier to save the coordinates as unreachable, rather than to manually
 			// recalculate
@@ -222,22 +211,22 @@ public class IntelligentTanker extends Tanker {
 		// Station with a task found
 		// TODO maybe use supplied distance?
 		if (result != null) {
+			prevRoam = null;
+			roamCoords = null;
 			return moveTo(result, State.MOVING_TO_STATION);
 		}
-		// Make sure we have a roam target
-		if (roamCoords == null) {
-			roamCoords = getReachableStation();
+
+		if (roamCoords == null || world.standingOn(roamCoords)) {
+			prevRoam = roamCoords;
+			roamCoords = getRoamingPoint();
 			// If no reachable station exists, refuel
-			if (roamCoords == null || world.distanceTo(roamCoords) * 2 > getFuelLevel()) {
+			if (roamCoords == null || !isReachable(roamCoords).first) {
 				// Need to make sure that we aren't just in a situation, where there aren't any
 				// reachable stations
+				prevRoam = null;
+				roamCoords = null;
 				return refuel();
 			}
-			// If we are already here, find another station
-		} else if (world.standingOn(roamCoords)) {
-			prevRoam = roamCoords;
-			roamCoords = null;
-			return roam();
 		}
 		state = State.ROAMING;
 		return registeredMove(Path.bestMove(world.tankerX, world.tankerY, roamCoords.first, roamCoords.second));
@@ -256,67 +245,42 @@ public class IntelligentTanker extends Tanker {
 		}
 		Cell cell = getCurrentCell(view);
 
-		// TODO in the future check if we are standing on fuel pump, if so, refuel
+		if (!refueled && cell instanceof FuelPump && getFuelLevel() != MAX_FUEL) {
+			refueled = true;
+			return new RefuelAction();
+		}
 		// If we have a path, should always complete it.
 		if (activePath != null && activePath.hasSteps()) {
-			if (!refueled && cell instanceof FuelPump && getFuelLevel() != MAX_FUEL) {
-				refueled = true;
-				return new RefuelAction();
-			}
 			refueled = false;
 			return followPath();
 		}
+		refueled = false;
 
 		// TEMP
-		if (timestep > 72) {
+		if (timestep >= 160) {
 			int b = 2;
 			int c = b + b;
 		}
 
 		// Safe to assume that at this point we stand on the needed cell
-		if (state == State.ROAMING) {
+		if (state == State.ROAMING || state == State.DISPOSING) {
 			return roam();
-		} else if (state == State.MOVING_TO_STATION) {
-			// Means we got interrupted
-			if (!(cell instanceof Station)) {
-				return roam();
-			}
-			// If not start consuming
-			task = ((Station) cell).getTask();
+		}
+
+		if (state == State.MOVING_TO_STATION) {
 			state = State.CONSUMING;
-			return new LoadWasteAction(task);
+			return new LoadWasteAction(((Station) cell).getTask());
 		} else if (state == State.CONSUMING) {
 			return tryToPickupTask();
 		} else if (state == State.MOVING_TO_WELL) {
-			// We got interrupted
-			if (!(cell instanceof Well)) {
-				return moveTo(world.getBestCell(CellType.WELL), State.MOVING_TO_WELL);
-			}
-			// Otherwise start disposing
 			state = State.DISPOSING;
 			return new DisposeWasteAction();
-		} else if (state == State.DISPOSING) {
-			if (getWasteLevel() != 0) {
-				return new DisposeWasteAction();
-			}
-			// When disposed, go back to roaming
-			return roam();
 		} else if (state == State.MOVING_TO_FUEL) {
-			if (getFuelLevel() == MAX_FUEL) {
-				state = State.REFUELING;
-				return senseAndAct();
+			// Because we check for refuelling before, by this point we already refuelled
+			if (getWasteCapacity() != MAX_WASTE) {
+				return tryToPickupTask();
 			}
-			state = State.REFUELING;
-			return new RefuelAction();
-		} else if (state == State.REFUELING) {
-			state = savedState;
-			savedState = null;
-			// No saved state means we were not interrupted
-			if (state == null) {
-				state = State.ROAMING;
-			}
-
-			return senseAndAct();
+			return roam();
 
 		}
 

@@ -41,8 +41,12 @@ public class World {
 		return Path.distance(tankerX, tankerY, g.first, g.second);
 	}
 
+	public Group.Group2<Integer, Integer> tankerPos() {
+		return Group.make2(tankerX, tankerY);
+	}
+
 	public boolean standingOn(Group.Group2<Integer, Integer> coords) {
-		return coords.first == tankerX && coords.second == tankerY;
+		return tankerPos().equals(coords);
 	}
 
 	public boolean hasSeenCell(Group.Group2<Integer, Integer> coords) {

@@ -34,10 +34,10 @@ import uk.ac.nott.cs.g53dia.library.TankerViewer;
  */
 
 public class Simulator {
-	private static boolean REGULAR = true;
-	private static int SEED = 88;
-	private static int THREADS = 20;
-	private static int LEVEL = 100;
+	private static boolean REGULAR = false;
+	private static int SEED = 5;
+	private static int THREADS = 25;
+	private static int LEVEL = 50;
 	private static int FAIL_DELAY = 3000;
 	/**
 	 * Time for which execution pauses so that GUI can update. Reducing this value
@@ -87,7 +87,7 @@ public class Simulator {
 				Thread.currentThread().interrupt();
 				actionFailed = false;
 				return saved;
-			} catch (NullPointerException e) {
+			} catch (Exception e) {
 				System.err.println(e.getMessage());
 				System.err.println("Failed at level: " + actual + " timestep: " + env.getTimestep());
 				Thread.currentThread().interrupt();
