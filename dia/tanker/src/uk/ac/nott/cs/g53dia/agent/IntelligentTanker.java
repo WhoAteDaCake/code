@@ -198,8 +198,6 @@ public class IntelligentTanker extends Tanker {
 		// Station with a task found
 		// TODO maybe use supplied distance?
 		if (result != null) {
-			prevRoam = null;
-			roamCoords = null;
 			return moveTo(result, State.MOVING_TO_STATION);
 		}
 
@@ -210,8 +208,6 @@ public class IntelligentTanker extends Tanker {
 			if (roamCoords == null || !isReachable(roamCoords).first) {
 				// Need to make sure that we aren't just in a situation, where there aren't any
 				// reachable stations
-				prevRoam = null;
-				roamCoords = null;
 				return refuel();
 			}
 		}
@@ -243,17 +239,12 @@ public class IntelligentTanker extends Tanker {
 		}
 		refueled = false;
 
-		// TEMP
-		if (timestep >= 160) {
-			int b = 2;
-			int c = b + b;
-		}
-
 		// Safe to assume that at this point we stand on the needed cell
 		if (state == State.ROAMING || state == State.DISPOSING) {
 			return roam();
 		}
-
+		prevRoam = null;
+		roamCoords = null;
 		if (state == State.MOVING_TO_STATION) {
 			state = State.CONSUMING;
 			return new LoadWasteAction(((Station) cell).getTask());
@@ -262,16 +253,12 @@ public class IntelligentTanker extends Tanker {
 		} else if (state == State.MOVING_TO_WELL) {
 			state = State.DISPOSING;
 			return new DisposeWasteAction();
-		} else if (state == State.MOVING_TO_FUEL) {
-			// Because we check for refuelling before, by this point we already refuelled
-			if (getWasteCapacity() != MAX_WASTE) {
-				return tryToPickupTask();
-			}
-			return roam();
-
 		}
-
-		return null;
+		// Because we check for refuelling before, by this point we already refuelled
+		if (getWasteCapacity() != MAX_WASTE) {
+			return tryToPickupTask();
+		}
+		return roam();
 	}
 
 	public Action senseAndAct() {

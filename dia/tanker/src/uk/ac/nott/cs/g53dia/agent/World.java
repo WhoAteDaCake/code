@@ -199,9 +199,6 @@ public class World {
 		if (type == CellType.WELL) {
 			return getBestWell(from);
 		}
-//		} else if (type == CellType.STATION) {
-//			return getBestStation(from);
-//		}
 		return findClosestCell(type, from);
 	}
 
