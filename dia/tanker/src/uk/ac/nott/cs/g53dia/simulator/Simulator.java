@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
-import uk.ac.nott.cs.g53dia.agent.DemoTanker;
 import uk.ac.nott.cs.g53dia.agent.IntelligentTanker;
 import uk.ac.nott.cs.g53dia.library.Action;
 import uk.ac.nott.cs.g53dia.library.Cell;
@@ -38,7 +37,7 @@ public class Simulator {
 //	private static int SEED = 5;
 	private static int SEED = new Random().nextInt();
 	private static int THREADS = 25;
-	private static int LEVEL = 100;
+	private static int LEVEL = 50;
 	private static int FAIL_DELAY = 3000;
 	/**
 	 * Time for which execution pauses so that GUI can update. Reducing this value
