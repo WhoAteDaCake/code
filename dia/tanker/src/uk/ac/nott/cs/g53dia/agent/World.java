@@ -172,7 +172,7 @@ public class World {
 	private int withinRadius(Group.Group2<Integer, Integer> coords, List<Group.Group2<Integer, Integer>> list,
 			int radius) {
 		return list.stream().reduce(1, (count, p) -> Path.distance(coords, p) <= radius ? count + 1 : count,
-				(p, q) -> p + 1);
+				(p, q) -> p + q);
 	}
 
 	public Group.Group2<Integer, Integer> getBestStation(Group.Group2<Integer, Integer> from) {
