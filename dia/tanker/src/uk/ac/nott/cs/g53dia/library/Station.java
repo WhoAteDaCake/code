@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class Station extends DefaultCell {
 
-	final static double NEW_TASK_PROBABILITY = 0.001;
+	final static double NEW_TASK_PROBABILITY = 0.05;
 	private Task task;
 	private Random r;
 
@@ -32,7 +32,7 @@ public class Station extends DefaultCell {
 	}
 
 	protected void generateTask() {
-				if (this.task == null) {
+		if (this.task == null) {
 			if (r.nextDouble() < NEW_TASK_PROBABILITY) {
 				this.task = new Task(this, r);
 			}
