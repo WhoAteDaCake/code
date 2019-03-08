@@ -231,5 +231,6 @@ int main(int argc, char **argv)
   glDepthFunc(GL_LEQUAL);  // Choose the depth comparison function
   glutMainLoop();          // Begin rendering sequence
   setup();
+  printf("Hello\n");
   return 0;
 }
