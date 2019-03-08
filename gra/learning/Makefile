@@ -1,7 +1,7 @@
 #OBJS specifies which files to compile as part of the project
 SRC_DIR := ./src
 
-OBJS := $(wildcard $(SRC_DIR)/**/*.cpp)
+OBJS := $(wildcard $(SRC_DIR)/*.cpp)
 
 #CC specifies which compiler we're using
 CC = g++
