@@ -218,6 +218,7 @@ void specialKeys(int key, int x, int y)
 
 int main(int argc, char **argv)
 {
+  printf("Hello\n");
   glutInit(&argc, argv); // Initialise GL environment
   setup();               // Call additional initialisation commands
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -231,6 +232,5 @@ int main(int argc, char **argv)
   glDepthFunc(GL_LEQUAL);  // Choose the depth comparison function
   glutMainLoop();          // Begin rendering sequence
   setup();
-  printf("Hello\n");
   return 0;
 }
