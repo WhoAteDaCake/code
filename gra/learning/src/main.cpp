@@ -49,11 +49,33 @@ std::string load_file(std::string name)
     return src;
 }
 
-bool load_shaders(GLuint &program)
+GLuint load_shaders(std::string name, GLenum type)
 {
     char logs[512];
     GLint success;
-    std::string file = load_file(shader("vertex_core.glsl"));
+    std::string src = load_file(shader(name));
+    GLuint shader = glCreateShader(type);
+    const GLchar *s_src = src.c_str();
+    glShaderSource(shader, 1, &s_src, NULL);
+    glCompileShader(shader);
+
+    // Check whether it was successful
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (success == -1)
+    {
+        glGetShaderInfoLog(shader, 512, NULL, logs);
+        std::cout << "ERROR: could not compile vertex shader :" << name << std::endl;
+        std::cout << logs << std::endl;
+    }
+    return shader;
+}
+
+bool load_shaders(GLuint &program)
+{
+    GLuint vertex_shader = load_shaders("vertex_core.glsl", GL_VERTEX_SHADER);
+    GLuint fragment_shader = load_shaders("fragment_core.glsl", GL_FRAGMENT_SHADER);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(fragment_shader);
     return true;
 }
 

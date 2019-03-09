@@ -8,7 +8,7 @@ CC = g++
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
 # -w suppresses all warnings
-COMPILER_FLAGS = -I./src -g -std=c++11
+COMPILER_FLAGS = -I./src -g -std=c++11 -DGL_GLEXT_PROTOTYPES
 
 #LINKER_FLAGS specifies the libraries we're linking against
 LINKER_FLAGS = -lGL -lGLU -lglut
