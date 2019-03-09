@@ -1,5 +1,21 @@
 #include "libs.h"
 
+Vertex vertices[] =
+    {
+        //Position								//Color							//Texcoords
+        glm::vec3(-0.5f, 0.5f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec2(0.f, 1.f),
+        glm::vec3(-0.5f, -0.5f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 0.f),
+        glm::vec3(0.5f, -0.5f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 0.f),
+        glm::vec3(0.5f, 0.5f, 0.f), glm::vec3(1.f, 1.f, 0.f), glm::vec2(1.f, 1.f)};
+unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
+
+GLuint indices[] =
+    {
+        0, 1, 2, //Triangle 1
+        0, 2, 3  //Triangle 2
+};
+unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
+
 std::string shader(std::string file)
 {
     return "./shaders/" + file;
@@ -61,7 +77,7 @@ GLuint load_shaders(std::string name, GLenum type)
 
     // Check whether it was successful
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (success == -1)
+    if (!success)
     {
         glGetShaderInfoLog(shader, 512, NULL, logs);
         std::cout << "ERROR: could not compile vertex shader :" << name << std::endl;
@@ -74,9 +90,37 @@ bool load_shaders(GLuint &program)
 {
     GLuint vertex_shader = load_shaders("vertex_core.glsl", GL_VERTEX_SHADER);
     GLuint fragment_shader = load_shaders("fragment_core.glsl", GL_FRAGMENT_SHADER);
+
+    // Allocate space
+    program = glCreateProgram();
+    glAttachShader(program, vertex_shader);
+    glAttachShader(program, fragment_shader);
+    glLinkProgram(program);
+
+    // Check for errors
+    char logs[512];
+    GLint success;
+    glGetProgramiv(program, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        glGetProgramInfoLog(program, 512, NULL, logs);
+        std::cout << "ERROR: could not link program \n";
+        std::cout << logs << std::endl;
+    }
+
+    glUseProgram(0);
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
     return true;
+}
+
+void handle_key(unsigned char key, int x, int y)
+{
+    // Escape key
+    if (key == 27)
+    {
+        glutLeaveMainLoop();
+    }
 }
 
 int main(int iArgc, char **cppArgv)
@@ -87,12 +131,31 @@ int main(int iArgc, char **cppArgv)
     GLuint program;
     load_shaders(program);
 
+    // GL options
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_BLEND);
+
+    // Blend colors of polygons
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glCullFace(GL_BACK);
+    // Set front face as shown one
+    glFrontFace(GL_CCW);
+
+    // Set to fill the whole shape
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
     glutInitWindowSize(windowSize, windowSize);
     glutInitWindowPosition(200, 200);
     glutCreateWindow("XoaX.net");
+
     Initialize();
     glutDisplayFunc(Draw);
+    glutKeyboardFunc(handle_key);
+
     glutMainLoop();
+    glDeleteProgram(program);
+
     return 0;
 }
