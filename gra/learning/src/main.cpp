@@ -37,6 +37,9 @@ void Draw()
 
     glUseProgram(program);
 
+    // Update uniforms (if you need more than 1 texture)
+    glUniform1i(glGetUniformLocation(program, "texture0"), 0);
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture0);
 
@@ -46,6 +49,12 @@ void Draw()
     glutSwapBuffers();
     glFlush();
     checkError("display");
+    // Reset
+    glBindVertexArray(0);
+    glUseProgram(0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+    checkError("reset");
 }
 
 void Initialize()
