@@ -1,18 +1,30 @@
 #include "libs.h"
 
-Vertex vertices[] =
+GLuint program;
+GLuint VAO;
+GLuint VBO;
+GLuint EBO;
+
+/* report GL errors, if any, to stderr */
+void checkError(const char *functionName)
+{
+    GLenum error;
+    while ((error = glGetError()) != GL_NO_ERROR)
     {
-        //Position								//Color							//Texcoords
-        glm::vec3(-0.5f, 0.5f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec2(0.f, 1.f),
-        glm::vec3(-0.5f, -0.5f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 0.f),
-        glm::vec3(0.5f, -0.5f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 0.f),
-        glm::vec3(0.5f, 0.5f, 0.f), glm::vec3(1.f, 1.f, 0.f), glm::vec2(1.f, 1.f)};
+        fprintf(stderr, "GL error 0x%X detected in %s\n", error, functionName);
+    }
+}
+
+Vertex vertices[] = {
+    glm::vec3(0.0f, 0.5f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec2(0.f, 1.f),
+    glm::vec3(-0.5f, -0.5f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 0.f),
+    glm::vec3(0.5f, -0.5f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 0.f)};
+
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 
 GLuint indices[] =
     {
         0, 1, 2, //Triangle 1
-        0, 2, 3  //Triangle 2
 };
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
 
@@ -23,21 +35,57 @@ std::string shader(std::string file)
 
 void Draw()
 {
+    glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    glColor3f(1.0, 1.0, 1.0);
-    glBegin(GL_LINES);
-    glVertex3f(0.25, 0.25, 0.0);
-    glVertex3f(0.75, 0.75, 0.0);
-    glEnd();
+
+    glUseProgram(program);
+    glBindVertexArray(VAO);
+
+    glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
+
+    glutSwapBuffers();
     glFlush();
+    checkError("display");
 }
 
 void Initialize()
 {
-    glClearColor(1.f, 0.4f, 0.0, 0.0);
+    glClearColor(0.f, 0.f, 0.f, 0.0);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+    // glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
+    //MODEL
+
+    //VAO, VBO, EBO
+    //GEN VAO AND BIND
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    // //GEN VBO AND BIND AND SEND DATA
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    // //GEN EBO AND BIND AND SEND DATA
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    //SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
+    //Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, position));
+    glEnableVertexAttribArray(0);
+    //Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, color));
+    glEnableVertexAttribArray(1);
+    //Texcoord
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord));
+    glEnableVertexAttribArray(2);
+
+    //BIND VAO 0
+    glBindVertexArray(0);
+
+    checkError("Initialize");
 }
 
 std::string load_file(std::string name)
@@ -95,6 +143,13 @@ bool load_shaders(GLuint &program)
     program = glCreateProgram();
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
+
+    // Because of 1.30 glsl, we need to specify attributes manually
+    // https://stackoverflow.com/questions/21354301/glsl-syntax-problems-unexpected-new-identifier
+    glBindAttribLocation(program, 0, "vertex_position");
+    glBindAttribLocation(program, 1, "vertex_color");
+    glBindAttribLocation(program, 2, "vertex_texcoord");
+
     glLinkProgram(program);
 
     // Check for errors
@@ -128,27 +183,26 @@ int main(int iArgc, char **cppArgv)
     int windowSize = 400;
     glutInit(&iArgc, cppArgv);
 
-    GLuint program;
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+    glutInitWindowSize(windowSize, windowSize);
+    glutInitWindowPosition(200, 200);
+    glutCreateWindow("XoaX.net");
+
     load_shaders(program);
 
     // GL options
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_COLOR_MATERIAL);
     glEnable(GL_BLEND);
-
     // Blend colors of polygons
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glCullFace(GL_BACK);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     // Set front face as shown one
     glFrontFace(GL_CCW);
-
     // Set to fill the whole shape
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    glutInitWindowSize(windowSize, windowSize);
-    glutInitWindowPosition(200, 200);
-    glutCreateWindow("XoaX.net");
 
     Initialize();
     glutDisplayFunc(Draw);
