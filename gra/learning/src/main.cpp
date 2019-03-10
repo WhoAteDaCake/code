@@ -14,24 +14,22 @@ void checkError(const char *functionName)
         fprintf(stderr, "GL error 0x%X detected in %s\n", error, functionName);
     }
 }
+float size = 0.5f;
 
-Vertex vertices[] = {
-    glm::vec3(0.0f, 0.5f, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec2(0.f, 1.f),
-    glm::vec3(-0.5f, -0.5f, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 0.f),
-    glm::vec3(0.5f, -0.5f, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 0.f)};
+Vertex vertices[] = {glm::vec3(-size, size, 0.f), glm::vec3(1.f, 0.f, 0.f),
+                     glm::vec2(0.f, 1.f), glm::vec3(-size, -size, 0.f),
+                     glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 1.f),
+                     glm::vec3(size, -size, 0.f), glm::vec3(0.f, 0.f, 1.f),
+                     glm::vec2(0.f, 1.f), glm::vec3(size, size, 0.f),
+                     glm::vec3(0.f, 0.f, 1.f), glm::vec2(0.f, 1.f)};
 
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 
-GLuint indices[] =
-    {
-        0, 1, 2, //Triangle 1
-};
+GLuint indices[] = {0, 1, 2, // Triangle 1
+                    0, 2, 3};
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
 
-std::string shader(std::string file)
-{
-    return "./shaders/" + file;
-}
+std::string shader(std::string file) { return "./shaders/" + file; }
 
 void Draw()
 {
@@ -54,10 +52,10 @@ void Initialize()
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     // glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-    //MODEL
+    // MODEL
 
-    //VAO, VBO, EBO
-    //GEN VAO AND BIND
+    // VAO, VBO, EBO
+    // GEN VAO AND BIND
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
@@ -69,20 +67,24 @@ void Initialize()
     // //GEN EBO AND BIND AND SEND DATA
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+                 GL_STATIC_DRAW);
 
-    //SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
-    //Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, position));
+    // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, position));
     glEnableVertexAttribArray(0);
-    //Color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, color));
+    // Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, color));
     glEnableVertexAttribArray(1);
-    //Texcoord
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)offsetof(Vertex, texcoord));
+    // Texcoord
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, texcoord));
     glEnableVertexAttribArray(2);
 
-    //BIND VAO 0
+    // BIND VAO 0
     glBindVertexArray(0);
 
     checkError("Initialize");
@@ -128,7 +130,8 @@ GLuint load_shaders(std::string name, GLenum type)
     if (!success)
     {
         glGetShaderInfoLog(shader, 512, NULL, logs);
-        std::cout << "ERROR: could not compile vertex shader :" << name << std::endl;
+        std::cout << "ERROR: could not compile vertex shader :" << name
+                  << std::endl;
         std::cout << logs << std::endl;
     }
     return shader;
@@ -137,7 +140,8 @@ GLuint load_shaders(std::string name, GLenum type)
 bool load_shaders(GLuint &program)
 {
     GLuint vertex_shader = load_shaders("vertex_core.glsl", GL_VERTEX_SHADER);
-    GLuint fragment_shader = load_shaders("fragment_core.glsl", GL_FRAGMENT_SHADER);
+    GLuint fragment_shader =
+        load_shaders("fragment_core.glsl", GL_FRAGMENT_SHADER);
 
     // Allocate space
     program = glCreateProgram();
@@ -203,7 +207,6 @@ int main(int iArgc, char **cppArgv)
     glFrontFace(GL_CCW);
     // Set to fill the whole shape
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
     Initialize();
     glutDisplayFunc(Draw);
     glutKeyboardFunc(handle_key);
