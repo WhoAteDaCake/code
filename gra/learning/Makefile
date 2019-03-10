@@ -11,7 +11,7 @@ CC = g++
 COMPILER_FLAGS = -I./src -g -std=c++11 -DGL_GLEXT_PROTOTYPES
 
 #LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lGL -lGLU -lglut
+LINKER_FLAGS = -lGL -lGLU -lglut -lSOIL
 
 #OBJ_NAME specifies the name of our exectuable
 OBJ_NAME = program.exe

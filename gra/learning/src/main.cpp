@@ -4,6 +4,7 @@ GLuint program;
 GLuint VAO;
 GLuint VBO;
 GLuint EBO;
+GLuint texture0;
 
 /* report GL errors, if any, to stderr */
 void checkError(const char *functionName)
@@ -16,12 +17,10 @@ void checkError(const char *functionName)
 }
 float size = 0.5f;
 
-Vertex vertices[] = {glm::vec3(-size, size, 0.f), glm::vec3(1.f, 0.f, 0.f),
-                     glm::vec2(0.f, 1.f), glm::vec3(-size, -size, 0.f),
-                     glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 1.f),
-                     glm::vec3(size, -size, 0.f), glm::vec3(0.f, 0.f, 1.f),
-                     glm::vec2(0.f, 1.f), glm::vec3(size, size, 0.f),
-                     glm::vec3(0.f, 0.f, 1.f), glm::vec2(0.f, 1.f)};
+Vertex vertices[] = {glm::vec3(-size, size, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec2(0.f, 1.f),  //
+                     glm::vec3(-size, -size, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 0.f), //
+                     glm::vec3(size, -size, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 0.f),  //
+                     glm::vec3(size, size, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 1.f)};
 
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 
@@ -37,8 +36,11 @@ void Draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glUseProgram(program);
-    glBindVertexArray(VAO);
 
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture0);
+
+    glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
 
     glutSwapBuffers();
@@ -49,8 +51,8 @@ void Draw()
 void Initialize()
 {
     glClearColor(0.f, 0.f, 0.f, 0.0);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
+    // glMatrixMode(GL_PROJECTION);
+    // glLoadIdentity();
     // glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
     // MODEL
 
@@ -88,6 +90,45 @@ void Initialize()
     glBindVertexArray(0);
 
     checkError("Initialize");
+
+    // Textures
+    int image_w = 0;
+    int image_h = 0;
+    unsigned char *image = SOIL_load_image("./images/robot.png", &image_w, &image_h, NULL, SOIL_LOAD_RGBA);
+
+    // Make sure previous texture is saved
+    GLuint boundTexture = 0;
+    glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint *)&boundTexture);
+
+    glGenTextures(1, &texture0);
+    glBindTexture(GL_TEXTURE_2D, texture0);
+    checkError("Texture:bind");
+
+    // Set options
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    checkError("Texture:params");
+
+    if (image)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_w, image_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+        // For automatic adjustment of size
+        glGenerateMipmap(GL_TEXTURE_2D);
+        checkError("Texture:image");
+    }
+    else
+    {
+        std::cout << "ERROR: failed to load texture\n";
+        return;
+    }
+
+    SOIL_free_image_data(image);
+    // Make sure no textures are bound
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, boundTexture);
+    checkError("Texture:reset");
 }
 
 std::string load_file(std::string name)
