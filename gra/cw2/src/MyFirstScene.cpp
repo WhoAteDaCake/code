@@ -27,35 +27,73 @@ void draw_wall(float size) {
       Point(size, size, z),
   };
   int indices[] = {0, 1, 2, 0, 2, 3};
-  float c = 0.5f;
+  float c = 0.0f;
+  static GLfloat ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+  // White
+  static GLfloat diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
+  // No specular (black)
+  static GLfloat specular[] = {0.0f, 0.0f, 0.0f, 1.0f};
+
+  glPushAttrib(GL_ALL_ATTRIB_BITS);
+
+  glDisable(GL_COLOR_MATERIAL);
+  glEnable(GL_LIGHTING);
+
+  glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+  glMaterialf(GL_FRONT, GL_SHININESS, 100.f);
+
+  glClear(GL_COLOR_BUFFER_BIT);
   glColor3f(c, c, c);
   glBegin(GL_TRIANGLES);
-  draw_pts(points, indices, 6);
+  glNormal3f(0.f, 0.f, 1.f);
+
+  GLfloat _element_size = 1.f / 100.f;
+  for (GLfloat i = -size; i < size; i += _element_size) {
+    for (GLfloat j = -size; j < size; j += _element_size) {
+      glBegin(GL_TRIANGLES);
+      {
+        glNormal3f(0.0f, 0.0f, 1.0f);
+
+        glVertex3f(i, j, 0.0f);
+        glVertex3f(i + _element_size, j, 0.0f);
+        glVertex3f(i, j + _element_size, 0.0f);
+
+        glVertex3f(i + _element_size, j, 0.0f);
+        glVertex3f(i + _element_size, j + _element_size, 0.0f);
+        glVertex3f(i, j + _element_size, 0.0f);
+      }
+      glEnd();
+    }
+  }
+  // draw_pts(points, indices, 6);
+
   glEnd();
+  glPopAttrib();
 }
 
-void draw_light(float size, float x_offset) {
-  float z = 0.f;
-  Point points[] = {
-      Point(-size, size, z),
-      Point(-size, -size, z),
-      Point(size, -size, z),
-      Point(size, size, z),
-  };
-  int indices[] = {0, 1, 2, 0, 2, 3};
-  float c = 0.f;
+void draw_light(float size, float x_offset, GLenum lightSrc, GLfloat *ambient,
+                GLfloat *diffuse, GLfloat *specular) {
+  float z = size + size / 2;
 
-  glPushMatrix();
+  glEnable(GL_LIGHTING);
+  // Colour
+  glLightfv(lightSrc, GL_AMBIENT, ambient);
+  glLightfv(lightSrc, GL_DIFFUSE, diffuse);
+  glLightfv(lightSrc, GL_SPECULAR, specular);
 
-  // Add x transform
-  glTranslatef(x_offset, 0.f, 0.f);
-  glBegin(GL_TRIANGLES);
+  // Position
+  GLfloat pos[] = {0.f + x_offset, 0.f, z, -1.f};
+  glLightfv(lightSrc, GL_POSITION, pos);
 
-  glColor3f(c, c, c);
-  draw_pts(points, indices, 6);
+  // Fall off
 
-  glEnd();
-  glPopMatrix();
+  glLightf(lightSrc, GL_CONSTANT_ATTENUATION, 0.f);
+  glLightf(lightSrc, GL_LINEAR_ATTENUATION, 0.f);
+  glLightf(lightSrc, GL_QUADRATIC_ATTENUATION, 0.f);
+
+  glEnable(lightSrc);
 }
 
 void draw() {
@@ -64,7 +102,7 @@ void draw() {
   glMatrixMode(GL_MODELVIEW); // set for model and viewing operations
   glLoadIdentity();
   glClearColor(0.f, 0.f, 0.f, 1.f); // set background colour
-  glTranslatef(0.f, 0.f, -100.f);   // reset drawing
+  glTranslatef(0.f, 0.f, -50.f);    // reset drawing
   // Rotate when user changes rotate_x and rotate_y
 
   glRotatef(rotate_x, 1.0, 0.0, 0.0);
@@ -74,10 +112,13 @@ void draw() {
   // Drawings
   draw_wall(20.f);
   checkError("DRAW:WALL");
-  float ls = 2.f;
+  float ls = 20.f;
   float lo = 8;
-  draw_light(ls, -lo);
-  draw_light(ls, lo);
+  static GLfloat ambient_A[] = {0.1f, 0.0f, 0.0f, 1.0f};
+  static GLfloat diffuse_A[] = {0.9f, 0.0f, 0.0f, 1.0f};
+  static GLfloat specular_A[] = {0.0f, 0.0f, 0.0f, 1.0f};
+  draw_light(ls, -lo, GL_LIGHT0, ambient_A, diffuse_A, specular_A);
+  // draw_light(ls, lo);
   checkError("DRAW:LIGHT");
 
   if (MojaveWorkAround) {
@@ -96,7 +137,44 @@ void setup() {
                       GLUT_DOUBLE);  // enable 3D rendering and double buffering
   glutInitWindowSize(width, height); // set window size
   glutCreateWindow("My Scene");      // create and show window (named MyScene)
-  draw();
+
+  // Light
+  glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+
+  // set the ambient light model
+  GLfloat global_ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, global_ambient);
+
+  // Enable smooth shading from lighting
+  glShadeModel(GL_SMOOTH);
+
+  // Enable automatic normalisation of normal vectors
+  glEnable(GL_NORMALIZE);
+  // Enable depth testing
+
+  // Enable backface culling
+  glEnable(GL_CULL_FACE);
+
+  // Enable transparency blending
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_DEPTH_TEST); // Enable depth testing
+  glDepthMask(GL_TRUE);    // Enable depth write
+  glDepthFunc(GL_LEQUAL);  // Choose the depth comparison function
+
+  // Set lighting intensity and color
+  // GLfloat qaAmbientLight[] = {0.2, 0.2, 0.2, 1.0};
+  // GLfloat qaDiffuseLight[] = {0.8, 0.8, 0.8, 1.0};
+  // GLfloat qaSpecularLight[] = {1.0, 1.0, 1.0, 1.0};
+  // glLightfv(GL_LIGHT0, GL_AMBIENT, qaAmbientLight);
+  // glLightfv(GL_LIGHT0, GL_DIFFUSE, qaDiffuseLight);
+  // glLightfv(GL_LIGHT0, GL_SPECULAR, qaSpecularLight);
+
+  // // Set the light position
+  // GLfloat qaLightPosition[] = {.5, .5, 0.0, 1.0};
+  // glLightfv(GL_LIGHT0, GL_POSITION, qaLightPosition);
+
+  // draw();
 }
 
 void reshape(int _width, int _height) {
@@ -144,10 +222,6 @@ int main(int argc, char **argv) {
   checkError("MAIN");    // Check any OpenGL errors in initialisation
   glutReshapeFunc(reshape);
   glutSpecialFunc(specialKeys);
-  glEnable(GL_DEPTH_TEST); // Enable depth testing
-  glDepthMask(GL_TRUE);    // Enable depth write
-  glDepthFunc(GL_LEQUAL);  // Choose the depth comparison function
-
   glutMainLoop(); // Begin rendering sequence
   setup();
   return 0;
