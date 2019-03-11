@@ -28,46 +28,49 @@ void draw_wall(float size) {
   };
   int indices[] = {0, 1, 2, 0, 2, 3};
   float c = 0.0f;
-  static GLfloat ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
+  // static GLfloat ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
   // White
-  static GLfloat diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
+  // static GLfloat diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
   // No specular (black)
-  static GLfloat specular[] = {0.0f, 0.0f, 0.0f, 1.0f};
+  static GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
   glPushAttrib(GL_ALL_ATTRIB_BITS);
 
   glDisable(GL_COLOR_MATERIAL);
   glEnable(GL_LIGHTING);
 
-  glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
-  glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+  // glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
+  // glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
   glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
-  glMaterialf(GL_FRONT, GL_SHININESS, 100.f);
+  GLfloat mat_shininess[] = {50.0};
+  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
   glClear(GL_COLOR_BUFFER_BIT);
   glColor3f(c, c, c);
   glBegin(GL_TRIANGLES);
   glNormal3f(0.f, 0.f, 1.f);
 
-  GLfloat _element_size = 1.f / 100.f;
-  for (GLfloat i = -size; i < size; i += _element_size) {
-    for (GLfloat j = -size; j < size; j += _element_size) {
-      glBegin(GL_TRIANGLES);
-      {
-        glNormal3f(0.0f, 0.0f, 1.0f);
+  // GLfloat _element_size = 1.f / 100.f;
+  // for (GLfloat i = -size; i < size; i += _element_size)
+  // {
+  // 	for (GLfloat j = -size; j < size; j += _element_size)
+  // 	{
+  // 		glBegin(GL_TRIANGLES);
+  // 		{
+  // 			glNormal3f(0.0f, 0.0f, 1.0f);
 
-        glVertex3f(i, j, 0.0f);
-        glVertex3f(i + _element_size, j, 0.0f);
-        glVertex3f(i, j + _element_size, 0.0f);
+  // 			glVertex3f(i, j, 0.0f);
+  // 			glVertex3f(i + _element_size, j, 0.0f);
+  // 			glVertex3f(i, j + _element_size, 0.0f);
 
-        glVertex3f(i + _element_size, j, 0.0f);
-        glVertex3f(i + _element_size, j + _element_size, 0.0f);
-        glVertex3f(i, j + _element_size, 0.0f);
-      }
-      glEnd();
-    }
-  }
-  // draw_pts(points, indices, 6);
+  // 			glVertex3f(i + _element_size, j, 0.0f);
+  // 			glVertex3f(i + _element_size, j + _element_size, 0.0f);
+  // 			glVertex3f(i, j + _element_size, 0.0f);
+  // 		}
+  // 		glEnd();
+  // 	}
+  // }
+  draw_pts(points, indices, 6);
 
   glEnd();
   glPopAttrib();
@@ -127,14 +130,15 @@ void draw() {
   }
   glutPostRedisplay();
   checkError("DRAW");
+  glFlush();
   glutSwapBuffers(); // execute all commands, swap buffers
 }
 
 void setup() {
   width = 600;  // initialise global window variables
   height = 400; // define in your header: int width, height;
-  glutInitDisplayMode(GLUT_DEPTH |
-                      GLUT_DOUBLE);  // enable 3D rendering and double buffering
+
+  glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(width, height); // set window size
   glutCreateWindow("My Scene");      // create and show window (named MyScene)
 
