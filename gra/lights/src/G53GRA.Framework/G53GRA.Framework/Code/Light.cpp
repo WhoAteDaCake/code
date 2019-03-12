@@ -45,6 +45,7 @@ void Light::Display()
   glColor4fv(_diffuse);
 
   // Draw and move
+  // WARNING: extremely fragile, even changing lamp size can break the whole display
   float lamp_size = 20.f;
   glTranslatef(_position[0], _position[1], _position[2]);
   glutSolidSphere(lamp_size, lamp_size, lamp_size);
