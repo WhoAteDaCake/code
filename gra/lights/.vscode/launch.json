@@ -1,0 +1,17 @@
+{
+	"version": "0.2.0",
+	"configurations": [{
+		"name": "C++ Launch",
+		"type": "cppdbg",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "cwd": "${workspaceRoot}",
+		"program": "${workspaceRoot}/program.exe",
+		"stopAtEntry": false,
+		"launchCompleteCommand": "exec-run",
+		"linux": {
+			"MIMode": "gdb",
+			"miDebuggerPath": "/usr/bin/gdb"
+		}
+	}]
+}
