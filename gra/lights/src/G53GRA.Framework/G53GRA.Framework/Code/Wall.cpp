@@ -2,6 +2,50 @@
 
 #define _TESSELATION_RES 100.0f;
 
+GLfloat mp(GLfloat p1[], GLfloat p2[], int i)
+{
+  return (p1[i] + p2[i]) * 0.5f;
+}
+
+GLfloat *middle_vertex(GLfloat p1[], GLfloat p2[])
+{
+  GLfloat *p = (GLfloat *)malloc(sizeof(GLfloat) * 3);
+  p[0] = mp(p1, p2, 0);
+  p[1] = mp(p1, p2, 1);
+  p2[2] = mp(p1, p2, 2);
+  return p;
+}
+
+void subdivide(int level, GLfloat p1[], GLfloat p2[], GLfloat p3[])
+{
+  if (level == 0)
+  {
+    glBegin(GL_TRIANGLES);
+    glNormal3f(0.f, 0.f, 1.0f);
+    glVertex3fv(p1);
+    glVertex3fv(p2);
+    glVertex3fv(p3);
+    glEnd();
+    return;
+  }
+  GLfloat *lp = middle_vertex(p1, p2);
+  GLfloat *bp = middle_vertex(p2, p3);
+  GLfloat *rp = middle_vertex(p1, p3);
+
+  int new_level = level - 1;
+  // Left
+  subdivide(new_level, lp, p2, bp);
+  // Middle
+  subdivide(new_level, lp, bp, rp);
+  // Right
+  subdivide(new_level, rp, bp, p3);
+  // Top
+  subdivide(new_level, p1, lp, rp);
+  free(lp);
+  free(bp);
+  free(rp);
+}
+
 Wall::Wall()
 {
   // Grey
@@ -39,27 +83,52 @@ void Wall::Display()
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, _mat_specular);
   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, _mat_shininess);
 
-  GLfloat _element_size = 1.0f / _TESSELATION_RES;
+  float size = 0.5f;
+  float z = 0.f;
 
-  for (GLfloat i = -0.5f; i < 0.5f; i += _element_size)
-  {
-    for (GLfloat j = -0.5f; j < 0.5f; j += _element_size)
-    {
-      glBegin(GL_TRIANGLES);
-      {
-        glNormal3f(0.0f, 0.0f, 1.0f);
+  GLfloat p[4][3] = {
+      {-size, size, z},
+      {-size, -size, z},
+      {size, -size, z},
+      {size, size, z}};
 
-        glVertex3f(i, j, 0.0f);
-        glVertex3f(i + _element_size, j, 0.0f);
-        glVertex3f(i, j + _element_size, 0.0f);
+  int level = 5;
+  subdivide(level, p[0], p[1], p[2]);
+  subdivide(level, p[0], p[2], p[3]);
+  // glBegin(GL_TRIANGLES);
+  // glNormal3f(0.f, 0.f, 1.0f);
 
-        glVertex3f(i + _element_size, j, 0.0f);
-        glVertex3f(i + _element_size, j + _element_size, 0.0f);
-        glVertex3f(i, j + _element_size, 0.0f);
-      }
-      glEnd();
-    }
-  }
+  // glVertex3fv(points[0]);
+  // glVertex3fv(points[1]);
+  // glVertex3fv(points[2]);
+
+  // glVertex3fv(points[0]);
+  // glVertex3fv(points[2]);
+  // glVertex3fv(points[3]);
+
+  // glEnd();
+
+  // GLfloat _element_size = 1.0f / _TESSELATION_RES;
+
+  // for (GLfloat i = -0.5f; i < 0.5f; i += _element_size)
+  // {
+  //   for (GLfloat j = -0.5f; j < 0.5f; j += _element_size)
+  //   {
+  //     glBegin(GL_TRIANGLES);
+  //     {
+  //       glNormal3f(0.0f, 0.0f, 1.0f);
+
+  //       glVertex3f(i, j, 0.0f);
+  //       glVertex3f(i + _element_size, j, 0.0f);
+  //       glVertex3f(i, j + _element_size, 0.0f);
+
+  //       glVertex3f(i + _element_size, j, 0.0f);
+  //       glVertex3f(i + _element_size, j + _element_size, 0.0f);
+  //       glVertex3f(i, j + _element_size, 0.0f);
+  //     }
+  //     glEnd();
+  //   }
+  // }
 
   glPopAttrib();
   glPopMatrix();

@@ -13,19 +13,21 @@ void MyScene::Initialise()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Wall
+	float wall_z = -200;
 
 	Wall *w = new Wall();
-	w->position(0.0f, 0.0f, -100.0f);
+	w->position(0.0f, 0.0f, wall_z);
 	w->size(800.0f, 600.0f, 1.0f);
 
 	AddObjectToScene(w);
 
+	float lamp_z = wall_z / 2;
 	// Light A (red)
 
 	static GLfloat ambient_A[] = {0.5f, 0.0f, 0.0f, 1.0f};
 	static GLfloat diffuse_A[] = {0.9f, 0.0f, 0.0f, 1.0f};
 	static GLfloat specular_A[] = {0.0f, 0.0f, 0.0f, 1.0f};
-	static GLfloat position_A[] = {-100.0f, 0.0f, 0.0f, 1.0f};
+	static GLfloat position_A[] = {-100.0f, 0.0f, lamp_z, 1.0f};
 
 	Light *l_A = new Light(GL_LIGHT0, ambient_A, diffuse_A, specular_A, position_A);
 
@@ -34,7 +36,7 @@ void MyScene::Initialise()
 	static GLfloat ambient_B[] = {0.0f, 0.0f, 0.5f, 1.0f};
 	static GLfloat diffuse_B[] = {0.0f, 0.0f, 0.9f, 1.0f};
 	static GLfloat specular_B[] = {0.0f, 0.0f, 0.0f, 1.0f};
-	static GLfloat position_B[] = {100.0f, 0.0f, 0.0f, 1.0f};
+	static GLfloat position_B[] = {100.0f, 0.0f, lamp_z, 1.0f};
 
 	Light *l_B = new Light(GL_LIGHT1, ambient_B, diffuse_B, specular_B, position_B);
 
