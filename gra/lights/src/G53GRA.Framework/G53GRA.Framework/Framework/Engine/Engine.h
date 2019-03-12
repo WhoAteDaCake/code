@@ -4,7 +4,8 @@
 #include <GL/glut.h>
 #include <Windows.h>
 #else
-#include <GLUT/glut.h>
+#include <GL/freeglut.h>
+#include <GL/gl.h>
 #endif
 /**
   * Base Engine for the framework. Handles windowing and freeglut/OpenGL contexts.
@@ -16,7 +17,7 @@ public:
 	/**
 	* Constructor takes in command line arguments, a title and initial window dimensions.
 	*/
-	Engine(int argc, char** argv, const char *title, const int& windowWidth, const int& windowHeight);
+	Engine(int argc, char **argv, const char *title, const int &windowWidth, const int &windowHeight);
 	virtual ~Engine(){};
 	/**
 	 * Initial startup method. Sets up GL context and windowing functions to handle drawing, timing and input.
@@ -25,9 +26,9 @@ public:
 	/**
 	 * Returns self.
 	 */
-	static Engine* GetCurrentInstance();
+	static Engine *GetCurrentInstance();
 	/** Returns window title */
-	static const char* GetWindowTitle();
+	static const char *GetWindowTitle();
 	/** Returns window id */
 	static int GetWindowID();
 	/** Returns window width */
@@ -39,7 +40,7 @@ protected:
 	/** pointer to current window context */
 	static Engine *current;
 
-	static const char* windowTitle;
+	static const char *windowTitle;
 	static int windowID;
 	static int windowWidth;
 	static int windowHeight;
@@ -72,7 +73,7 @@ protected:
 	virtual void Initialise() = 0;
 	virtual void Draw() = 0;
 	virtual void Reshape(int w, int h) = 0;
-	virtual void Update(const double&) = 0;
+	virtual void Update(const double &) = 0;
 	virtual void HandleKey(unsigned char key, int state, int x, int y) = 0;
 	virtual void HandleSpecialKey(int key, int state, int x, int y) = 0;
 	virtual void HandleMouse(int button, int state, int x, int y) = 0;
@@ -86,4 +87,3 @@ protected:
 	 */
 	static int CheckGLError();
 };
-

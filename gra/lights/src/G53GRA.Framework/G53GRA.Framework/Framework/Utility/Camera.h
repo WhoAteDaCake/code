@@ -4,7 +4,8 @@
 #include <GL/glut.h>
 #include <Windows.h>
 #else
-#include <GLUT/glut.h>
+#include <GL/freeglut.h>
+#include <GL/gl.h>
 #endif
 
 #include "../Interface/Input.h"
@@ -34,7 +35,7 @@ public:
 	* Update the position of the camera and look-at vectors based on keyboard input.
 	* @param deltaTime change in time since previous call (unused)
 	*/
-	virtual void Update(const double& deltaTime);
+	virtual void Update(const double &deltaTime);
 
 	/**
 	* Resets {@link Camera} vectors to default values. Sets position of camera at (0,0) in x,y-plane
