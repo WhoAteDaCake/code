@@ -32,6 +32,9 @@ void resize(int w, int h)
   window_h = h;
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+  glFrustum(static_cast<GLdouble>(-window_w) / static_cast<GLdouble>(2.0), static_cast<GLdouble>(window_w) / static_cast<GLdouble>(2.0),
+            static_cast<GLdouble>(-window_h) / static_cast<GLdouble>(2.0), static_cast<GLdouble>(window_h) / static_cast<GLdouble>(2.0),
+            static_cast<GLdouble>(1.0), static_cast<GLdouble>(1000.0));
   // Reset back to 3D
   GLdouble aspect = window_w / window_h;
   gluPerspective(60.0, aspect, 1.0, 1000.0);
@@ -174,12 +177,13 @@ void draw()
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+  glPushMatrix();
   glTranslatef(0.f, 0.f, 10.f);
 
   glRotatef(rotate_x, 1.0, 0.0, 0.0);
   glRotatef(rotate_y, 0.0, 1.0, 0.0);
 
-  GLfloat wall_pos[] = {0.f, 0.f, -1000.f};
+  GLfloat wall_pos[] = {0.f, 0.f, -300.f};
   GLfloat wall_scale[] = {800.f, 600.f, 1.0f};
   draw_wall(wall_pos, wall_scale);
 
@@ -195,7 +199,7 @@ void draw()
   static GLfloat position_B[] = {100.0f, 0.0f, 400.0f, 1.0f};
 
   draw_light(GL_LIGHT1, ambient_B, diffuse_B, specular_B, position_B);
-
+  glPopMatrix();
   // Zealous reset of MODELVIEW matrix
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
