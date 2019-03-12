@@ -4,14 +4,10 @@
 #include "Animation.h"
 #include "Input.h"
 
-class Light : public DisplayableObject,
-              public Animation,
-              public Input
+class Light : public DisplayableObject, public Animation
 {
 public:
-  Light();
-
-  Light(GLenum lightSrc, GLfloat *ambient, GLfloat *diffuse, GLfloat *specular, GLfloat *position);
+  Light(GLenum lightSrc, float offset, float lamp_z, int indice);
 
   ~Light();
 
@@ -19,13 +15,7 @@ public:
 
   void Update(const double &deltaTime);
 
-  void HandleKey(unsigned char key, int state, int mx, int my);
-
-  inline void ToggleVisualisation() { _flagVisualise = !_flagVisualise; }
-
 private:
-  GLboolean _flagVisualise;
-
   GLenum _lightSrc;
 
   GLfloat *_ambient, *_diffuse, *_specular, *_position;

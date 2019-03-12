@@ -48,11 +48,7 @@ void subdivide(int level, GLfloat p1[], GLfloat p2[], GLfloat p3[])
   free(rp);
 }
 
-Wall::Wall()
-{
-
-  // Matte (not shiny)
-}
+Wall::Wall() {}
 
 void Wall::Display()
 {
@@ -62,6 +58,8 @@ void Wall::Display()
   glTranslatef(pos[0], pos[1], pos[2]);
   glScalef(scale[0], scale[1], scale[2]);
 
+  // HAS TO RUN AFTER PUSH AND TRANSLATE
+  // OTHERWISE WILL GET HORRIBLE SIDE EFFECTS
   glDisable(GL_COLOR_MATERIAL);
   glEnable(GL_LIGHTING);
 
@@ -70,6 +68,7 @@ void Wall::Display()
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 1.f);
 
+  // Best ratio, otherwise it seems to freak out and not render the view
   float size = 0.5f;
   float z = 0.f;
 

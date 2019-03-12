@@ -1,46 +1,53 @@
 #include "Light.h"
 
-Light::Light()
-    : _lightSrc(GL_LIGHT0), _c_falloff(0.0f), _l_falloff(0.025f), _q_falloff(0.00005f), _flagVisualise(false)
+GLfloat *v4()
 {
-  static GLfloat ambient[] = {0.0f, 0.0f, 0.0f, 1.0f};
-  static GLfloat diffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
-  static GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
-  static GLfloat position[] = {0.0f, 0.0f, 0.0f, 1.0f};
-
-  _ambient = ambient;
-  _diffuse = diffuse;
-  _specular = specular;
-  _position = position;
+  GLfloat *v = (GLfloat *)malloc(sizeof(GLfloat) * 4);
+  v[0] = 0.f;
+  v[1] = 0.f;
+  v[2] = 0.f;
+  v[3] = 1.f;
+  return v;
 }
 
-Light::Light(GLenum lightSrc, GLfloat *ambient, GLfloat *diffuse, GLfloat *specular, GLfloat *position) : Light()
+Light::Light(GLenum lightSrc, float offset, float lamp_z, int i)
 {
-  _ambient = ambient;
-  _diffuse = diffuse;
-  _specular = specular;
-  _position = position;
+  _ambient = v4();
+  _diffuse = v4();
+  _specular = v4();
+  _position = v4();
 
+  //Set lamp position
+  _position[0] = offset;
+  _position[2] = lamp_z;
+  // Will make either Red, green or blue
+  _ambient[i] = 0.5f;
+  _diffuse[i] = 0.9f;
+  // Set source
   _lightSrc = lightSrc;
 }
 
 Light::~Light()
 {
+  free(_ambient);
+  free(_diffuse);
+  free(_specular);
+  free(_position);
 }
 
 void Light::Display()
 {
-  if (!_flagVisualise)
-    return;
-
   glPushMatrix();
   glPushAttrib(GL_ALL_ATTRIB_BITS);
 
+  // Make sure the cube is not affected
   glDisable(GL_LIGHTING);
   glColor4fv(_diffuse);
-  glTranslatef(_position[0], _position[1], _position[2]);
 
-  glutSolidSphere(10.0, 10, 10);
+  // Draw and move
+  float lamp_size = 20.f;
+  glTranslatef(_position[0], _position[1], _position[2]);
+  glutSolidSphere(lamp_size, lamp_size, lamp_size);
 
   glEnable(GL_LIGHTING);
 
@@ -59,24 +66,9 @@ void Light::Update(const double &deltaTime)
   // Position
   glLightfv(_lightSrc, GL_POSITION, _position);
 
-  // Fall off
+  glLightf(_lightSrc, GL_CONSTANT_ATTENUATION, 0.5);
+  glLightf(_lightSrc, GL_LINEAR_ATTENUATION, 0.025f);
+  glLightf(_lightSrc, GL_QUADRATIC_ATTENUATION, 0.00005f);
 
-  glLightf(_lightSrc, GL_CONSTANT_ATTENUATION, _c_falloff);
-  glLightf(_lightSrc, GL_LINEAR_ATTENUATION, _l_falloff);
-  glLightf(_lightSrc, GL_QUADRATIC_ATTENUATION, _q_falloff);
-
-  /*
-	GLfloat spotdir[] = { 0.0f, 0.0f, -1.0f, 0.0f };
-
-	glLightfv(_lightSrc, GL_SPOT_DIRECTION, spotdir);
-	glLightf(_lightSrc, GL_SPOT_EXPONENT, 4.0f);
-	glLightf(_lightSrc, GL_SPOT_CUTOFF, 60.0f);
-	*/
   glEnable(_lightSrc);
-}
-
-void Light::HandleKey(unsigned char key, int state, int mx, int my)
-{
-  if (key == 'x' && state)
-    ToggleVisualisation();
 }
