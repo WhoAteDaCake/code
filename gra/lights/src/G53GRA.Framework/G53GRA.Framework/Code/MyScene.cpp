@@ -17,8 +17,8 @@ void MyScene::Initialise()
 	float wall_w = 600.f;
 
 	Wall *w = new Wall();
+	w->size(800.0f, wall_w, 0.0f);
 	w->position(0.0f, 0.0f, wall_z);
-	w->size(800.0f, wall_w, 1.0f);
 
 	float lamp_z = wall_z / 2.f;
 	float offset = wall_w / 4.f;
