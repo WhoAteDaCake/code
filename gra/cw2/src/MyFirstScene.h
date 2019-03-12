@@ -10,16 +10,19 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
-#include <GL/glut.h>
+#include <GL/freeglut.h>
+#include <GL/gl.h>
 #endif
 
-struct Point {
+struct Point
+{
   float x;
   float y;
   float z;
   Point(float x, float y, float z) : x(x), y(y), z(z) {}
   Point() : x(0.f), y(0.f), z(0.f) {}
-  std::string to_string() {
+  std::string to_string()
+  {
     char buff[50];
     snprintf(buff, sizeof(buff), "(%f, %f, %f)", x, y, z);
     std::string result = buff;

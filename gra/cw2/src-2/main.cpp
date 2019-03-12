@@ -10,6 +10,8 @@
 #include <GL/glut.h>
 #endif
 
+double rotate_y = 0;
+double rotate_x = 0;
 int window_w = 600;
 int window_h = 400;
 const char *window_title = "Application";
@@ -31,6 +33,8 @@ void resize(int w, int h)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   // Reset back to 3D
+  GLdouble aspect = window_w / window_h;
+  gluPerspective(60.0, aspect, 1.0, 1000.0);
   glMatrixMode(GL_MODELVIEW);
   checkError("RESIZE");
 }
@@ -86,7 +90,8 @@ void initialize()
   glEnable(GL_NORMALIZE);
   glViewport(0.f, 0.f, window_w, window_h);
 
-  gluLookAt(0.f, 0.f, 0.5f, 0.f, 0.f, -0.5f, 0.f, 1.f, 0.f);
+  // float m = 0.5f * static_cast<float>(window_h) / static_cast<float>(tan(M_PI / 6.0));
+  // gluLookAt(0.f, 0.f, m, 0.f, 0.f, m - 1.0f, 0.f, 1.f, 0.f);
   glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
   checkError("INITIALIZE");
 }
@@ -102,7 +107,7 @@ void draw_wall(GLfloat pos[], GLfloat scale[])
   glPushAttrib(GL_ALL_ATTRIB_BITS);
 
   glTranslatef(pos[0], pos[1], pos[2]);
-  glScalef(scale[0], scale[1], scale[2]);
+  // glScalef(scale[0], scale[1], scale[2]);
 
   glDisable(GL_COLOR_MATERIAL);
   glEnable(GL_LIGHTING);
@@ -113,27 +118,28 @@ void draw_wall(GLfloat pos[], GLfloat scale[])
   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 1.0f);
 
-  GLfloat _element_size = 1.0f / 100;
+  glutSolidCube(200);
+  // GLfloat _element_size = 1.0f / 100;
 
-  for (GLfloat i = -0.5f; i < 0.5f; i += _element_size)
-  {
-    for (GLfloat j = -0.5f; j < 0.5f; j += _element_size)
-    {
-      glBegin(GL_TRIANGLES);
-      {
-        glNormal3f(0.0f, 0.0f, 1.0f);
+  // for (GLfloat i = -0.5f; i < 0.5f; i += _element_size)
+  // {
+  //   for (GLfloat j = -0.5f; j < 0.5f; j += _element_size)
+  //   {
+  //     glBegin(GL_TRIANGLES);
+  //     {
+  //       glNormal3f(0.0f, 0.0f, 1.0f);
 
-        glVertex3f(i, j, 0.0f);
-        glVertex3f(i + _element_size, j, 0.0f);
-        glVertex3f(i, j + _element_size, 0.0f);
+  //       glVertex3f(i, j, 0.0f);
+  //       glVertex3f(i + _element_size, j, 0.0f);
+  //       glVertex3f(i, j + _element_size, 0.0f);
 
-        glVertex3f(i + _element_size, j, 0.0f);
-        glVertex3f(i + _element_size, j + _element_size, 0.0f);
-        glVertex3f(i, j + _element_size, 0.0f);
-      }
-      glEnd();
-    }
-  }
+  //       glVertex3f(i + _element_size, j, 0.0f);
+  //       glVertex3f(i + _element_size, j + _element_size, 0.0f);
+  //       glVertex3f(i, j + _element_size, 0.0f);
+  //     }
+  //     glEnd();
+  //   }
+  // }
 
   glPopAttrib();
   glPopMatrix();
@@ -163,29 +169,61 @@ void draw()
 {
   // Clear colour and depth buffers
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  resize(window_w, window_h);
   // Reset MODELVIEW matrix
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  GLfloat wall_pos[] = {0.f, 0.f, -100.f};
+  glTranslatef(0.f, 0.f, 10.f);
+
+  glRotatef(rotate_x, 1.0, 0.0, 0.0);
+  glRotatef(rotate_y, 0.0, 1.0, 0.0);
+
+  GLfloat wall_pos[] = {0.f, 0.f, -1000.f};
   GLfloat wall_scale[] = {800.f, 600.f, 1.0f};
   draw_wall(wall_pos, wall_scale);
 
   static GLfloat ambient_A[] = {0.5f, 0.0f, 0.0f, 1.0f};
   static GLfloat diffuse_A[] = {0.9f, 0.0f, 0.0f, 1.0f};
   static GLfloat specular_A[] = {0.0f, 0.0f, 0.0f, 1.0f};
-  static GLfloat position_A[] = {-100.0f, 0.0f, 0.0f, 1.0f};
+  static GLfloat position_A[] = {-100.0f, 0.0f, 400.0f, 1.0f};
   draw_light(GL_LIGHT0, ambient_A, diffuse_A, specular_A, position_A);
 
   static GLfloat ambient_B[] = {0.0f, 0.0f, 0.5f, 1.0f};
   static GLfloat diffuse_B[] = {0.0f, 0.0f, 0.9f, 1.0f};
   static GLfloat specular_B[] = {0.0f, 0.0f, 0.0f, 1.0f};
-  static GLfloat position_B[] = {100.0f, 0.0f, 0.0f, 1.0f};
+  static GLfloat position_B[] = {100.0f, 0.0f, 400.0f, 1.0f};
 
   draw_light(GL_LIGHT1, ambient_B, diffuse_B, specular_B, position_B);
 
+  // Zealous reset of MODELVIEW matrix
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
   glutSwapBuffers();
   checkError("DRAW");
+}
+
+void special_keys(int key, int x, int y)
+{
+
+  float modifier = 2.0;
+  //  Right arrow - increase rotation by 5 degree
+  if (key == GLUT_KEY_RIGHT)
+    rotate_y += modifier;
+
+  //  Left arrow - decrease rotation by 5 degree
+  else if (key == GLUT_KEY_LEFT)
+    rotate_y -= modifier;
+
+  else if (key == GLUT_KEY_UP)
+    rotate_x += modifier;
+
+  else if (key == GLUT_KEY_DOWN)
+    rotate_x -= modifier;
+
+  //  Request display update
+  glutPostRedisplay();
 }
 
 int main(int argc, char **argv)
@@ -200,6 +238,7 @@ int main(int argc, char **argv)
   resize(window_w, window_h);
   glutDisplayFunc(draw);
   glutReshapeFunc(resize);
+  glutSpecialFunc(special_keys);
 
   initialize();
 

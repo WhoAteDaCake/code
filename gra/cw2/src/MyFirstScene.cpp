@@ -1,24 +1,29 @@
 #include "MyFirstScene.h"
 
 /* report GL errors, if any, to stderr */
-void checkError(const char *functionName) {
+void checkError(const char *functionName)
+{
   GLenum error;
-  while ((error = glGetError()) != GL_NO_ERROR) {
+  while ((error = glGetError()) != GL_NO_ERROR)
+  {
     fprintf(stderr, "GL_ERROR:[%s]: 0x%X\n", functionName, error);
   }
 }
 
 void draw_p(Point p) { glVertex3f(p.x, p.y, p.z); }
 
-void draw_pts(Point points[], int indices[], int size) {
+void draw_pts(Point points[], int indices[], int size)
+{
   int i = 0;
-  while (i < size) {
+  while (i < size)
+  {
     draw_p(points[indices[i]]);
     i += 1;
   }
 }
 
-void draw_wall(float size) {
+void draw_wall(float size, float zp)
+{
   float z = 0.f;
   Point points[] = {
       Point(-size, size, z),
@@ -29,112 +34,105 @@ void draw_wall(float size) {
   int indices[] = {0, 1, 2, 0, 2, 3};
   float c = 0.0f;
   // static GLfloat ambient[] = {0.2f, 0.2f, 0.2f, 1.0f};
-  // White
+  // // White
   // static GLfloat diffuse[] = {0.8f, 0.8f, 0.8f, 1.0f};
-  // No specular (black)
-  static GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
+  // // No specular (black)
+  // static GLfloat specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
   glPushAttrib(GL_ALL_ATTRIB_BITS);
+  glPushMatrix();
+
+  glTranslatef(0.f, 0.f, zp);
 
   glDisable(GL_COLOR_MATERIAL);
   glEnable(GL_LIGHTING);
 
   // glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
   // glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
-  glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
-  GLfloat mat_shininess[] = {50.0};
-  glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
+  // glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+  GLfloat mat_shininess[] = {30.0};
+  // glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
 
   glClear(GL_COLOR_BUFFER_BIT);
   glColor3f(c, c, c);
   glBegin(GL_TRIANGLES);
   glNormal3f(0.f, 0.f, 1.f);
-
-  // GLfloat _element_size = 1.f / 100.f;
-  // for (GLfloat i = -size; i < size; i += _element_size)
-  // {
-  // 	for (GLfloat j = -size; j < size; j += _element_size)
-  // 	{
-  // 		glBegin(GL_TRIANGLES);
-  // 		{
-  // 			glNormal3f(0.0f, 0.0f, 1.0f);
-
-  // 			glVertex3f(i, j, 0.0f);
-  // 			glVertex3f(i + _element_size, j, 0.0f);
-  // 			glVertex3f(i, j + _element_size, 0.0f);
-
-  // 			glVertex3f(i + _element_size, j, 0.0f);
-  // 			glVertex3f(i + _element_size, j + _element_size, 0.0f);
-  // 			glVertex3f(i, j + _element_size, 0.0f);
-  // 		}
-  // 		glEnd();
-  // 	}
-  // }
   draw_pts(points, indices, 6);
 
   glEnd();
   glPopAttrib();
+  glPopMatrix();
 }
 
-void draw_light(float size, float x_offset, GLenum lightSrc, GLfloat *ambient,
-                GLfloat *diffuse, GLfloat *specular) {
-  float z = size + size / 2;
-
-  glEnable(GL_LIGHTING);
+void draw_light(float z, float x_offset, GLenum lightSrc, GLfloat *ambient,
+                GLfloat *diffuse, GLfloat *specular)
+{
   // Colour
   glLightfv(lightSrc, GL_AMBIENT, ambient);
   glLightfv(lightSrc, GL_DIFFUSE, diffuse);
   glLightfv(lightSrc, GL_SPECULAR, specular);
 
   // Position
-  GLfloat pos[] = {0.f + x_offset, 0.f, z, -1.f};
+  GLfloat pos[] = {0.f + x_offset, 0.f, z, 1.f};
   glLightfv(lightSrc, GL_POSITION, pos);
 
+  glDisable(lightSrc);
+  glPushMatrix();
+  glTranslatef(pos[0], pos[1], pos[2]);
+  float s = 30.f;
+  glutSolidSphere(s, s, s);
+  glPopMatrix();
   // Fall off
-
-  glLightf(lightSrc, GL_CONSTANT_ATTENUATION, 0.f);
-  glLightf(lightSrc, GL_LINEAR_ATTENUATION, 0.f);
-  glLightf(lightSrc, GL_QUADRATIC_ATTENUATION, 0.f);
+  // glLightf(lightSrc, GL_CONSTANT_ATTENUATION, 0.f);
+  glLightf(lightSrc, GL_LINEAR_ATTENUATION, 0.0025f);
+  // glLightf(lightSrc, GL_QUADRATIC_ATTENUATION, 0.f);
 
   glEnable(lightSrc);
 }
 
-void draw() {
+void draw()
+{
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear buffers
-  glMatrixMode(GL_MODELVIEW); // set for model and viewing operations
+  glMatrixMode(GL_MODELVIEW);                         // set for model and viewing operations
   glLoadIdentity();
-  glClearColor(0.f, 0.f, 0.f, 1.f); // set background colour
-  glTranslatef(0.f, 0.f, -50.f);    // reset drawing
+  // glClearColor(0.f, 0.f, 0.f, 1.f); // set background colour
+  // glTranslatef(0.f, 0.f, -50.f);    // reset drawing
   // Rotate when user changes rotate_x and rotate_y
-
+  glPushMatrix();
   glRotatef(rotate_x, 1.0, 0.0, 0.0);
   glRotatef(rotate_y, 0.0, 1.0, 0.0);
   // move drawing further back in the scene
 
+  float z = -1000;
   // Drawings
-  draw_wall(20.f);
+  draw_wall(300.f, z);
   checkError("DRAW:WALL");
-  float ls = 20.f;
   float lo = 8;
   static GLfloat ambient_A[] = {0.1f, 0.0f, 0.0f, 1.0f};
   static GLfloat diffuse_A[] = {0.9f, 0.0f, 0.0f, 1.0f};
   static GLfloat specular_A[] = {0.0f, 0.0f, 0.0f, 1.0f};
-  draw_light(ls, -lo, GL_LIGHT0, ambient_A, diffuse_A, specular_A);
+  draw_light(z + 20, -lo, GL_LIGHT0, ambient_A, diffuse_A, specular_A);
   // draw_light(ls, lo);
   checkError("DRAW:LIGHT");
 
-  if (MojaveWorkAround) {
+  if (MojaveWorkAround)
+  {
     glutReshapeWindow(601, 401);
     MojaveWorkAround = false;
   }
-  glutPostRedisplay();
+  glPopMatrix();
+  glMatrixMode(GL_MODELVIEW); // set for model and viewing operations
+  glLoadIdentity();
+
+  // glutPostRedisplay();
   checkError("DRAW");
-  glFlush();
+  // glFlush();
   glutSwapBuffers(); // execute all commands, swap buffers
 }
 
-void setup() {
+void setup()
+{
   width = 600;  // initialise global window variables
   height = 400; // define in your header: int width, height;
 
@@ -181,7 +179,8 @@ void setup() {
   // draw();
 }
 
-void reshape(int _width, int _height) {
+void reshape(int _width, int _height)
+{
   // update global dimension variables
   width = _width;
   height = _height;
@@ -191,12 +190,14 @@ void reshape(int _width, int _height) {
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity(); // reset matrix
-  gluPerspective(45.0, aspect, 1, 1000);
+  gluPerspective(180.0, aspect, 1, 2000);
   glViewport(0, 0, width, height);
   glMatrixMode(GL_MODELVIEW); // return matrix mode to modelling and viewing
+  glLoadIdentity();
 }
 
-void specialKeys(int key, int x, int y) {
+void specialKeys(int key, int x, int y)
+{
 
   float modifier = 2.0;
   //  Right arrow - increase rotation by 5 degree
@@ -216,8 +217,16 @@ void specialKeys(int key, int x, int y) {
   //  Request display update
   glutPostRedisplay();
 }
-
-int main(int argc, char **argv) {
+void handle_key(unsigned char key, int x, int y)
+{
+  // Escape key
+  if (key == 27)
+  {
+    glutLeaveMainLoop();
+  }
+}
+int main(int argc, char **argv)
+{
   glutInit(&argc, argv); // Initialise GL environment
 
   setup(); // Call additional initialisation commands
@@ -226,6 +235,7 @@ int main(int argc, char **argv) {
   checkError("MAIN");    // Check any OpenGL errors in initialisation
   glutReshapeFunc(reshape);
   glutSpecialFunc(specialKeys);
+  glutKeyboardFunc(handle_key);
   glutMainLoop(); // Begin rendering sequence
   setup();
   return 0;
