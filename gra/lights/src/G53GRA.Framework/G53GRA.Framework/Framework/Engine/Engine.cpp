@@ -2,13 +2,13 @@
 #include <string>
 
 Engine *Engine::current = 0;
-const char* Engine::windowTitle = "";
+const char *Engine::windowTitle = "";
 int Engine::windowID = 0;
 int Engine::windowWidth = 0;
 int Engine::windowHeight = 0;
 int Engine::time = 0;
 
-Engine::Engine(int argc, char** argv, const char *title, const int& windowWidth, const int& windowHeight)
+Engine::Engine(int argc, char **argv, const char *title, const int &windowWidth, const int &windowHeight)
 {
 	Engine::windowWidth = windowWidth;
 	Engine::windowHeight = windowHeight;
@@ -99,9 +99,7 @@ void Engine::InitFunc()
 
 	current->Initialise();
 	time = 0;
-
 }
-
 
 void Engine::DrawFunc()
 {
@@ -134,7 +132,6 @@ void Engine::SpecialKeyDownFunc(int key, int x, int y)
 void Engine::SpecialKeyUpFunc(int key, int x, int y)
 {
 	current->HandleSpecialKey(key, 0, x, y);
-
 }
 
 void Engine::MouseFunc(int button, int state, int x, int y)
@@ -156,7 +153,7 @@ void Engine::IdleFunc()
 {
 	// Get elapsed time (milliseconds)
 	int t = glutGet(GLUT_ELAPSED_TIME);
-	// Calculate difference in seconds between previous and current call 
+	// Calculate difference in seconds between previous and current call
 	double diff = static_cast<double>(t - time) / 1000.0;
 	time = t;
 	// Call Update methods
@@ -179,12 +176,12 @@ int Engine::CheckGLError()
 	return e;
 }
 
-Engine* Engine::GetCurrentInstance()
+Engine *Engine::GetCurrentInstance()
 {
 	return Engine::current;
 }
 
-const char* Engine::GetWindowTitle()
+const char *Engine::GetWindowTitle()
 {
 	return Engine::windowTitle;
 }
@@ -199,6 +196,7 @@ int Engine::GetWindowWidth()
 	return Engine::windowWidth;
 }
 
-int Engine::GetWindowHeight(){
+int Engine::GetWindowHeight()
+{
 	return Engine::windowHeight;
 }
