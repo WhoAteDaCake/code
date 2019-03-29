@@ -33,7 +33,7 @@ import uk.ac.nott.cs.g53dia.library.TankerViewer;
  */
 
 public class Simulator {
-	private static boolean REGULAR = false;
+	private static boolean REGULAR = true;
 //	private static int SEED = 5;
 	private static int SEED = new Random().nextInt();
 	private static int THREADS = 25;

@@ -4,11 +4,11 @@ import uk.ac.nott.cs.g53dia.multilibrary.*;
 import java.util.*;
 
 public class DemoFleet extends Fleet {
-
+	Manager m;
     /** 
      * Number of tankers in the fleet (this is just an example, not a requirement).
      */
-    private static int FLEET_SIZE = 3;
+    private static int FLEET_SIZE = 5;
     
     public DemoFleet() {
     	this(new Random());
@@ -22,9 +22,10 @@ public class DemoFleet extends Fleet {
 	 *            The random number generator.
 	 */
     public DemoFleet(Random r) {
-	// Create the tankers
-	for (int i=0; i<FLEET_SIZE; i++) {
-	    this.add(new DemoTanker(r));
-	}
+    	// Create the tankers
+    	m = new Manager(r);
+		for (int i=0; i<FLEET_SIZE; i++) {
+		    this.add(new Agent(r, m));
+		}
     }
 }

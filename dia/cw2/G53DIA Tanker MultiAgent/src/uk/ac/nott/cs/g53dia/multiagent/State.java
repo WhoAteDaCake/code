@@ -1,0 +1,5 @@
+package uk.ac.nott.cs.g53dia.multiagent;
+
+enum State {
+	ROAMING, MOVING_TO_FUEL, MOVING_TO_STATION, MOVING_TO_WELL, REFUELING, CONSUMING, DISPOSING,
+}
