@@ -4,6 +4,7 @@ import java.util.Random;
 
 import uk.ac.nott.cs.g53dia.multilibrary.Action;
 import uk.ac.nott.cs.g53dia.multilibrary.Cell;
+import uk.ac.nott.cs.g53dia.multilibrary.MoveAction;
 import uk.ac.nott.cs.g53dia.multilibrary.Tanker;
 
 public class Agent extends Tanker {
@@ -16,10 +17,17 @@ public class Agent extends Tanker {
 		m = manager;
 	}
 	
+	// Track future position before agent moves
+	private Action registeredMove(int direction) {
+		Group.Group2<Integer, Integer> change = Path.moveChange(direction);
+		coords = Group.make2(coords.first + change.first, coords.second + change.second);
+		return new MoveAction(direction);
+	}
+	
 	@Override
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
 		// TODO Auto-generated method stub
-		return null;
+		return registeredMove(r.nextInt(8));
 	}
 
 }
