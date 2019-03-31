@@ -21,7 +21,7 @@ public class World {
 	private int mFuel;
 	
 	public World(int size, int maxFuel) {
-		cx = cy = size /2;
+		cx = cy = size;
 		mFuel = maxFuel;
 		// Initial pump location
 		pumps.add(Group.make2(0, 0));
@@ -95,8 +95,8 @@ public class World {
 	
 	public void saveGridCell(Group.Group2<Integer, Integer> tCoords, Cell cell, CellType type, int row, int col) {
 		// Change from center
-		int xC = cx - col;
-		int yC = cy - row;
+		int xC = cx - row;
+		int yC = cy - col;
 		
 		Group.Group2<Integer, Integer> coords = Group.make2(tCoords.first + xC, tCoords.second + yC);
 		if (type == CellType.PUMP) {

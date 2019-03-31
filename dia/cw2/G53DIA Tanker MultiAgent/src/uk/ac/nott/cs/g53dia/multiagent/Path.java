@@ -122,6 +122,11 @@ public class Path {
 		this(path, 0, 0);
 	}
 
+	public Path(Path path, Group.Group2<Integer, Integer> p1) {
+		this(path.path, p1.first, p1.second);
+	}
+
+	
 	public Path(Path path, int x, int y) {
 		this(path.path, x, y);
 	}

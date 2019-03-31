@@ -32,8 +32,7 @@ public class Agent extends Tanker {
 	}
 	
 	/*
-	 * Find all cells nearby that are special (well/station/pump) TODO: in the
-	 * future probably don't need to run it every single move
+	 * Find all cells nearby that are special (well/station/pump)
 	 */
 	private void analyseView(Cell[][] view) {
 		// Make sure pump is loaded to allow for distance calculations
