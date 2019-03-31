@@ -12,8 +12,8 @@ public class World {
 	private HashMap<Group.Group2<Integer, Integer>, Cell> stations = new HashMap<>();
 	
 	// Stations that have a tanker moving towards
-	private ArrayList<Group.Group2<Integer, Integer>> reserved = new ArrayList<>();
-	private ArrayList<Group.Group2<Integer, Integer>> unreachable = new ArrayList<>();
+	private HashSet<Group.Group2<Integer, Integer>> reserved = new HashSet<>();
+	private HashSet<Group.Group2<Integer, Integer>> unreachable = new HashSet<>();
 	
 	private int cx;
 	private int cy;
@@ -37,5 +37,19 @@ public class World {
 		} else {
 			wells.add(coords);
 		}
+	}
+	
+	public void setUnreachable(Group.Group2<Integer, Integer> coords) {
+		unreachable.add(coords);
+	}
+	
+	// Reserve a station, so other wells do not move towards it
+	public void reserve(Group.Group2<Integer, Integer> coords) {
+		reserved.add(coords);
+	}
+	
+	// Free reservation up
+	public void free(Group.Group2<Integer, Integer> coords) {
+		reserved.remove(coords);
 	}
 }

@@ -23,7 +23,7 @@ public class DemoFleet extends Fleet {
 	 */
     public DemoFleet(Random r) {
     	// Create the tankers
-    	m = new Manager(r);
+    	m = new Manager(r, Agent.VIEW_RANGE);
 		for (int i=0; i<FLEET_SIZE; i++) {
 		    this.add(new Agent(r, m));
 		}

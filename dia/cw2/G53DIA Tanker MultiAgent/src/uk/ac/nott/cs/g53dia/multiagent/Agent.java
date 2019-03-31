@@ -12,8 +12,12 @@ import uk.ac.nott.cs.g53dia.multilibrary.Tanker;
 
 public class Agent extends Tanker {
 	Manager m;
-	State state = State.ROAMING;
-	Group.Group2<Integer, Integer> coords = Group.make2(0, 0);	
+	Group.Group2<Integer, Integer> coords = Group.make2(0, 0);
+	
+	// These will be set by the manager
+	public Path path = null;
+	public State state = State.ROAMING;
+	public Group.Group2<Integer, Integer> target = null;
 	
 	public Agent(Random rand, Manager manager) {
 		r = rand;
@@ -55,8 +59,12 @@ public class Agent extends Tanker {
 	@Override
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
 		analyseView(view);
-		// TODO Auto-generated method stub
-		return registeredMove(r.nextInt(8));
+		
+		if (path != null && path.hasSteps()) {
+			return registeredMove(path.step());
+		}
+		Group.Group2<Action, Integer> result = m.asignAction(this);
+		return result.first != null ? result.first : registeredMove(result.second);
 	}
 
 }
