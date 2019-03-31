@@ -13,8 +13,8 @@ public class World {
 	private HashMap<Group.Group2<Integer, Integer>, Cell> stations = new HashMap<>();
 	
 	// Stations that have a tanker moving towards
-	private HashSet<Group.Group2<Integer, Integer>> reserved = new HashSet<>();
-	private HashSet<Group.Group2<Integer, Integer>> unreachable = new HashSet<>();
+	public HashSet<Group.Group2<Integer, Integer>> reserved = new HashSet<>();
+	public HashSet<Group.Group2<Integer, Integer>> unreachable = new HashSet<>();
 	
 	private int cx;
 	private int cy;
@@ -30,6 +30,10 @@ public class World {
 	
 	public Group.Group2<Group.Group2<Integer, Integer>, Boolean> getNearestTaskStation(Agent agent) {
 		HashSet<Group.Group2<Integer, Integer>> keys = new HashSet<>(stations.keySet());
+		for (Group.Group2<Integer, Integer> entry: reserved) {
+			keys.remove(entry);
+		}
+		
 		int price = Integer.MAX_VALUE;
 		Group.Group2<Integer, Integer> coords = null;
 		boolean isReachable = false;
@@ -49,6 +53,23 @@ public class World {
 			}
 		}
 		return coords == null ? null : Group.make2(coords, isReachable);
+	}
+	
+	public Group.Group2<Group.Group2<Integer, Integer>, Boolean> getWell(Agent agent) {
+		int price = Integer.MAX_VALUE;
+		Group.Group2<Integer, Integer> coords = null;
+		boolean isReachable = false;
+		
+		for (Group.Group2<Integer, Integer> entry: wells) {
+			Group.Group2<Boolean, Boolean> reachability = isReachable(agent.coords, entry, agent.getFuelLevel());
+			int myPrice = Path.distance(agent.coords, entry);
+			if (myPrice < price) {
+				coords = entry;
+				price = myPrice;
+				isReachable = reachability.first;
+			}
+		}
+		return Group.make2(coords, isReachable);
 	}
 	
 	public Group.Group2<Integer, Integer> getBestCell(CellType type, Group.Group2<Integer, Integer> from) {

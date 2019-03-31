@@ -11,17 +11,21 @@ import uk.ac.nott.cs.g53dia.multilibrary.Station;
 import uk.ac.nott.cs.g53dia.multilibrary.Tanker;
 
 public class Agent extends Tanker {
-	Manager m;
+	private Manager m;
+	public int id;
 	
 	// These will be set by the manager
 	public Path path = null;
 	public State state = State.ROAMING;
 	public Path toTarget = null;
+	public Group.Group2<Integer, Integer> target = null;
+	public Group.Group2<Integer, Integer> pTarget = null;
 	public Group.Group2<Integer, Integer> coords = Group.make2(0, 0);
 	
-	public Agent(Random rand, Manager manager) {
+	public Agent(Random rand, Manager manager, int myId) {
 		r = rand;
 		m = manager;
+		id = myId;
 	}
 	
 	// Track future position before agent moves
@@ -59,11 +63,18 @@ public class Agent extends Tanker {
 	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
 		analyseView(view);
 		
+		if (timestep >= 90) {
+			int a = 2;
+		}
+		
 		if (path != null && path.hasSteps()) {
 			return registeredMove(path.step());
 		}
-		Group.Group2<Action, Integer> result = m.asignAction(this);
+		Group.Group2<Action, Integer> result = m.asignAction(this, view);
 		return result.first != null ? result.first : registeredMove(result.second);
 	}
 
+	public String toString() {
+		return "Agent: " + id;
+	}
 }
