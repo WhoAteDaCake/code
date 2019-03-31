@@ -12,12 +12,12 @@ import uk.ac.nott.cs.g53dia.multilibrary.Tanker;
 
 public class Agent extends Tanker {
 	Manager m;
-	Group.Group2<Integer, Integer> coords = Group.make2(0, 0);
 	
 	// These will be set by the manager
 	public Path path = null;
 	public State state = State.ROAMING;
-	public Group.Group2<Integer, Integer> target = null;
+	public Path toTarget = null;
+	public Group.Group2<Integer, Integer> coords = Group.make2(0, 0);
 	
 	public Agent(Random rand, Manager manager) {
 		r = rand;

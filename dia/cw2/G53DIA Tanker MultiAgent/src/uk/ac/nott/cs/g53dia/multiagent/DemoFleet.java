@@ -8,7 +8,7 @@ public class DemoFleet extends Fleet {
     /** 
      * Number of tankers in the fleet (this is just an example, not a requirement).
      */
-    private static int FLEET_SIZE = 5;
+    private static int FLEET_SIZE = 1;
     
     public DemoFleet() {
     	this(new Random());
@@ -23,7 +23,7 @@ public class DemoFleet extends Fleet {
 	 */
     public DemoFleet(Random r) {
     	// Create the tankers
-    	m = new Manager(r, Agent.VIEW_RANGE);
+    	m = new Manager(r, Agent.VIEW_RANGE, Agent.MAX_FUEL);
 		for (int i=0; i<FLEET_SIZE; i++) {
 		    this.add(new Agent(r, m));
 		}
