@@ -20,9 +20,9 @@ public class Agent extends Tanker {
 	public Path path = null;
 	public State state = State.ROAMING;
 	public Path toTarget = null;
-	public Group.Group2<Integer, Integer> target = null;
-	public Group.Group2<Integer, Integer> pTarget = null;
-	public Group.Group2<Integer, Integer> coords = Group.make2(0, 0);
+	public Group2<Integer, Integer> target = null;
+	public Group2<Integer, Integer> pTarget = null;
+	public Group2<Integer, Integer> coords = new Group2<>(0, 0);
 	
 	public Agent(Random rand, Manager manager, int myId) {
 		r = rand;
@@ -32,8 +32,8 @@ public class Agent extends Tanker {
 	
 	// Track future position before agent moves
 	private Action registeredMove(int direction) {
-		Group.Group2<Integer, Integer> change = Path.moveChange(direction);
-		coords = Group.make2(coords.first + change.first, coords.second + change.second);
+		Group2<Integer, Integer> change = Path.moveChange(direction);
+		coords = new Group2<>(coords.first + change.first, coords.second + change.second);
 		return new MoveAction(direction);
 	}
 	
@@ -76,14 +76,14 @@ public class Agent extends Tanker {
 		analyseView(view);
 		timestep = tstep;
 		
-		if (timestep >= 58 && id == 0) {
+		if (timestep >= 1692 && id == 3) {
 			int a = 2;
 		}
 		
 		if (path != null && path.hasSteps()) {
 			return registeredMove(path.step());
 		}
-		Group.Group2<Action, Integer> result = m.asignAction(this, view);
+		Group2<Action, Integer> result = m.asignAction(this, view);
 		return result.first != null ? result.first : registeredMove(result.second);
 	}
 

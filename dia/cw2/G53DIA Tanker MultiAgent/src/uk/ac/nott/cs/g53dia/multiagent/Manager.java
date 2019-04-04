@@ -9,7 +9,7 @@ import uk.ac.nott.cs.g53dia.multilibrary.*;
 public class Manager {
 	private Random r;
 	// For performance improvement
-	private Group.Group2<Integer, Integer> lastTStation;
+	private Group2<Integer, Integer> lastTStation;
 	
 	public World w;
 	
@@ -19,13 +19,13 @@ public class Manager {
 		w = new World(gridSize, maxFuel);
 	}
 	
-	private Group.Group2<Integer, Integer> getRoamTarget(Agent agent) {
+	private Group2<Integer, Integer> getRoamTarget(Agent agent) {
 		// Need a list here because we are accessing random indices
-		ArrayList<Group.Group2<Integer, Integer>> stations = new ArrayList<>(w.getFreeStations());
+		ArrayList<Group2<Integer, Integer>> stations = new ArrayList<>(w.getFreeStations());
 		
 		while (stations.size() > 0) {
 			int index = r.nextInt(stations.size() > 1 ? stations.size() - 1 : 1);
-			Group.Group2<Integer, Integer> coords = stations.get(index);
+			Group2<Integer, Integer> coords = stations.get(index);
 			boolean notVisited = !coords.equals(agent.pTarget) && !coords.equals(agent.coords);
 			if (notVisited && w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
 				w.reserve(coords, agent);
@@ -38,7 +38,7 @@ public class Manager {
 		}
 
 		int modifier = r.nextInt(10) > 5 ? -20 : 20;
-		Group.Group2<Integer, Integer> coords = Group.make2(
+		Group2<Integer, Integer> coords = new Group2<>(
 				agent.coords.first + modifier,
 				agent.coords.second + modifier);
 		if (w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
@@ -50,7 +50,7 @@ public class Manager {
 	// Returns -1, when the agent can do better than roaming
 	// Returns -2, when a refuel is needed
 	private int roam(Agent agent) {
-		Group.Group2<Group.Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
+		Group2<Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
 		if (result != null) {
 			lastTStation = result.first;
 			if (result.second) {
@@ -68,7 +68,7 @@ public class Manager {
 			w.free(agent.target, agent);
 		}
 		
-		Group.Group2<Integer, Integer> target = getRoamTarget(agent);
+		Group2<Integer, Integer> target = getRoamTarget(agent);
 		if (target != null) {
 			agent.toTarget = Path.movesToPoint(agent.coords, target);
 			return agent.toTarget.step();
@@ -76,63 +76,75 @@ public class Manager {
 		return -2;
 	}
 
-	private Group.Group2<Action, Integer> refuel(Agent agent) {
+	private Group2<Action, Integer> refuel(Agent agent) {
+		agent.state = State.REFUELING;
+		return new Group2<>(new RefuelAction(), null);
+	}
+	
+	private Group2<Action, Integer> consumeTask(Agent agent, Cell[][] view) {
+		agent.state = State.CONSUMING;
+		Cell cell = agent.getCurrentCell(view);
+		Task task = ((Station) cell).getTask();
+		return new Group2<>(new LoadWasteAction(task) , null);
+	}
+	
+	private Group2<Action, Integer> moveToPump(Agent agent) {
+		// Check whether we aren't just standing on re-fuelling spot already
+		if (w.pumps.contains(agent.coords)) {
+			return refuel(agent);
+		}
 		agent.state = State.MOVING_TO_FUEL;
 		agent.path = Path.movesToPoint(agent.coords, w.getBestCell(CellType.PUMP, agent.coords));
-		return Group.make2(null, agent.path.step());
+		return new Group2<>(null, agent.path.step());
 	}
 	
 	// Returns action or direction that the tanker should perform
-	public Group.Group2<Action, Integer> asignAction(Agent agent, Cell[][] view) {
+	public Group2<Action, Integer> asignAction(Agent agent, Cell[][] view) {
 		if (agent.state == State.ROAMING) {
 			int direction = roam(agent);
 			if (direction == -1) {
 				agent.state = State.MOVING_TO_STATION;
 				agent.path = Path.movesToPoint(agent.coords, lastTStation);
-				// Make sure no other tanks go for the same place
+				// new Group2<> sure no other tanks go for the same place
 				w.reserve(lastTStation, agent);
 				// Happens when a station generates a task, while we are standing on it
 				// To re-use code we just re-run action assignment again
 				if (agent.path.stepCount() == 0) {
-					return asignAction(agent, view);
+					return consumeTask(agent, view);
 				}
-				return Group.make2(null, agent.path.step());
+				return new Group2<>(null, agent.path.step());
 			} else if (direction == -2) {
 				// Should recalculate targets after refuelling
 				agent.freeTargets();
-				return refuel(agent);
+				return moveToPump(agent);
 			} else {
-				return Group.make2(null, direction);
+				return new Group2<>(null, direction);
 			}
 		// Can assume, that at this point agent is standing on a station
 		} else if (agent.state == State.MOVING_TO_STATION) {
-			agent.state = State.CONSUMING;
-			Cell cell = agent.getCurrentCell(view);
-			Task task = ((Station) cell).getTask();
-			return Group.make2(new LoadWasteAction(task) , null);
+			return consumeTask(agent, view);
 		// Move to the well
 		} else if (agent.state == State.CONSUMING) {
 			// No longer reserved
 			w.free(agent.coords, agent);
-			Group.Group2<Group.Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
+			Group2<Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
 			// Not enough fuel
 			if (!meta.second) {
-				return refuel(agent);
+				return moveToPump(agent);
 			}
 			agent.state = State.MOVING_TO_WELL;
 			agent.path = Path.movesToPoint(agent.coords, meta.first);
-			return Group.make2(null, agent.path.step());
+			return new Group2<>(null, agent.path.step());
 		// Assume already at the well
 		} else if (agent.state == State.MOVING_TO_WELL) {
 			agent.state = State.DISPOSING;
-			return Group.make2(new DisposeWasteAction(), null);
+			return new Group2<>(new DisposeWasteAction(), null);
 		} else if (agent.state == State.DISPOSING) {
 			agent.state = State.ROAMING;
 			return asignAction(agent, view);
 		// Assume already at the pump
 		} else if (agent.state == State.MOVING_TO_FUEL) {
-			agent.state = State.REFUELING;
-			return Group.make2(new RefuelAction(), null);
+			return refuel(agent);
 		} else if (agent.state == State.REFUELING) {
 			if (agent.getWasteLevel() != 0) {
 				agent.state = State.CONSUMING;

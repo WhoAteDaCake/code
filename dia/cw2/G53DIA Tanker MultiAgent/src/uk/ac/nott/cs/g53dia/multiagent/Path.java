@@ -9,7 +9,7 @@ public class Path {
 	 * Calculates modifications to global state after move is made Used to track
 	 * positions of
 	 */
-	static Group.Group2<Integer, Integer> moveChange(int direction) {
+	static Group2<Integer, Integer> moveChange(int direction) {
 		int x = 0;
 		int y = 0;
 
@@ -44,7 +44,7 @@ public class Path {
 			y--;
 			break;
 		}
-		return Group.make2(x, y);
+		return new Group2<>(x, y);
 	}
 
 	// Distance in the world
@@ -56,7 +56,7 @@ public class Path {
 		return Math.max(pointDist(x1, x2), pointDist(y1, y2));
 	}
 
-	public static int distance(Group.Group2<Integer, Integer> p1, Group.Group2<Integer, Integer> p2) {
+	public static int distance(Group2<Integer, Integer> p1, Group2<Integer, Integer> p2) {
 		return distance(p1.first, p1.second, p2.first, p2.second);
 	}
 
@@ -91,7 +91,7 @@ public class Path {
 		}
 		int nextMove = bestMove(fromX, fromY, toX, toY);
 		path.addMove(nextMove);
-		Group.Group2<Integer, Integer> move = moveChange(nextMove);
+		Group2<Integer, Integer> move = moveChange(nextMove);
 		return movesToPointAux(fromX + move.first, fromY + move.second, toX, toY, path);
 	}
 
@@ -99,7 +99,7 @@ public class Path {
 		return movesToPointAux(fromX, fromY, toX, toY, new Path());
 	}
 
-	public static Path movesToPoint(Group.Group2<Integer, Integer> p1, Group.Group2<Integer, Integer> p2) {
+	public static Path movesToPoint(Group2<Integer, Integer> p1, Group2<Integer, Integer> p2) {
 		return movesToPoint(p1.first, p1.second, p2.first, p2.second);
 	}
 
@@ -122,7 +122,7 @@ public class Path {
 		this(path, 0, 0);
 	}
 
-	public Path(Path path, Group.Group2<Integer, Integer> p1) {
+	public Path(Path path, Group2<Integer, Integer> p1) {
 		this(path.path, p1.first, p1.second);
 	}
 
@@ -159,15 +159,15 @@ public class Path {
 		this.path.addAll(moves);
 	}
 
-	public Group.Group2<Integer, Integer> walk() {
+	public Group2<Integer, Integer> walk() {
 		int x = this.x;
 		int y = this.y;
 		for (int move : path) {
-			Group.Group2<Integer, Integer> modifier = moveChange(move);
+			Group2<Integer, Integer> modifier = moveChange(move);
 			x += modifier.first;
 			y += modifier.second;
 		}
-		return Group.make2(x, y);
+		return new Group2<>(x, y);
 	}
 
 }
