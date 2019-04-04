@@ -30,7 +30,7 @@ public class MultiSimulator {
 	 * Time for which execution pauses so that GUI can update. Reducing this
 	 * value causes the simulation to run faster.
 	 */
-	private static int DELAY = 2;
+	private static int DELAY = 4;
 
 	/**
 	 * Number of timesteps to execute.
@@ -53,7 +53,7 @@ public class MultiSimulator {
     	FleetViewer fv = new FleetViewer(fleet);
     	// TMP
     	// 1 is the one that gets null ref
-    	fv.setTanker(fleet.get(0));
+    	fv.setTanker(fleet.get(3));
     	
     	fv.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
     	// Start executing the tankers in the Fleet

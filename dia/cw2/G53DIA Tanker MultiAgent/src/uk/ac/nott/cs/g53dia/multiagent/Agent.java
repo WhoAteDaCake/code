@@ -28,6 +28,8 @@ public class Agent extends Tanker {
 		r = rand;
 		m = manager;
 		id = myId;
+		
+		m.register(this);
 	}
 	
 	// Track future position before agent moves
@@ -76,7 +78,7 @@ public class Agent extends Tanker {
 		analyseView(view);
 		timestep = tstep;
 		
-		if (timestep >= 1692 && id == 3) {
+		if (timestep >= 400 && id == 3) {
 			int a = 2;
 		}
 		

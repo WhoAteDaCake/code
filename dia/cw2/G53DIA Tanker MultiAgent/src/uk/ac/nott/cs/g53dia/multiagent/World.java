@@ -28,6 +28,20 @@ public class World {
 	}
 	
 	
+	public HashSet<Group2<Integer, Integer>> getTaskStations() {
+		HashSet<Group2<Integer, Integer>> keys = new HashSet<>();
+		for (Group2<Integer, Integer> entry: stations.keySet()) {
+			if (reserved.contains(entry)) {
+				continue;
+			}
+			Station station = (Station) stations.get(entry);
+			if (station.getTask() != null) {
+				keys.add(entry);
+			}
+		}
+		return keys;
+	}
+	
 	public Group2<Group2<Integer, Integer>, Boolean> getNearestTaskStation(Agent agent) {
 		HashSet<Group2<Integer, Integer>> keys = new HashSet<>(stations.keySet());
 		for (Group2<Integer, Integer> entry: reserved) {
