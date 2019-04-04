@@ -13,6 +13,8 @@ import uk.ac.nott.cs.g53dia.multilibrary.Tanker;
 public class Agent extends Tanker {
 	private Manager m;
 	public int id;
+	// For debugging
+	public long timestep;
 	
 	// These will be set by the manager
 	public Path path = null;
@@ -33,6 +35,15 @@ public class Agent extends Tanker {
 		Group.Group2<Integer, Integer> change = Path.moveChange(direction);
 		coords = Group.make2(coords.first + change.first, coords.second + change.second);
 		return new MoveAction(direction);
+	}
+	
+	public void freeTargets() {
+		if (m.w.reserved.contains(target)) {
+			m.w.free(target, this);
+		}
+		toTarget = null;
+		target = null;
+		pTarget = null;	
 	}
 	
 	/*
@@ -59,11 +70,13 @@ public class Agent extends Tanker {
 		}
 	}
 	
+	
 	@Override
-	public Action senseAndAct(Cell[][] view, boolean actionFailed, long timestep) {
+	public Action senseAndAct(Cell[][] view, boolean actionFailed, long tstep) {
 		analyseView(view);
+		timestep = tstep;
 		
-		if (timestep >= 90) {
+		if (timestep >= 58 && id == 0) {
 			int a = 2;
 		}
 		

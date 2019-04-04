@@ -34,6 +34,7 @@ public class World {
 			keys.remove(entry);
 		}
 		
+		
 		int price = Integer.MAX_VALUE;
 		Group.Group2<Integer, Integer> coords = null;
 		boolean isReachable = false;
@@ -134,12 +135,15 @@ public class World {
 	}
 	
 	// Reserve a station, so other wells do not move towards it
-	public void reserve(Group.Group2<Integer, Integer> coords) {
+	public void reserve(Group.Group2<Integer, Integer> coords, Agent agent) {
+//		System.out.println(String.format("Reserving station %s by: %s at timestep %d", coords.toString(), agent.toString(), agent.timestep));
+//		System.out.println("Reserving station: " + coords.toString() + " by: " + agent.toString());
 		reserved.add(coords);
 	}
 	
 	// Free reservation up
-	public void free(Group.Group2<Integer, Integer> coords) {
+	public void free(Group.Group2<Integer, Integer> coords, Agent agent) {
+//		System.out.println(String.format("Freeing station %s by: %s at timestep %d", coords.toString(), agent.toString(), agent.timestep));
 		reserved.remove(coords);
 	}
 }

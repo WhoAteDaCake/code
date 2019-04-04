@@ -28,7 +28,7 @@ public class Manager {
 			Group.Group2<Integer, Integer> coords = stations.get(index);
 			boolean notVisited = !coords.equals(agent.pTarget) && !coords.equals(agent.coords);
 			if (notVisited && w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
-				w.reserve(coords);
+				w.reserve(coords, agent);
 				agent.pTarget = agent.target;
 				agent.target = coords;
 				return coords;
@@ -53,22 +53,19 @@ public class Manager {
 		Group.Group2<Group.Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
 		if (result != null) {
 			lastTStation = result.first;
-			// Reset targets
-			if (w.reserved.contains(agent.target)) {
-				w.free(agent.target);
+			if (result.second) {
+				// Reset targets
+				agent.freeTargets();
+				return -1;
 			}
-			agent.toTarget = null;
-			agent.target = null;
-			agent.pTarget = null;
-			
-			return result.second ? -1 : -2;
+			return -2;
 		}
 		
 		// Target section
 		if (agent.toTarget != null && agent.toTarget.hasSteps()) {
 			return agent.toTarget.step();
 		} else if (w.reserved.contains(agent.target)) {
-			w.free(agent.target);
+			w.free(agent.target, agent);
 		}
 		
 		Group.Group2<Integer, Integer> target = getRoamTarget(agent);
@@ -93,13 +90,16 @@ public class Manager {
 				agent.state = State.MOVING_TO_STATION;
 				agent.path = Path.movesToPoint(agent.coords, lastTStation);
 				// Make sure no other tanks go for the same place
-				w.reserve(lastTStation);
+				w.reserve(lastTStation, agent);
 				// Happens when a station generates a task, while we are standing on it
+				// To re-use code we just re-run action assignment again
 				if (agent.path.stepCount() == 0) {
 					return asignAction(agent, view);
 				}
 				return Group.make2(null, agent.path.step());
 			} else if (direction == -2) {
+				// Should recalculate targets after refuelling
+				agent.freeTargets();
 				return refuel(agent);
 			} else {
 				return Group.make2(null, direction);
@@ -113,7 +113,7 @@ public class Manager {
 		// Move to the well
 		} else if (agent.state == State.CONSUMING) {
 			// No longer reserved
-			w.free(agent.coords);
+			w.free(agent.coords, agent);
 			Group.Group2<Group.Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
 			// Not enough fuel
 			if (!meta.second) {
