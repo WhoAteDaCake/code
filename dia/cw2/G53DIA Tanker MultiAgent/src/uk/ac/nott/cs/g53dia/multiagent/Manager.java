@@ -101,21 +101,24 @@ public class Manager {
 	// Experimental
 	// if more than 3 are available, agent should take one
 	private Group2<Group2<Integer, Integer>, Boolean> checkForTasks(Agent agent) {
-		int price = Integer.MAX_VALUE;
-		Group2<Integer, Integer> coords = null;
 		
-		for (Group2<Integer, Integer> entry: w.getTaskStations()) {
-			Group2<Integer, Integer> result = assingAgent(entry);
-			if (result.first != agent.id) {
-				continue;
-			}
-			if (result.second < price) {
-				price = result.second;
-				coords = entry;
-			}
-			
-		}
-		return coords == null ? null : new Group2<>(coords, price * 2 < agent.getFuelLevel());
+		
+		return w.getNearestTaskStation(agent);
+//		int price = Integer.MAX_VALUE;
+//		Group2<Integer, Integer> coords = null;
+//		
+//		for (Group2<Integer, Integer> entry: w.getTaskStations()) {
+//			Group2<Integer, Integer> result = assingAgent(entry);
+//			if (result.first != agent.id) {
+//				continue;
+//			}
+//			if (result.second < price) {
+//				price = result.second;
+//				coords = entry;
+//			}
+//			
+//		}
+//		return coords == null ? null : new Group2<>(coords, price * 2 < agent.getFuelLevel());
 	}
 	
 	/**
@@ -127,8 +130,7 @@ public class Manager {
 	 */
 	private int roamAction(Agent agent) {
 		// Get the coordinates and whether we can afford it
-		Group2<Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
-//		Group2<Group2<Integer, Integer>, Boolean> result = checkForTasks(agent);
+		Group2<Group2<Integer, Integer>, Boolean> result = checkForTasks(agent);
 		if (result != null) {
 			lastTStation = result.first;
 			if (result.second) {
@@ -250,7 +252,7 @@ public class Manager {
 			Debug.error("Failed to find a well for agent: " + agent.toString());
 			return null;
 		}
-		Group2<Group2<Integer, Integer>, Boolean> station = w.getNearestTaskStation(agent);
+		Group2<Group2<Integer, Integer>, Boolean> station = checkForTasks(agent);
 		
 		// If no task was found or we can't reach it
 		if (station == null || !station.second) {
