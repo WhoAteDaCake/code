@@ -13,6 +13,7 @@ import uk.ac.nott.cs.g53dia.multilibrary.Tanker;
 public class Agent extends Tanker {
 	private Manager m;
 	public int id;
+	public Cell[][] view;
 	// For debugging
 	public long timestep;
 	
@@ -73,10 +74,15 @@ public class Agent extends Tanker {
 	}
 	
 	
+	public Cell myCell() {
+		return getCurrentCell(view);
+	}
+	
 	@Override
-	public Action senseAndAct(Cell[][] view, boolean actionFailed, long tstep) {
+	public Action senseAndAct(Cell[][] aview, boolean actionFailed, long tstep) {
 		analyseView(view);
 		timestep = tstep;
+		view = aview;
 		
 		if (timestep >= 400 && id == 3) {
 			int a = 2;
@@ -85,7 +91,7 @@ public class Agent extends Tanker {
 		if (path != null && path.hasSteps()) {
 			return registeredMove(path.step());
 		}
-		Group2<Action, Integer> result = m.asignAction(this, view);
+		Group2<Action, Integer> result = m.asignAction(this);
 		return result.first != null ? result.first : registeredMove(result.second);
 	}
 

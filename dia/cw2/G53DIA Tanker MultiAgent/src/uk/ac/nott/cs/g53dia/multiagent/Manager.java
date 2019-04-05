@@ -159,9 +159,9 @@ public class Manager {
 		return new Group2<>(new RefuelAction(), null);
 	}
 	
-	private Group2<Action, Integer> consumeTask(Agent agent, Cell[][] view) {
+	private Group2<Action, Integer> consumeTask(Agent agent) {
 		agent.state = State.CONSUMING;
-		Cell cell = agent.getCurrentCell(view);
+		Cell cell = agent.myCell();
 		Task task = ((Station) cell).getTask();
 		return new Group2<>(new LoadWasteAction(task) , null);
 	}
@@ -200,14 +200,16 @@ public class Manager {
 		return new Group2<>(null, agent.path.step());
 	}
 	
-	private Group2<Action, Integer> roam(Agent agent, Cell[][] view) {
+	private Group2<Action, Integer> roam(Agent agent) {
+		// Setting state now makes it convenient for future iterations
+		agent.state = State.ROAMING;
 		int direction = roamAction(agent);
 		if (direction == -1) {
 			w.reserve(lastTStation, agent);
 			// make sure no other tanks go for the same place
 			// Happens when a station generates a task, while we are standing on it
 			if (agent.coords.equals(lastTStation)) {
-				return consumeTask(agent, view);
+				return consumeTask(agent);
 			}
 			
 			agent.state = State.MOVING_TO_STATION;
@@ -223,13 +225,13 @@ public class Manager {
 	}
 	
 	// Returns action or direction that the tanker should perform
-	public Group2<Action, Integer> asignAction(Agent agent, Cell[][] view) {
+	public Group2<Action, Integer> asignAction(Agent agent) {
 		
 		if (agent.state == State.ROAMING) {
-			return roam(agent, view);
+			return roam(agent);
 		// Can assume, that at this point agent is standing on a station
 		} else if (agent.state == State.MOVING_TO_STATION) {
-			return consumeTask(agent, view);
+			return consumeTask(agent);
 		// Move to the well
 		} else if (agent.state == State.CONSUMING) {
 			// No longer reserved
@@ -245,8 +247,7 @@ public class Manager {
 			agent.state = State.DISPOSING;
 			return new Group2<>(new DisposeWasteAction(), null);
 		} else if (agent.state == State.DISPOSING) {
-			agent.state = State.ROAMING;
-			return asignAction(agent, view);
+			return roam(agent);
 		// Assume already at the pump
 		} else if (agent.state == State.MOVING_TO_FUEL) {
 			return refuel(agent);
@@ -254,8 +255,7 @@ public class Manager {
 			if (agent.getWasteLevel() != 0) {
 				return moveToWell(agent);
 			} else {
-				agent.state = State.ROAMING;
-				return roam(agent, view);
+				return roam(agent);
 			}
 		}
 			
