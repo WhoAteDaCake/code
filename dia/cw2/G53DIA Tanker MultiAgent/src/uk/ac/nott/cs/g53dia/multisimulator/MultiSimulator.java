@@ -44,7 +44,7 @@ public class MultiSimulator {
 
     public static void main(String[] args) {
     	// Note: to obtain reproducible behaviour, you can set the Random seed
-    	Random r = new Random(55 + 19);
+    	Random r = new Random(55);
     	// Create an environment
     	Environment env = new Environment(Tanker.MAX_FUEL/2, r);
     	// Create a fleet
@@ -53,7 +53,7 @@ public class MultiSimulator {
     	FleetViewer fv = new FleetViewer(fleet);
     	// TMP
     	// 1 is the one that gets null ref
-    	fv.setTanker(fleet.get(1));
+//    	fv.setTanker(fleet.get(1));
     	
     	fv.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
     	// Start executing the tankers in the Fleet

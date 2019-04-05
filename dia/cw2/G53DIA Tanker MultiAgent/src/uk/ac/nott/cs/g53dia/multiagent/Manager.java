@@ -90,7 +90,7 @@ public class Manager {
 			if (agent.getWasteCapacity() < waste && state != State.DISPOSING) {
 				continue;
 			}
-			if (!w.isReachable(entry, agent.coords, agent.getFuelLevel()).second) {
+			if (!w.isReachable(agent.coords, entry, agent.getFuelLevel()).second) {
 				continue;
 			}
 			int myPrice = Path.distance(entry, agent.coords);
@@ -124,7 +124,7 @@ public class Manager {
 		for (Group2<Integer, Integer> entry: stations) {
 			int id = assingAgent(entry);
 			if (id == -1) {
-				Debug.error(String.format("Got -1 for entry: %s agent : %s", entry.toString(), agent.toString()));
+				Debug.warn(String.format("Got -1 for entry: %s agent : %s", entry.toString(), agent.toString()));
 				continue;
 			}
 			if (assignments.containsKey(id)) {
@@ -137,22 +137,46 @@ public class Manager {
 		}
 		
 		HashSet<Group2<Integer, Integer>> myAssignments = assignments.get(agent.id);
+		// Check other station assignments
+		// and take tasks from agents that have more than one
+		if (myAssignments == null) {
+			myAssignments = new HashSet<>();
+			for(int i = 0; i < agents.size(); i += 1) {
+				HashSet<Group2<Integer, Integer>> items = assignments.get(i);
+				if (i == agent.id || items == null) {
+					continue;
+				}
+				if (items.size() > 1) {
+					myAssignments.addAll(items);
+				}
+			}
+		}
+		
 		// We have been assigned tasks, Find the closest station
-		if (myAssignments != null && myAssignments.size() != 0) {
+		if (myAssignments.size() != 0) {
 			int price = Integer.MAX_VALUE;
+			boolean isReachable = false;
 			Group2<Integer, Integer> coords = null;
 			
 			for(Group2<Integer, Integer> entry: myAssignments) {
+				// Skip stations that can't be reached
+				Group2<Boolean, Boolean> result = w.isReachable(agent.coords, coords, agent.getFuelLevel());
+				if (!result.second) {
+					continue;
+				}
+				
 				int myPrice = Path.distance(entry, agent.coords);
 				if (myPrice < price) {
 					price = myPrice;
 					coords = entry;
+					isReachable = result.first;
 				}
 			}
-			return new Group2<>(coords, w.isReachable(coords, agent.coords, agent.getFuelLevel()).first);
+			return new Group2<>(coords, isReachable);
 		}
 		
 		return null;
+//		return w.getNearestTaskStation(agent);
 	}
 	
 	/**
@@ -327,12 +351,11 @@ public class Manager {
 			return new Group2<>(new DisposeWasteAction(), null);
 		} else if (agent.state == State.DISPOSING) {
 			return roam(agent);
-		// Assume already at the pump
 		} else if (agent.state == State.MOVING_TO_FUEL) {
 			return refuel(agent);
 		} else if (agent.state == State.REFUELING) {
 			if (agent.getWasteLevel() != 0) {
-				return moveToWell(agent);
+				return tryToPickupTask(agent);
 			} else {
 				return roam(agent);
 			}
