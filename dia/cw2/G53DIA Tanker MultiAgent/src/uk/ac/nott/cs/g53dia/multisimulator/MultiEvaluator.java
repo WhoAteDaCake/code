@@ -11,8 +11,8 @@ import java.util.Random;
 public class MultiEvaluator {
 
 	private static int DURATION = 10000;
-	private static int NRUNS = 10;
-	private static int SEED = 0;
+	private static int NRUNS = 20;
+	private static int SEED = 55;
 
 	private static boolean actionFailed = false;
 
@@ -31,13 +31,13 @@ public class MultiEvaluator {
 			// Create an environment
 			Environment env = new Environment(Tanker.MAX_FUEL/2, r);
 			// Create a fleet
-			Fleet fleet = new DemoFleet(r);
+			Fleet fleet = new MyFleet(r);
 			// Start executing the tankers in the Fleet
 			run:
 				while (env.getTimestep() < DURATION) {
 					// Advance the environment timestep
 					env.tick();
-
+ 
 					for (Tanker t: fleet) {
 						// Get the current view of the tanker
 						Cell[][] view = env.getView(t.getPosition(), Tanker.VIEW_RANGE);
@@ -67,11 +67,13 @@ public class MultiEvaluator {
 				}
 
 			System.out.println("Run: " + i +
-					" score per agent: " + df.format(fleet.getScore()) + error);
+					" score per agent: " + fleet.getScore() + error);
 			score = score + fleet.getScore();
 
 		}
+//		System.out.println("\nTotal average score per agent: "
+//				+ df.format(score / NRUNS));
 		System.out.println("\nTotal average score per agent: "
-				+ df.format(score / NRUNS));
+				+ score / NRUNS);
 	}
 }
