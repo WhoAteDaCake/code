@@ -224,7 +224,12 @@ public class Manager {
 		}
 	}
 	
-	// Returns action or direction that the tanker should perform
+	/**
+	 * Returns an action or direction that an agent should perform
+	 * If action is null, agent should perform a move action using supplied direction
+	 * @param agent
+	 * @return Group2<Action, direction>
+	 */
 	public Group2<Action, Integer> asignAction(Agent agent) {
 		
 		if (agent.state == State.ROAMING) {
@@ -234,15 +239,7 @@ public class Manager {
 			return consumeTask(agent);
 		// Move to the well
 		} else if (agent.state == State.CONSUMING) {
-			// No longer reserved
-			w.free(agent.coords, agent);
-			Group2<Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
-			// Not enough fuel
-			if (!meta.second) {
-				return moveToPump(agent);
-			}
 			return moveToWell(agent);
-		// Assume already at the well
 		} else if (agent.state == State.MOVING_TO_WELL) {
 			agent.state = State.DISPOSING;
 			return new Group2<>(new DisposeWasteAction(), null);

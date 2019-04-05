@@ -52,7 +52,7 @@ public class Agent extends Tanker {
 	/*
 	 * Find all cells nearby that are special (well/station/pump)
 	 */
-	private void analyseView(Cell[][] view) {
+	private void analyseView() {
 		// Make sure pump is loaded to allow for distance calculations
 		for (int x = 0; x < view.length; x += 1) {
 			for (int y = 0; y < view[x].length; y += 1) {
@@ -80,9 +80,9 @@ public class Agent extends Tanker {
 	
 	@Override
 	public Action senseAndAct(Cell[][] aview, boolean actionFailed, long tstep) {
-		analyseView(view);
 		timestep = tstep;
 		view = aview;
+		analyseView();
 		
 		if (timestep >= 400 && id == 3) {
 			int a = 2;
