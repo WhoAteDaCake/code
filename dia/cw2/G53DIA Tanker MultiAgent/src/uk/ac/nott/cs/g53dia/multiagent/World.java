@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import uk.ac.nott.cs.g53dia.multilibrary.Cell;
 import uk.ac.nott.cs.g53dia.multilibrary.Station;
+import uk.ac.nott.cs.g53dia.multilibrary.Task;
 
 public class World {
 	public HashSet<Group2<Integer, Integer>> pumps = new HashSet<>();
@@ -57,7 +58,8 @@ public class World {
 			Station station = (Station) stations.get(entry);
 			// Make sure it has a task and a tanker is able to visit it at some point
 			Group2<Boolean, Boolean> reachability = isReachable(agent.coords, entry, agent.getFuelLevel());
-			if (station.getTask() == null || !reachability.second) {
+			Task task = station.getTask();
+			if (task == null || task.getWasteAmount() > agent.getWasteCapacity() ||!reachability.second) {
 				continue;
 			}
 			int myPrice = Path.distance(agent.coords, entry);

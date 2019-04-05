@@ -234,24 +234,33 @@ public class Manager {
 	 * And evaluate whether it's worth it to pick it up
 	 * If not, it will go to nearest well and drop off the waste
 	 * @param agent
-	 * @return
+	 * @return Group2<Action, Integer>
 	 */
 	private Group2<Action, Integer> tryToPickupTask(Agent agent) {
 		// TODO: improve by passing the found well to moveToWell function
-		Group2<Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
+		Group2<Group2<Integer, Integer>, Boolean> well = w.getWell(agent);
 		
-		if (meta.first == null) {
+		if (well.first == null) {
+			// TODO: remove before release
 			System.err.println("Failed to find a well for agent: " + agent.toString());
 			return null;
 		}
-		Group2<Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
+		Group2<Group2<Integer, Integer>, Boolean> station = w.getNearestTaskStation(agent);
 		
-		if (result.first == null) {
+		// If no task was found or we can't reach it
+		if (station == null || !station.second) {
 			return moveToWell(agent);
 		}
 		
+		int wellRatio = 2;
+		int toWell = Path.distance(agent.coords, well.first);
+		int toStation = Path.distance(agent.coords, station.first);
 		
-		return null;
+		if (toWell * 2 < toStation) {
+			return moveToWell(agent);
+		}
+		
+		return moveToStation(agent, station.first);
 	}
 	
 	/**
@@ -270,7 +279,8 @@ public class Manager {
 			return consumeTask(agent);
 		// Move to the well
 		} else if (agent.state == State.CONSUMING) {
-			return moveToWell(agent);
+//			return moveToWell(agent);
+			return tryToPickupTask(agent);
 		} else if (agent.state == State.MOVING_TO_WELL) {
 			agent.state = State.DISPOSING;
 			return new Group2<>(new DisposeWasteAction(), null);
