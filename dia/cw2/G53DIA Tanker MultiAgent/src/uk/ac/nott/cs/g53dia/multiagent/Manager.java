@@ -200,21 +200,25 @@ public class Manager {
 		return new Group2<>(null, agent.path.step());
 	}
 	
+	private Group2<Action, Integer> moveToStation(Agent agent, Group2<Integer, Integer> station) {
+		// make sure no other tanks go for the same place
+		w.reserve(station, agent);
+		// Happens when a station generates a task, while we are standing on it
+		if (agent.coords.equals(station)) {
+			return consumeTask(agent);
+		}
+		
+		agent.state = State.MOVING_TO_STATION;
+		agent.path = Path.movesToPoint(agent.coords, station);
+		return new Group2<>(null, agent.path.step());
+	}
+	
 	private Group2<Action, Integer> roam(Agent agent) {
 		// Setting state now makes it convenient for future iterations
 		agent.state = State.ROAMING;
 		int direction = roamAction(agent);
 		if (direction == -1) {
-			w.reserve(lastTStation, agent);
-			// make sure no other tanks go for the same place
-			// Happens when a station generates a task, while we are standing on it
-			if (agent.coords.equals(lastTStation)) {
-				return consumeTask(agent);
-			}
-			
-			agent.state = State.MOVING_TO_STATION;
-			agent.path = Path.movesToPoint(agent.coords, lastTStation);
-			return new Group2<>(null, agent.path.step());
+			return moveToStation(agent, lastTStation);
 		} else if (direction == -2) {
 			// Should recalculate targets after refuelling
 			agent.freeTargets();
@@ -225,8 +229,35 @@ public class Manager {
 	}
 	
 	/**
+	 * The function should be called after consuming a task
+	 * It will try to find any other tasks nearby
+	 * And evaluate whether it's worth it to pick it up
+	 * If not, it will go to nearest well and drop off the waste
+	 * @param agent
+	 * @return
+	 */
+	private Group2<Action, Integer> tryToPickupTask(Agent agent) {
+		// TODO: improve by passing the found well to moveToWell function
+		Group2<Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
+		
+		if (meta.first == null) {
+			System.err.println("Failed to find a well for agent: " + agent.toString());
+			return null;
+		}
+		Group2<Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
+		
+		if (result.first == null) {
+			return moveToWell(agent);
+		}
+		
+		
+		return null;
+	}
+	
+	/**
 	 * Returns an action or direction that an agent should perform
 	 * If action is null, agent should perform a move action using supplied direction
+	 * All MOVINT_TO_* stations assume that at this point the agent is at the target location
 	 * @param agent
 	 * @return Group2<Action, direction>
 	 */
