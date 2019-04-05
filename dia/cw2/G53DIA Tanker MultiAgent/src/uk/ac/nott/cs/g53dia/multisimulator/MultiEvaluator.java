@@ -37,7 +37,7 @@ public class MultiEvaluator {
 				while (env.getTimestep() < DURATION) {
 					// Advance the environment timestep
 					env.tick();
-
+ 
 					for (Tanker t: fleet) {
 						// Get the current view of the tanker
 						Cell[][] view = env.getView(t.getPosition(), Tanker.VIEW_RANGE);
