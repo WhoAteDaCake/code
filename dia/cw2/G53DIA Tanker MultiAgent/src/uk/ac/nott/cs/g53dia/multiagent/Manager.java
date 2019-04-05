@@ -26,6 +26,13 @@ public class Manager {
 		agents.put(agent.id, agent);
 	}
 	
+	/**
+	 * Goes trough all of the stations at chooses a random one to roam towards
+	 * Will not choose the same station twice
+	 * If no station is chosen, it will walk to a random diagonal direction
+	 * @param agent
+	 * @return Group2<Integer, Integer>
+	 */
 	private Group2<Integer, Integer> getRoamTarget(Agent agent) {
 		// Need a list here because we are accessing random indices
 		ArrayList<Group2<Integer, Integer>> stations = new ArrayList<>(w.getFreeStations());
@@ -91,6 +98,8 @@ public class Manager {
 	}
 	
 	// Checks whether there are any tasks that the agent is best for
+	// Experimental
+	// if more than 3 are available, agent should take one
 	private Group2<Group2<Integer, Integer>, Boolean> checkForTasks(Agent agent) {
 		int price = Integer.MAX_VALUE;
 		Group2<Integer, Integer> coords = null;
@@ -109,8 +118,13 @@ public class Manager {
 		return coords == null ? null : new Group2<>(coords, price * 2 < agent.getFuelLevel());
 	}
 	
-	// Returns -1, when the agent can do better than roaming
-	// Returns -2, when a refuel is needed
+	/**
+	 * Returns -1, when the agent can do better than roaming
+	 * Returns -2, when a refuel is needed
+	 * Otherwise will return integer 1-8 for the direction agent should move to
+	 * @param agent
+	 * @return int
+	 */
 	private int roamAction(Agent agent) {
 		// Get the coordinates and whether we can afford it
 		Group2<Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
