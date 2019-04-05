@@ -237,12 +237,17 @@ public class Manager {
 	 * @return Group2<Action, Integer>
 	 */
 	private Group2<Action, Integer> tryToPickupTask(Agent agent) {
+		// Release just consumed task
+		if (w.reserved.contains(agent.coords)) {
+			w.free(agent.coords, agent);
+		}
+		
 		// TODO: improve by passing the found well to moveToWell function
 		Group2<Group2<Integer, Integer>, Boolean> well = w.getWell(agent);
 		
 		if (well.first == null) {
 			// TODO: remove before release
-			System.err.println("Failed to find a well for agent: " + agent.toString());
+			Debug.error("Failed to find a well for agent: " + agent.toString());
 			return null;
 		}
 		Group2<Group2<Integer, Integer>, Boolean> station = w.getNearestTaskStation(agent);

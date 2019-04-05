@@ -152,14 +152,13 @@ public class World {
 	
 	// Reserve a station, so other wells do not move towards it
 	public void reserve(Group2<Integer, Integer> coords, Agent agent) {
-//		System.out.println(String.format("Reserving station %s by: %s at timestep %d", coords.toString(), agent.toString(), agent.timestep));
-//		System.out.println("Reserving station: " + coords.toString() + " by: " + agent.toString());
+		Debug.log(String.format("Reserving station %s by: %s at timestep %d", coords.toString(), agent.toString(), agent.timestep));
 		reserved.add(coords);
 	}
 	
 	// Free reservation up
 	public void free(Group2<Integer, Integer> coords, Agent agent) {
-//		System.out.println(String.format("Freeing station %s by: %s at timestep %d", coords.toString(), agent.toString(), agent.timestep));
+		Debug.log(String.format("Freeing station %s by: %s at timestep %d", coords.toString(), agent.toString(), agent.timestep));
 		reserved.remove(coords);
 	}
 }

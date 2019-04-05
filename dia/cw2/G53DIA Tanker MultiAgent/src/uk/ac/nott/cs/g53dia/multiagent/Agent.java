@@ -84,7 +84,7 @@ public class Agent extends Tanker {
 		view = aview;
 		analyseView();
 		
-		if (timestep >= 400 && id == 3) {
+		if (timestep >= 870 && id == 1) {
 			int a = 2;
 		}
 		
