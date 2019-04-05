@@ -112,8 +112,8 @@ public class Manager {
 	// Returns -2, when a refuel is needed
 	private int roam(Agent agent) {
 		// Get the coordinates and whether we can afford it
-//		Group2<Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
-		Group2<Group2<Integer, Integer>, Boolean> result = checkForTasks(agent);
+		Group2<Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
+//		Group2<Group2<Integer, Integer>, Boolean> result = checkForTasks(agent);
 		if (result != null) {
 			lastTStation = result.first;
 			if (result.second) {
