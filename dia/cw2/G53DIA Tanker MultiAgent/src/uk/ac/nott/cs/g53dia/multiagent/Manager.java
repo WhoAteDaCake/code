@@ -160,12 +160,12 @@ public class Manager {
 			
 			for(Group2<Integer, Integer> entry: myAssignments) {
 				// Skip stations that can't be reached
-				Group2<Boolean, Boolean> result = w.isReachable(agent.coords, coords, agent.getFuelLevel());
+				Group2<Boolean, Boolean> result = w.isReachable(agent.coords, entry, agent.getFuelLevel());
 				if (!result.second) {
 					continue;
 				}
 				
-				int myPrice = Path.distance(entry, agent.coords);
+				int myPrice = Path.distance(agent.coords, entry);
 				if (myPrice < price) {
 					price = myPrice;
 					coords = entry;
@@ -216,6 +216,11 @@ public class Manager {
 
 	private Group2<Action, Integer> refuel(Agent agent) {
 		agent.state = State.REFUELING;
+		
+		if (agent.getFuelLevel() == agent.MAX_FUEL) {
+			Debug.error("Tank is full for " + agent.toString() + " at timestep " + agent.timestep);
+		}
+		
 		return new Group2<>(new RefuelAction(), null);
 	}
 	

@@ -2,7 +2,7 @@ package uk.ac.nott.cs.g53dia.multiagent;
 
 public class Debug {
 	public static boolean DEBUG = false;
-	public static boolean ERROR = false;
+	public static boolean ERROR = true;
 	public static boolean WARN = false;
 
 	
