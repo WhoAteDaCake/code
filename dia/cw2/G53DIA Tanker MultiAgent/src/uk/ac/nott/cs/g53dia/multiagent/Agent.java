@@ -17,6 +17,10 @@ public class Agent extends Tanker {
 	// For debugging
 	public long timestep;
 	
+	public int initiationSteps = 0;
+	public int initiationDirection;
+	public int initiationLimit = Tanker.MAX_FUEL / 4;
+	
 	// These will be set by the manager
 	public Path path = null;
 	public State state = State.ROAMING;
@@ -25,12 +29,20 @@ public class Agent extends Tanker {
 	public Group2<Integer, Integer> pTarget = null;
 	public Group2<Integer, Integer> coords = new Group2<>(0, 0);
 	
+	/**
+	 * Create a random diagonal direction to move bast on id
+	 */
+	public static int getInitiationDir(int id) {
+		return ((id * 2) + 1) % 8;
+	}
+	
 	public Agent(Random rand, Manager manager, int myId) {
 		r = rand;
 		m = manager;
 		id = myId;
 		
 		m.register(this);
+		initiationDirection = getInitiationDir(myId);
 	}
 	
 	// Track future position before agent moves
@@ -83,9 +95,15 @@ public class Agent extends Tanker {
 		timestep = tstep;
 		view = aview;
 		analyseView();
-		
+
+		// TESTING
 		if (timestep >= 870 && id == 1) {
 			int a = 2;
+		}
+		
+		if (initiationSteps < initiationLimit) {
+			initiationSteps += 1;
+			return registeredMove(initiationDirection);
 		}
 		
 		if (path != null && path.hasSteps()) {
