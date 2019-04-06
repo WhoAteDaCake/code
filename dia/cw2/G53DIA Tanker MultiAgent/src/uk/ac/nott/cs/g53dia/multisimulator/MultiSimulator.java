@@ -30,9 +30,9 @@ public class MultiSimulator {
 	 * Time for which execution pauses so that GUI can update. Reducing this
 	 * value causes the simulation to run faster.
 	 */
-	private static int DELAY = 20;
+	private static int DELAY = 5;
 	private static int SEED = 6;
-	private static int SHOW_AGENT = 0;
+	private static int SHOW_AGENT = 3;
 
 	/**
 	 * Number of timesteps to execute.

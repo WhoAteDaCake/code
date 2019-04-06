@@ -30,10 +30,10 @@ public class Agent extends Tanker {
 	public Group2<Integer, Integer> coords = new Group2<>(0, 0);
 	
 	/**
-	 * Create a random diagonal direction to move bast on id
+	 * Chose diagonal based on id
 	 */
 	public static int getInitiationDir(int id) {
-		return ((id * 2) + 1) % 8;
+		return 4 + (id % 4);
 	}
 	
 	public Agent(Random rand, Manager manager, int myId) {

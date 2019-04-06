@@ -26,6 +26,36 @@ public class Manager {
 		agents.put(agent.id, agent);
 	}
 	
+	public Group2<Group2<Integer, Integer>, Boolean> getBestWell(Agent agent) {
+		Group2<Integer, Integer> selected = null;
+
+		double cost = Double.MAX_VALUE;
+		double wasteMultiplier = agent.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 4 : 2;
+		double fuelMultiplier = agent.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 4 : 2;
+		boolean canAfford = false;
+
+		for (Group2<Integer, Integer> coords : w.wells) {
+			// Check whether is reachable, otherwise we might get false paths
+			if (!w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
+				continue;
+			}
+			Group2<Integer, Integer> pump = w.findClosestCell(CellType.PUMP, coords);
+			Group2<Integer, Integer> station = w.findClosestCell(CellType.STATION, coords);
+			double pathCost = Path.distance(agent.coords, coords);
+			double pumpCost = Path.distance(coords, pump) / fuelMultiplier;
+			double stationCost = pumpCost * 2;
+			if (station != null) {
+				stationCost = Path.distance(coords, station) / wasteMultiplier;
+			}
+			double myCost = pathCost + pumpCost + stationCost;
+			if (cost > myCost) {
+				selected = coords;
+				cost = myCost;
+			}
+		}
+		return selected == null ? w.getWell(agent) : new Group2(selected, true);
+	}
+	
 	/**
 	 * Goes trough all of the stations at chooses a random one to roam towards
 	 * Will not choose the same station twice
@@ -259,7 +289,8 @@ public class Manager {
 		if (w.reserved.contains(agent.coords)) {
 			w.free(agent.coords, agent);
 		}
-		Group2<Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
+		Group2<Group2<Integer, Integer>, Boolean> meta = getBestWell(agent);
+//		Group2<Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
 		// Not enough fuel
 		if (!meta.second) {
 			return moveToPump(agent);
@@ -317,7 +348,8 @@ public class Manager {
 		}
 		
 		// TODO: improve by passing the found well to moveToWell function
-		Group2<Group2<Integer, Integer>, Boolean> well = w.getWell(agent);
+//		Group2<Group2<Integer, Integer>, Boolean> well = w.getWell(agent);
+		Group2<Group2<Integer, Integer>, Boolean> well = getBestWell(agent);
 		
 		if (well.first == null) {
 			// TODO: remove before release
