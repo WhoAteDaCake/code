@@ -84,7 +84,11 @@ public class Agent extends Tanker {
 		view = aview;
 		analyseView();
 		
-		if (timestep >= 870 && id == 1) {
+		if (getFuelLevel() < 10) {
+			Debug.warn(String.format("%s :running low on fuel at step %d", this.toString(), timestep));
+		}
+		
+		if (timestep >= 1660 && id == 2) {
 			int a = 2;
 		}
 		
@@ -96,6 +100,6 @@ public class Agent extends Tanker {
 	}
 
 	public String toString() {
-		return "Agent: " + id;
+		return String.format("Agent: %d | Coords: %s | Fuel: %d | State: %s", id, coords.toString(), getFuelLevel(), state.toString());
 	}
 }

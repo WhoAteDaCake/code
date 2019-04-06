@@ -119,7 +119,21 @@ public class World {
 		// Make sure we can reach a pump after said point
 		int toPumpPrice = Path.distance(coords, pump);
 		int fullPrice = (pathPrice + toPumpPrice) * 2;
-		return new Group2<>(fullPrice < fuelLevel, fullPrice < mFuel);
+		boolean canReach = fullPrice < fuelLevel;
+		boolean reachable = canReach;
+		
+		// Check if it's possible to reach a nearby pump and then reach said station
+		if (!reachable) {
+			Group2<Integer, Integer> nearPositionPump = getBestCell(CellType.PUMP, from);
+			int toNearPump = Path.distance(from, nearPositionPump) * 2;
+			if (toNearPump < fuelLevel) {
+				// At this point we know that we can reach a nearby pump
+				int pumpToCoord = Path.distance(nearPositionPump, coords);
+				reachable = (pumpToCoord + toPumpPrice) * 2 < mFuel;
+			}
+		}
+		
+		return new Group2<>(canReach, reachable);
 	}
 	
 	// Will get all the stations that are not reserved
