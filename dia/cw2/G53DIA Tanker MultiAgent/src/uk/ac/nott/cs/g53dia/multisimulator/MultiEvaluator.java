@@ -13,7 +13,7 @@ import java.util.Random;
 public class MultiEvaluator {
 
 	private static int DURATION = 10000;
-	private static int THREADS = 5;
+	private static int THREADS = 25;
 	
 	private static int DELAY = 20;
 	private static int SEED = 0;

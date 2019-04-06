@@ -137,23 +137,24 @@ public class Manager {
 		}
 		
 		HashSet<Group2<Integer, Integer>> myAssignments = assignments.get(agent.id);
+		// NOTE: after doing some runs, it doesn't seem to increase perf
 		// Check other station assignments
 		// and take tasks from agents that have more than one
-		if (myAssignments == null) {
-			myAssignments = new HashSet<>();
-			for(int i = 0; i < agents.size(); i += 1) {
-				HashSet<Group2<Integer, Integer>> items = assignments.get(i);
-				if (i == agent.id || items == null) {
-					continue;
-				}
-				if (items.size() > 1) {
-					myAssignments.addAll(items);
-				}
-			}
-		}
-		
+//		if (myAssignments == null) {
+//			myAssignments = new HashSet<>();
+//			for(int i = 0; i < agents.size(); i += 1) {
+//				HashSet<Group2<Integer, Integer>> items = assignments.get(i);
+//				if (i == agent.id || items == null) {
+//					continue;
+//				}
+//				if (items.size() > 1) {
+//					myAssignments.addAll(items);
+//				}
+//			}
+//		}
+//		
 		// We have been assigned tasks, Find the closest station
-		if (myAssignments.size() != 0) {
+		if (myAssignments != null && myAssignments.size() != 0) {
 			int price = Integer.MAX_VALUE;
 			boolean isReachable = false;
 			Group2<Integer, Integer> coords = null;
@@ -161,7 +162,9 @@ public class Manager {
 			for(Group2<Integer, Integer> entry: myAssignments) {
 				// Skip stations that can't be reached
 				Group2<Boolean, Boolean> result = w.isReachable(agent.coords, entry, agent.getFuelLevel());
-				if (!result.second) {
+				Task task = ((Station)w.stations.get(entry)).getTask();
+				// When tasks were assigned, waste was checked for single agent only
+				if (!result.second || task.getWasteAmount() > agent.getWasteCapacity()) {
 					continue;
 				}
 				
@@ -172,11 +175,12 @@ public class Manager {
 					isReachable = result.first;
 				}
 			}
-			return new Group2<>(coords, isReachable);
+			if (coords != null) {
+				return new Group2<>(coords, isReachable);
+			}
 		}
 		
 		return null;
-//		return w.getNearestTaskStation(agent);
 	}
 	
 	/**

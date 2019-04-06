@@ -88,7 +88,7 @@ public class Agent extends Tanker {
 			Debug.warn(String.format("%s :running low on fuel at step %d", this.toString(), timestep));
 		}
 		
-		if (timestep >= 1360 && id == 2) {
+		if (timestep >= 1660 && id == 2) {
 			int a = 2;
 		}
 		
