@@ -30,7 +30,9 @@ public class MultiSimulator {
 	 * Time for which execution pauses so that GUI can update. Reducing this
 	 * value causes the simulation to run faster.
 	 */
-	private static int DELAY = 5;
+	private static int DELAY = 20;
+	private static int SEED = 6;
+	private static int SHOW_AGENT = 0;
 
 	/**
 	 * Number of timesteps to execute.
@@ -44,7 +46,7 @@ public class MultiSimulator {
 
     public static void main(String[] args) {
     	// Note: to obtain reproducible behaviour, you can set the Random seed
-    	Random r = new Random(55);
+    	Random r = new Random(SEED);
     	// Create an environment
     	Environment env = new Environment(Tanker.MAX_FUEL/2, r);
     	// Create a fleet
@@ -53,7 +55,7 @@ public class MultiSimulator {
     	FleetViewer fv = new FleetViewer(fleet);
     	// TMP
     	// 1 is the one that gets null ref
-    	fv.setTanker(fleet.get(2));
+    	fv.setTanker(fleet.get(SHOW_AGENT));
     	
     	fv.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
     	// Start executing the tankers in the Fleet

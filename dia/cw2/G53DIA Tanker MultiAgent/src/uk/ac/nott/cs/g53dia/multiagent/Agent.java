@@ -19,7 +19,7 @@ public class Agent extends Tanker {
 	
 	public int initiationSteps = 0;
 	public int initiationDirection;
-	public int initiationLimit = Tanker.MAX_FUEL / 4;
+	public int initiationLimit = Tanker.MAX_FUEL / 5;
 	
 	// These will be set by the manager
 	public Path path = null;
@@ -96,12 +96,13 @@ public class Agent extends Tanker {
 		view = aview;
 		analyseView();
 		
+		// TESTING
 		if (getFuelLevel() < 10) {
 			Debug.warn(String.format("%s :running low on fuel at step %d", this.toString(), timestep));
 		}
 		
 		// TESTING
-		if (timestep >= 1660 && id == 2) {
+		if (timestep >= 80 && id == 0) {
 			int a = 2;
 		}
 		
