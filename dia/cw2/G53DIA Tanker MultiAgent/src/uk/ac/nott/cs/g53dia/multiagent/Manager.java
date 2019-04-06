@@ -61,30 +61,36 @@ public class Manager {
 		return null;
 	}
 	
-	// Find the best agent to consume a specific task
-	// returns <id of agent, price to get there>
-	private Group2<Integer, Integer> assingAgent(Group2<Integer, Integer> entry) {
+	/**
+	 * Finds a best agent for a specific station with a task
+	 * Criteria:
+	 * 	Needs to have enough space
+	 * 	Can be in the following states: ROAMING, DISPOSING, REFUELING, CONSUMING
+	 * Gets sorted by which one is the closest
+	 * @param entry
+	 * @return id of agent
+	 */
+	private int assingAgent(Group2<Integer, Integer> entry) {
 		int price = Integer.MAX_VALUE;
+		
 		int id = -1;
 		Task task = ((Station) w.stations.get(entry)).getTask();
 		int waste = task.getWasteAmount();
 		
-		/*
-		 * Criteria:
-		 * 	Needs to have enough space
-		 * 	Can be in the following states: ROAMING, DISPOSING, REFUELING
-		 * Gets sorted by which one is the closest
-		 */
 		for (int i = 0; i < agents.size(); i += 1) {
 			Agent agent = agents.get(i);
 			State state = agent.state;
-			if (!(state == State.ROAMING || state == State.DISPOSING || state == State.REFUELING)) {
+			if (!(
+					state == State.ROAMING ||
+					state == State.DISPOSING ||
+					state == State.REFUELING ||
+					state == State.CONSUMING)) {
 				continue;
 			}
 			if (agent.getWasteCapacity() < waste && state != State.DISPOSING) {
 				continue;
 			}
-			if (!(w.isReachable(entry, agent.coords, agent.getFuelLevel())).first) {
+			if (!w.isReachable(agent.coords, entry, agent.getFuelLevel()).second) {
 				continue;
 			}
 			int myPrice = Path.distance(entry, agent.coords);
@@ -94,28 +100,87 @@ public class Manager {
 			}
 		}
 		
-		return new Group2<>(id, price);
+		return id;
 	}
 	
-	// Checks whether there are any tasks that the agent is best for
-	// Experimental
-	// if more than 3 are available, agent should take one
+	/**
+	 * Tries to find the best station for an agent
+	 * Works by:
+	 * 		Assigns all stations to agents (using assingAgent)
+	 * 		Checks the list if given agent was assigned anything
+	 * 		If not, checks whether some agents have been assigned multiple tasks
+	 * 		And takes one of those tasks
+	 * @param agent
+	 * @return <Coordinates, whether it's reachable with current fuel>
+	 */
 	private Group2<Group2<Integer, Integer>, Boolean> checkForTasks(Agent agent) {
-		int price = Integer.MAX_VALUE;
-		Group2<Integer, Integer> coords = null;
+//		return w.getNearestTaskStation(agent);
+		HashSet<Group2<Integer, Integer>> stations = w.getTaskStations();
+		HashMap<Integer, HashSet<Group2<Integer, Integer>>> assignments = new HashMap<>();
+		if (stations.size() == 0) {
+			return null;
+		}
 		
-		for (Group2<Integer, Integer> entry: w.getTaskStations()) {
-			Group2<Integer, Integer> result = assingAgent(entry);
-			if (result.first != agent.id) {
+		for (Group2<Integer, Integer> entry: stations) {
+			int id = assingAgent(entry);
+			if (id == -1) {
+				Debug.warn(String.format("Got -1 for entry: %s agent : %s", entry.toString(), agent.toString()));
 				continue;
 			}
-			if (result.second < price) {
-				price = result.second;
-				coords = entry;
+			if (assignments.containsKey(id)) {
+				assignments.get(id).add(entry);
+			} else {
+				HashSet<Group2<Integer, Integer>> coords = new HashSet<>();
+				coords.add(entry);
+				assignments.put(id, coords);
 			}
-			
 		}
-		return coords == null ? null : new Group2<>(coords, price * 2 < agent.getFuelLevel());
+		
+		HashSet<Group2<Integer, Integer>> myAssignments = assignments.get(agent.id);
+		// NOTE: after doing some runs, it doesn't seem to increase perf
+		// Check other station assignments
+		// and take tasks from agents that have more than one
+//		if (myAssignments == null) {
+//			myAssignments = new HashSet<>();
+//			for(int i = 0; i < agents.size(); i += 1) {
+//				HashSet<Group2<Integer, Integer>> items = assignments.get(i);
+//				if (i == agent.id || items == null) {
+//					continue;
+//				}
+//				if (items.size() > 1) {
+//					myAssignments.addAll(items);
+//				}
+//			}
+//		}
+//		
+		// We have been assigned tasks, Find the closest station
+		if (myAssignments != null && myAssignments.size() != 0) {
+			int price = Integer.MAX_VALUE;
+			boolean isReachable = false;
+			Group2<Integer, Integer> coords = null;
+			
+			for(Group2<Integer, Integer> entry: myAssignments) {
+				// Skip stations that can't be reached
+				Group2<Boolean, Boolean> result = w.isReachable(agent.coords, entry, agent.getFuelLevel());
+				Task task = ((Station)w.stations.get(entry)).getTask();
+				// When tasks were assigned, waste was checked for single agent only
+				if (!result.second || task.getWasteAmount() > agent.getWasteCapacity()) {
+					continue;
+				}
+				
+				int myPrice = Path.distance(agent.coords, entry);
+				if (myPrice < price) {
+					price = myPrice;
+					coords = entry;
+					isReachable = result.first;
+				}
+			}
+			if (coords != null) {
+				return new Group2<>(coords, isReachable);
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
@@ -127,8 +192,7 @@ public class Manager {
 	 */
 	private int roamAction(Agent agent) {
 		// Get the coordinates and whether we can afford it
-		Group2<Group2<Integer, Integer>, Boolean> result = w.getNearestTaskStation(agent);
-//		Group2<Group2<Integer, Integer>, Boolean> result = checkForTasks(agent);
+		Group2<Group2<Integer, Integer>, Boolean> result = checkForTasks(agent);
 		if (result != null) {
 			lastTStation = result.first;
 			if (result.second) {
@@ -156,6 +220,11 @@ public class Manager {
 
 	private Group2<Action, Integer> refuel(Agent agent) {
 		agent.state = State.REFUELING;
+		
+		if (agent.getFuelLevel() == agent.MAX_FUEL) {
+			Debug.error("Tank is full for " + agent.toString() + " at timestep " + agent.timestep);
+		}
+		
 		return new Group2<>(new RefuelAction(), null);
 	}
 	
@@ -250,7 +319,7 @@ public class Manager {
 			Debug.error("Failed to find a well for agent: " + agent.toString());
 			return null;
 		}
-		Group2<Group2<Integer, Integer>, Boolean> station = w.getNearestTaskStation(agent);
+		Group2<Group2<Integer, Integer>, Boolean> station = checkForTasks(agent);
 		
 		// If no task was found or we can't reach it
 		if (station == null || !station.second) {
@@ -291,12 +360,11 @@ public class Manager {
 			return new Group2<>(new DisposeWasteAction(), null);
 		} else if (agent.state == State.DISPOSING) {
 			return roam(agent);
-		// Assume already at the pump
 		} else if (agent.state == State.MOVING_TO_FUEL) {
 			return refuel(agent);
 		} else if (agent.state == State.REFUELING) {
 			if (agent.getWasteLevel() != 0) {
-				return moveToWell(agent);
+				return tryToPickupTask(agent);
 			} else {
 				return roam(agent);
 			}
