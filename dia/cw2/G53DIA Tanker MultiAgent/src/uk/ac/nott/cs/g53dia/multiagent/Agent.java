@@ -101,15 +101,15 @@ public class Agent extends Tanker {
 		view = aview;
 		analyseView();
 		
-		// TESTING
-		if (getFuelLevel() < 10) {
-			Debug.warn(String.format("%s :running low on fuel at step %d", this.toString(), timestep));
-		}
-		
-		// TESTING
-		if (timestep >= 80 && id == 0) {
-			int a = 2;
-		}
+//		// TESTING
+//		if (getFuelLevel() < 10) {
+//			Debug.warn(String.format("%s :running low on fuel at step %d", this.toString(), timestep));
+//		}
+//		
+//		// TESTING
+//		if (timestep >= 80 && id == 0) {
+//			int a = 2;
+//		}
 		
 		if (initiationSteps < initiationLimit) {
 			initiationSteps += 1;
