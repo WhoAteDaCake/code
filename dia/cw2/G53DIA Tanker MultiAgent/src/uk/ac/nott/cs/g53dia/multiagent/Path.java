@@ -82,6 +82,10 @@ public class Path {
 		// fromY < toY
 		return MoveAction.NORTH;
 	}
+	
+	public static int bestMove(Group2<Integer, Integer> p1, Group2<Integer, Integer> p2) {
+		return bestMove(p1.first, p2.second, p2.first, p2.second);
+	}
 
 	// Calculates the best sequence of moves from one point to other
 	// Assumes a 2d grid.

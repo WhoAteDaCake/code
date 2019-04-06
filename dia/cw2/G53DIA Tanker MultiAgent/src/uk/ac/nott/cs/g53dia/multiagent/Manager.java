@@ -26,35 +26,85 @@ public class Manager {
 		agents.put(agent.id, agent);
 	}
 	
+	public Group2<Group2<Integer, Integer>, Boolean> getBestWell(Agent agent) {
+		Group2<Integer, Integer> selected = null;
+
+		double cost = Double.MAX_VALUE;
+		double wasteMultiplier = agent.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 4 : 2;
+		double fuelMultiplier = agent.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 4 : 2;
+
+		for (Group2<Integer, Integer> coords : w.wells) {
+			// Check whether is reachable, otherwise we might get false paths
+			if (!w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
+				continue;
+			}
+			Group2<Integer, Integer> pump = w.findClosestCell(CellType.PUMP, coords);
+			Group2<Integer, Integer> station = w.findClosestCell(CellType.STATION, coords);
+			double pathCost = Path.distance(agent.coords, coords);
+			double pumpCost = Path.distance(coords, pump) / fuelMultiplier;
+			double stationCost = pumpCost * 2;
+			if (station != null) {
+				stationCost = Path.distance(coords, station) / wasteMultiplier;
+			}
+			double myCost = pathCost + pumpCost + stationCost;
+			if (cost > myCost) {
+				selected = coords;
+				cost = myCost;
+			}
+		}
+		return selected == null ? w.getWell(agent) : new Group2(selected, true);
+	}
+	
 	/**
-	 * Goes trough all of the stations at chooses a random one to roam towards
+	 * Goes trough all of the stations at chooses one to roam towards
 	 * Will not choose the same station twice
-	 * If no station is chosen, it will walk to a random diagonal direction
+	 * If no station is chosen, it will use initiation direction to move to a point further away
 	 * @param agent
 	 * @return Group2<Integer, Integer>
 	 */
 	private Group2<Integer, Integer> getRoamTarget(Agent agent) {
 		// Need a list here because we are accessing random indices
-		ArrayList<Group2<Integer, Integer>> stations = new ArrayList<>(w.getFreeStations());
+		ArrayList<Group2<Integer, Integer>> stations = new ArrayList<>();
+		/*
+		 * Remove unreachable and visited stations
+		 */
+		for (Group2<Integer, Integer> entry: w.getFreeStations()) {
+			boolean notVisited = !entry.equals(agent.pTarget) && !entry.equals(agent.coords);
+			if (notVisited && w.isReachable(agent.coords, entry, agent.getFuelLevel()).first) {
+				// We prefer to follow initiationDirection to spread tankers around
+				if (Path.bestMove(agent.coords, entry) == agent.initiationDirection) {
+					w.reserve(entry, agent);
+					agent.pTarget = agent.target;
+					agent.target = entry;
+					return entry;
+				}
+				// To save iteration, save the station for random access loop bellow
+				stations.add(entry);
+			}
+		}
 		
+		
+		// Ideally we want to spread the agents around, so we try to move them toward initiation 
+		
+		// Fallback to choosing a random station
 		while (stations.size() > 0) {
 			int index = r.nextInt(stations.size() > 1 ? stations.size() - 1 : 1);
 			Group2<Integer, Integer> coords = stations.get(index);
-			boolean notVisited = !coords.equals(agent.pTarget) && !coords.equals(agent.coords);
-			if (notVisited && w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
-				w.reserve(coords, agent);
-				agent.pTarget = agent.target;
-				agent.target = coords;
-				return coords;
-			} else {
-				stations.remove(coords);
-			}
+			w.reserve(coords, agent);
+			agent.pTarget = agent.target;
+			agent.target = coords;
+			return coords;
 		}
-
-		int modifier = r.nextInt(10) > 5 ? -20 : 20;
+		/*
+		 * Here we use initiation direction to move to a random point
+		 * Using a specific direction helps to spread tankers around
+		 * Which helps to avoid competition over tasks
+		 */
+		int moves = 10;
+		Group2<Integer, Integer> direction = Path.moveChange(agent.initiationDirection);
 		Group2<Integer, Integer> coords = new Group2<>(
-				agent.coords.first + modifier,
-				agent.coords.second + modifier);
+				agent.coords.first + (direction.first * moves),
+				agent.coords.second + (direction.second * moves));
 		if (w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
 			return coords;
 		}
@@ -254,7 +304,8 @@ public class Manager {
 		if (w.reserved.contains(agent.coords)) {
 			w.free(agent.coords, agent);
 		}
-		Group2<Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
+		Group2<Group2<Integer, Integer>, Boolean> meta = getBestWell(agent);
+//		Group2<Group2<Integer, Integer>, Boolean> meta = w.getWell(agent);
 		// Not enough fuel
 		if (!meta.second) {
 			return moveToPump(agent);
@@ -312,7 +363,8 @@ public class Manager {
 		}
 		
 		// TODO: improve by passing the found well to moveToWell function
-		Group2<Group2<Integer, Integer>, Boolean> well = w.getWell(agent);
+//		Group2<Group2<Integer, Integer>, Boolean> well = w.getWell(agent);
+		Group2<Group2<Integer, Integer>, Boolean> well = getBestWell(agent);
 		
 		if (well.first == null) {
 			// TODO: remove before release

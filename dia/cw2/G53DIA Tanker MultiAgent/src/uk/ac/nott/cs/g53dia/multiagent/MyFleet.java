@@ -8,7 +8,7 @@ public class MyFleet extends Fleet {
     /** 
      * Number of tankers in the fleet (this is just an example, not a requirement).
      */
-    private static int FLEET_SIZE = 4;
+    private static int FLEET_SIZE = 2;
     
     public MyFleet() {
     	this(new Random());

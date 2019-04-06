@@ -13,7 +13,7 @@ import java.util.Random;
 public class MultiEvaluator {
 
 	private static int DURATION = 10000;
-	private static int THREADS = 25;
+	private static int THREADS = 20;
 	
 	private static int DELAY = 20;
 	private static int SEED = 0;
@@ -25,6 +25,7 @@ public class MultiEvaluator {
 		if (level == 0) {
 			return saved;
 		}
+//		int actual = new Random().nextInt();
 		int actual = SEED + level + offset;
 		String error = "";
 		System.out.println("Running iteration " + actual);

@@ -17,6 +17,15 @@ public class Agent extends Tanker {
 	// For debugging
 	public long timestep;
 	
+	public int initiationSteps = 0;
+	public int initiationDirection;
+	/*
+	 * Each move takes 2 fuel
+	 * So we need to limit to less than (Tanker.MAX_FUEL / 2) / 2
+	 * Otherwise we would not be able to get back
+	 */
+	public int initiationLimit = Tanker.MAX_FUEL / 5;
+	
 	// These will be set by the manager
 	public Path path = null;
 	public State state = State.ROAMING;
@@ -25,12 +34,20 @@ public class Agent extends Tanker {
 	public Group2<Integer, Integer> pTarget = null;
 	public Group2<Integer, Integer> coords = new Group2<>(0, 0);
 	
+	/**
+	 * Chose diagonal based on id
+	 */
+	public static int getInitiationDir(int id) {
+		return 4 + (id % 4);
+	}
+	
 	public Agent(Random rand, Manager manager, int myId) {
 		r = rand;
 		m = manager;
 		id = myId;
 		
 		m.register(this);
+		initiationDirection = getInitiationDir(myId);
 	}
 	
 	// Track future position before agent moves
@@ -84,12 +101,19 @@ public class Agent extends Tanker {
 		view = aview;
 		analyseView();
 		
+		// TESTING
 		if (getFuelLevel() < 10) {
 			Debug.warn(String.format("%s :running low on fuel at step %d", this.toString(), timestep));
 		}
 		
-		if (timestep >= 1660 && id == 2) {
+		// TESTING
+		if (timestep >= 80 && id == 0) {
 			int a = 2;
+		}
+		
+		if (initiationSteps < initiationLimit) {
+			initiationSteps += 1;
+			return registeredMove(initiationDirection);
 		}
 		
 		if (path != null && path.hasSteps()) {
