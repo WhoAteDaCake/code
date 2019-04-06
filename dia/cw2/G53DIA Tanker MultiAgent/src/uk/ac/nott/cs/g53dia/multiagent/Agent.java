@@ -19,6 +19,11 @@ public class Agent extends Tanker {
 	
 	public int initiationSteps = 0;
 	public int initiationDirection;
+	/*
+	 * Each move takes 2 fuel
+	 * So we need to limit to less than (Tanker.MAX_FUEL / 2) / 2
+	 * Otherwise we would not be able to get back
+	 */
 	public int initiationLimit = Tanker.MAX_FUEL / 5;
 	
 	// These will be set by the manager
