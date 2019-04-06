@@ -32,7 +32,6 @@ public class Manager {
 		double cost = Double.MAX_VALUE;
 		double wasteMultiplier = agent.getWasteCapacity() > (Tanker.MAX_WASTE / 2) ? 4 : 2;
 		double fuelMultiplier = agent.getFuelLevel() > (Tanker.MAX_FUEL / 2) ? 4 : 2;
-		boolean canAfford = false;
 
 		for (Group2<Integer, Integer> coords : w.wells) {
 			// Check whether is reachable, otherwise we might get false paths
@@ -57,7 +56,7 @@ public class Manager {
 	}
 	
 	/**
-	 * Goes trough all of the stations at chooses a random one to roam towards
+	 * Goes trough all of the stations at chooses one to roam towards
 	 * Will not choose the same station twice
 	 * If no station is chosen, it will use initiation direction to move to a point further away
 	 * @param agent
@@ -65,20 +64,36 @@ public class Manager {
 	 */
 	private Group2<Integer, Integer> getRoamTarget(Agent agent) {
 		// Need a list here because we are accessing random indices
-		ArrayList<Group2<Integer, Integer>> stations = new ArrayList<>(w.getFreeStations());
+		ArrayList<Group2<Integer, Integer>> stations = new ArrayList<>();
+		/*
+		 * Remove unreachable and visited stations
+		 */
+		for (Group2<Integer, Integer> entry: w.getFreeStations()) {
+			boolean notVisited = !entry.equals(agent.pTarget) && !entry.equals(agent.coords);
+			if (notVisited && w.isReachable(agent.coords, entry, agent.getFuelLevel()).first) {
+				// We prefer to follow initiationDirection to spread tankers around
+				if (Path.bestMove(agent.coords, entry) == agent.initiationDirection) {
+					w.reserve(entry, agent);
+					agent.pTarget = agent.target;
+					agent.target = entry;
+					return entry;
+				}
+				// To save iteration, save the station for random access loop bellow
+				stations.add(entry);
+			}
+		}
 		
+		
+		// Ideally we want to spread the agents around, so we try to move them toward initiation 
+		
+		// Fallback to choosing a random station
 		while (stations.size() > 0) {
 			int index = r.nextInt(stations.size() > 1 ? stations.size() - 1 : 1);
 			Group2<Integer, Integer> coords = stations.get(index);
-			boolean notVisited = !coords.equals(agent.pTarget) && !coords.equals(agent.coords);
-			if (notVisited && w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
-				w.reserve(coords, agent);
-				agent.pTarget = agent.target;
-				agent.target = coords;
-				return coords;
-			} else {
-				stations.remove(coords);
-			}
+			w.reserve(coords, agent);
+			agent.pTarget = agent.target;
+			agent.target = coords;
+			return coords;
 		}
 		/*
 		 * Here we use initiation direction to move to a random point

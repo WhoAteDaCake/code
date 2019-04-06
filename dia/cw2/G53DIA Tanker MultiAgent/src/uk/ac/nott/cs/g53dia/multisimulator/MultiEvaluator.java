@@ -17,7 +17,7 @@ public class MultiEvaluator {
 	
 	private static int DELAY = 20;
 	private static int SEED = 0;
-	private static int LEVEL = 40;
+	private static int LEVEL = 100;
 	
 	private static boolean actionFailed = false;
 	
@@ -25,6 +25,7 @@ public class MultiEvaluator {
 		if (level == 0) {
 			return saved;
 		}
+//		int actual = new Random().nextInt();
 		int actual = SEED + level + offset;
 		String error = "";
 		System.out.println("Running iteration " + actual);
