@@ -17,7 +17,7 @@ public class MultiEvaluator {
 	
 	private static int DELAY = 20;
 	private static int SEED = 0;
-	private static int LEVEL = 100;
+	private static int LEVEL = 40;
 	
 	private static boolean actionFailed = false;
 	

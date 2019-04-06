@@ -29,7 +29,7 @@ public class Manager {
 	/**
 	 * Goes trough all of the stations at chooses a random one to roam towards
 	 * Will not choose the same station twice
-	 * If no station is chosen, it will walk to a random diagonal direction
+	 * If no station is chosen, it will use initiation direction to move to a point further away
 	 * @param agent
 	 * @return Group2<Integer, Integer>
 	 */
@@ -50,11 +50,16 @@ public class Manager {
 				stations.remove(coords);
 			}
 		}
-
-		int modifier = r.nextInt(10) > 5 ? -20 : 20;
+		/*
+		 * Here we use initiation direction to move to a random point
+		 * Using a specific direction helps to spread tankers around
+		 * Which helps to avoid competition over tasks
+		 */
+		int moves = 10;
+		Group2<Integer, Integer> direction = Path.moveChange(agent.initiationDirection);
 		Group2<Integer, Integer> coords = new Group2<>(
-				agent.coords.first + modifier,
-				agent.coords.second + modifier);
+				agent.coords.first + (direction.first * moves),
+				agent.coords.second + (direction.second * moves));
 		if (w.isReachable(agent.coords, coords, agent.getFuelLevel()).first) {
 			return coords;
 		}
