@@ -9,7 +9,7 @@ public class Path {
 	 * Calculates modifications to global state after move is made Used to track
 	 * positions of
 	 */
-	static Group2<Integer, Integer> moveChange(int direction) {
+	static Pair<Integer, Integer> moveChange(int direction) {
 		int x = 0;
 		int y = 0;
 
@@ -44,7 +44,7 @@ public class Path {
 			y--;
 			break;
 		}
-		return new Group2<>(x, y);
+		return new Pair<>(x, y);
 	}
 
 	// Distance in the world
@@ -56,7 +56,7 @@ public class Path {
 		return Math.max(pointDist(x1, x2), pointDist(y1, y2));
 	}
 
-	public static int distance(Group2<Integer, Integer> p1, Group2<Integer, Integer> p2) {
+	public static int distance(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
 		return distance(p1.first, p1.second, p2.first, p2.second);
 	}
 
@@ -83,7 +83,7 @@ public class Path {
 		return MoveAction.NORTH;
 	}
 	
-	public static int bestMove(Group2<Integer, Integer> p1, Group2<Integer, Integer> p2) {
+	public static int bestMove(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
 		return bestMove(p1.first, p2.second, p2.first, p2.second);
 	}
 
@@ -95,7 +95,7 @@ public class Path {
 		}
 		int nextMove = bestMove(fromX, fromY, toX, toY);
 		path.addMove(nextMove);
-		Group2<Integer, Integer> move = moveChange(nextMove);
+		Pair<Integer, Integer> move = moveChange(nextMove);
 		return movesToPointAux(fromX + move.first, fromY + move.second, toX, toY, path);
 	}
 
@@ -103,7 +103,7 @@ public class Path {
 		return movesToPointAux(fromX, fromY, toX, toY, new Path());
 	}
 
-	public static Path movesToPoint(Group2<Integer, Integer> p1, Group2<Integer, Integer> p2) {
+	public static Path movesToPoint(Pair<Integer, Integer> p1, Pair<Integer, Integer> p2) {
 		return movesToPoint(p1.first, p1.second, p2.first, p2.second);
 	}
 
@@ -126,7 +126,7 @@ public class Path {
 		this(path, 0, 0);
 	}
 
-	public Path(Path path, Group2<Integer, Integer> p1) {
+	public Path(Path path, Pair<Integer, Integer> p1) {
 		this(path.path, p1.first, p1.second);
 	}
 
@@ -163,15 +163,15 @@ public class Path {
 		this.path.addAll(moves);
 	}
 
-	public Group2<Integer, Integer> walk() {
+	public Pair<Integer, Integer> walk() {
 		int x = this.x;
 		int y = this.y;
 		for (int move : path) {
-			Group2<Integer, Integer> modifier = moveChange(move);
+			Pair<Integer, Integer> modifier = moveChange(move);
 			x += modifier.first;
 			y += modifier.second;
 		}
-		return new Group2<>(x, y);
+		return new Pair<>(x, y);
 	}
 
 }

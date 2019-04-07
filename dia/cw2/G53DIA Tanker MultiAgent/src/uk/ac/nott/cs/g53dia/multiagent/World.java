@@ -8,13 +8,13 @@ import uk.ac.nott.cs.g53dia.multilibrary.Station;
 import uk.ac.nott.cs.g53dia.multilibrary.Task;
 
 public class World {
-	public HashSet<Group2<Integer, Integer>> pumps = new HashSet<>();
-	public HashSet<Group2<Integer, Integer>> wells = new HashSet<>();
-	public HashMap<Group2<Integer, Integer>, Cell> stations = new HashMap<>();
+	public HashSet<Pair<Integer, Integer>> pumps = new HashSet<>();
+	public HashSet<Pair<Integer, Integer>> wells = new HashSet<>();
+	public HashMap<Pair<Integer, Integer>, Cell> stations = new HashMap<>();
 
 	// Stations that have a tanker moving towards
-	public HashSet<Group2<Integer, Integer>> reserved = new HashSet<>();
-	public HashSet<Group2<Integer, Integer>> unreachable = new HashSet<>();
+	public HashSet<Pair<Integer, Integer>> reserved = new HashSet<>();
+	public HashSet<Pair<Integer, Integer>> unreachable = new HashSet<>();
 
 	private int cx;
 	private int cy;
@@ -24,12 +24,12 @@ public class World {
 		cx = cy = size;
 		mFuel = maxFuel;
 		// Initial pump location
-		pumps.add(new Group2<>(0, 0));
+		pumps.add(new Pair<>(0, 0));
 	}
 
-	public HashSet<Group2<Integer, Integer>> getTaskStations() {
-		HashSet<Group2<Integer, Integer>> keys = new HashSet<>();
-		for (Group2<Integer, Integer> entry : stations.keySet()) {
+	public HashSet<Pair<Integer, Integer>> getTaskStations() {
+		HashSet<Pair<Integer, Integer>> keys = new HashSet<>();
+		for (Pair<Integer, Integer> entry : stations.keySet()) {
 			if (reserved.contains(entry)) {
 				continue;
 			}
@@ -44,11 +44,11 @@ public class World {
 	/*
 	 * Will return the coordinates of the closest entity from given coordinates
 	 */
-	public Group2<Integer, Integer> findClosestCell(CellType type, Group2<Integer, Integer> from) {
-		Group2<Integer, Integer> selected = null;
+	public Pair<Integer, Integer> findClosestCell(CellType type, Pair<Integer, Integer> from) {
+		Pair<Integer, Integer> selected = null;
 		int distance = Integer.MAX_VALUE;
 
-		HashSet<Group2<Integer, Integer>> items = new HashSet<>();
+		HashSet<Pair<Integer, Integer>> items = new HashSet<>();
 		
 		if (type == CellType.PUMP) {
 			items = pumps;
@@ -59,7 +59,7 @@ public class World {
 			items = wells;
 		}
 		
-		for (Group2<Integer, Integer> coords : items) {
+		for (Pair<Integer, Integer> coords : items) {
 			// We should allow to refuel, while standing on a cell
 			int newDist = Path.distance(from, coords);
 			if (distance > newDist) {
@@ -70,20 +70,20 @@ public class World {
 		return selected;
 	}
 
-	public Group2<Group2<Integer, Integer>, Boolean> getNearestTaskStation(Agent agent) {
-		HashSet<Group2<Integer, Integer>> keys = new HashSet<>(stations.keySet());
-		for (Group2<Integer, Integer> entry : reserved) {
+	public Pair<Pair<Integer, Integer>, Boolean> getNearestTaskStation(Agent agent) {
+		HashSet<Pair<Integer, Integer>> keys = new HashSet<>(stations.keySet());
+		for (Pair<Integer, Integer> entry : reserved) {
 			keys.remove(entry);
 		}
 
 		int price = Integer.MAX_VALUE;
-		Group2<Integer, Integer> coords = null;
+		Pair<Integer, Integer> coords = null;
 		boolean isReachable = false;
 
-		for (Group2<Integer, Integer> entry : keys) {
+		for (Pair<Integer, Integer> entry : keys) {
 			Station station = (Station) stations.get(entry);
 			// Make sure it has a task and a tanker is able to visit it at some point
-			Group2<Boolean, Boolean> reachability = isReachable(agent.coords, entry, agent.getFuelLevel());
+			Pair<Boolean, Boolean> reachability = isReachable(agent.coords, entry, agent.getFuelLevel());
 			Task task = station.getTask();
 			if (task == null || task.getWasteAmount() > agent.getWasteCapacity() || !reachability.second) {
 				continue;
@@ -95,16 +95,16 @@ public class World {
 				isReachable = reachability.first;
 			}
 		}
-		return coords == null ? null : new Group2<>(coords, isReachable);
+		return coords == null ? null : new Pair<>(coords, isReachable);
 	}
 
-	public Group2<Group2<Integer, Integer>, Boolean> getWell(Agent agent) {
+	public Pair<Pair<Integer, Integer>, Boolean> getWell(Agent agent) {
 		int price = Integer.MAX_VALUE;
-		Group2<Integer, Integer> coords = null;
+		Pair<Integer, Integer> coords = null;
 		boolean isReachable = false;
 
-		for (Group2<Integer, Integer> entry : wells) {
-			Group2<Boolean, Boolean> reachability = isReachable(agent.coords, entry, agent.getFuelLevel());
+		for (Pair<Integer, Integer> entry : wells) {
+			Pair<Boolean, Boolean> reachability = isReachable(agent.coords, entry, agent.getFuelLevel());
 			int myPrice = Path.distance(agent.coords, entry);
 			if (myPrice < price) {
 				coords = entry;
@@ -112,45 +112,41 @@ public class World {
 				isReachable = reachability.first;
 			}
 		}
-		return new Group2<>(coords, isReachable);
+		return new Pair<>(coords, isReachable);
 	}
 
-	public Group2<Integer, Integer> getBestCell(CellType type, Group2<Integer, Integer> from) {
-		if (type == CellType.PUMP) {
-			// Initialise to first pump by default
-			Group2<Integer, Integer> coords = new Group2<>(0, 0);
-			int price = Path.distance(from, coords);
+	public Pair<Integer, Integer> getClosestPump(Pair<Integer, Integer> from) {
+		// Initialise to first pump by default
+		Pair<Integer, Integer> coords = new Pair<>(0, 0);
+		int price = Path.distance(from, coords);
 
-			for (Group2<Integer, Integer> entry : pumps) {
-				int myPrice = Path.distance(from, entry);
-				if (myPrice < price) {
-					price = myPrice;
-					coords = entry;
-				}
+		for (Pair<Integer, Integer> entry : pumps) {
+			int myPrice = Path.distance(from, entry);
+			if (myPrice < price) {
+				price = myPrice;
+				coords = entry;
 			}
-			return coords;
-
 		}
-		return null;
+		return coords;
 	}
 
 	// Some point's can't be reached due to limit on max fuel
 	// This will return <canReach, possibleToReach>
-	public Group2<Boolean, Boolean> isReachable(Group2<Integer, Integer> from, Group2<Integer, Integer> coords,
+	public Pair<Boolean, Boolean> isReachable(Pair<Integer, Integer> from, Pair<Integer, Integer> coords,
 			int fuelLevel) {
 		// Each move costs 2 fuel and car should be able to go there and back
 		int pathPrice = Path.distance(from, coords);
 		// From path, walk to pump
-		Group2<Integer, Integer> pump = getBestCell(CellType.PUMP, coords);
+		Pair<Integer, Integer> pump = getClosestPump(coords);
 		// Make sure we can reach a pump after said point
 		int toPumpPrice = Path.distance(coords, pump);
 		int fullPrice = (pathPrice + toPumpPrice) * 2;
 		boolean canReach = fullPrice < fuelLevel;
 		boolean reachable = canReach;
 
-		// Check if it's possible to reach a nearby pump and then reach said station
+		// Check if it's possible to reach a nearby pump first and then reach the other coordinate
 		if (!reachable) {
-			Group2<Integer, Integer> nearPositionPump = getBestCell(CellType.PUMP, from);
+			Pair<Integer, Integer> nearPositionPump = getClosestPump(from);
 			int toNearPump = Path.distance(from, nearPositionPump) * 2;
 			if (toNearPump < fuelLevel) {
 				// At this point we know that we can reach a nearby pump
@@ -159,24 +155,24 @@ public class World {
 			}
 		}
 
-		return new Group2<>(canReach, reachable);
+		return new Pair<>(canReach, reachable);
 	}
 
 	// Will get all the stations that are not reserved
-	public HashSet<Group2<Integer, Integer>> getFreeStations() {
-		HashSet<Group2<Integer, Integer>> keys = new HashSet<>(stations.keySet());
-		for (Group2<Integer, Integer> entry : reserved) {
+	public HashSet<Pair<Integer, Integer>> getFreeStations() {
+		HashSet<Pair<Integer, Integer>> keys = new HashSet<>(stations.keySet());
+		for (Pair<Integer, Integer> entry : reserved) {
 			keys.remove(entry);
 		}
 		return keys;
 	}
 
-	public void saveGridCell(Group2<Integer, Integer> tCoords, Cell cell, CellType type, int row, int col) {
-		// Change from center
+	public void saveGridCell(Pair<Integer, Integer> tCoords, Cell cell, CellType type, int row, int col) {
+		// Check for change from centre coordinate
 		int xC = cx - row;
 		int yC = cy - col;
 
-		Group2<Integer, Integer> coords = new Group2<>(tCoords.first + xC, tCoords.second + yC);
+		Pair<Integer, Integer> coords = new Pair<>(tCoords.first + xC, tCoords.second + yC);
 		if (type == CellType.PUMP) {
 			pumps.add(coords);
 		} else if (type == CellType.STATION) {
@@ -186,19 +182,19 @@ public class World {
 		}
 	}
 
-	public void setUnreachable(Group2<Integer, Integer> coords) {
+	public void setUnreachable(Pair<Integer, Integer> coords) {
 		unreachable.add(coords);
 	}
 
 	// Reserve a station, so other wells do not move towards it
-	public void reserve(Group2<Integer, Integer> coords, Agent agent) {
+	public void reserve(Pair<Integer, Integer> coords, Agent agent) {
 		Debug.log(String.format("Reserving station %s by: %s at timestep %d", coords.toString(), agent.toString(),
 				agent.timestep));
 		reserved.add(coords);
 	}
 
 	// Free reservation up
-	public void free(Group2<Integer, Integer> coords, Agent agent) {
+	public void free(Pair<Integer, Integer> coords, Agent agent) {
 		Debug.log(String.format("Freeing station %s by: %s at timestep %d", coords.toString(), agent.toString(),
 				agent.timestep));
 		reserved.remove(coords);

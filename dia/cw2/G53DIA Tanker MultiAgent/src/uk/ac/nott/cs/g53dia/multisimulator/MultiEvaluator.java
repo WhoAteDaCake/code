@@ -13,11 +13,11 @@ import java.util.Random;
 public class MultiEvaluator {
 
 	private static int DURATION = 10000;
-	private static int THREADS = 20;
+	private static int THREADS = 50;
 	
 	private static int DELAY = 20;
-	private static int SEED = 0;
-	private static int LEVEL = 100;
+	private static int SEED = 100;
+	private static int LEVEL = 200;
 	
 	private static boolean actionFailed = false;
 	

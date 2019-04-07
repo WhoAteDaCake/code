@@ -24,15 +24,15 @@ public class Agent extends Tanker {
 	 * So we need to limit to less than (Tanker.MAX_FUEL / 2) / 2
 	 * Otherwise we would not be able to get back
 	 */
-	public int initiationLimit = Tanker.MAX_FUEL / 5;
+	public int initiationLimit = (Tanker.MAX_FUEL / 4) - 1;
 	
 	// These will be set by the manager
 	public Path path = null;
 	public State state = State.ROAMING;
 	public Path toTarget = null;
-	public Group2<Integer, Integer> target = null;
-	public Group2<Integer, Integer> pTarget = null;
-	public Group2<Integer, Integer> coords = new Group2<>(0, 0);
+	public Pair<Integer, Integer> target = null;
+	public Pair<Integer, Integer> pTarget = null;
+	public Pair<Integer, Integer> coords = new Pair<>(0, 0);
 	
 	/**
 	 * Chose diagonal based on id
@@ -52,8 +52,8 @@ public class Agent extends Tanker {
 	
 	// Track future position before agent moves
 	private Action registeredMove(int direction) {
-		Group2<Integer, Integer> change = Path.moveChange(direction);
-		coords = new Group2<>(coords.first + change.first, coords.second + change.second);
+		Pair<Integer, Integer> change = Path.moveChange(direction);
+		coords = new Pair<>(coords.first + change.first, coords.second + change.second);
 		return new MoveAction(direction);
 	}
 	
@@ -68,9 +68,9 @@ public class Agent extends Tanker {
 	
 	/*
 	 * Find all cells nearby that are special (well/station/pump)
+	 * and save them to the grid
 	 */
 	private void analyseView() {
-		// Make sure pump is loaded to allow for distance calculations
 		for (int x = 0; x < view.length; x += 1) {
 			for (int y = 0; y < view[x].length; y += 1) {
 				Cell current = view[x][y];
@@ -101,25 +101,19 @@ public class Agent extends Tanker {
 		view = aview;
 		analyseView();
 		
-//		// TESTING
-//		if (getFuelLevel() < 10) {
-//			Debug.warn(String.format("%s :running low on fuel at step %d", this.toString(), timestep));
-//		}
-//		
-//		// TESTING
-//		if (timestep >= 80 && id == 0) {
-//			int a = 2;
-//		}
-		
+		// Make sure initiation is ran first
+		// This way the logic inside manager is simpler
 		if (initiationSteps < initiationLimit) {
 			initiationSteps += 1;
 			return registeredMove(initiationDirection);
 		}
-		
+		// Following a path is always a strong goal
+		// This allows the logic in the Manager class to be more simple
+		// By not considering movement
 		if (path != null && path.hasSteps()) {
 			return registeredMove(path.step());
 		}
-		Group2<Action, Integer> result = m.asignAction(this);
+		Pair<Action, Integer> result = m.asignAction(this);
 		return result.first != null ? result.first : registeredMove(result.second);
 	}
 

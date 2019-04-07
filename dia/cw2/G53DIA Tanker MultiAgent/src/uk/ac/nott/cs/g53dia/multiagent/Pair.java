@@ -1,10 +1,10 @@
 package uk.ac.nott.cs.g53dia.multiagent;
 
-public class Group2<K, V> {
+public class Pair<K, V> {
 	public final K first;
 	public final V second;
 
-	public Group2(K first, V second) {
+	public Pair(K first, V second) {
 		this.first = first;
 		this.second = second;
 	}
@@ -22,7 +22,7 @@ public class Group2<K, V> {
 			return false;
 		}
 		@SuppressWarnings("unchecked")
-		Group2<K, V> g2 = (Group2<K, V>) o;
+		Pair<K, V> g2 = (Pair<K, V>) o;
 		return first.equals(g2.first) && second.equals(g2.second);
 	}
 
