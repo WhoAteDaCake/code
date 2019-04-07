@@ -144,13 +144,7 @@ public class Manager {
 		for (int i = 0; i < agents.size(); i += 1) {
 			Agent agent = agents.get(i);
 			State state = agent.state;
-			if (!(
-					state == State.ROAMING ||
-					state == State.DISPOSING ||
-					state == State.REFUELING ||
-					state == State.CONSUMING)) {
-				continue;
-			}
+
 			// Agent should have enough capacity
 			if (agent.getWasteCapacity() < waste ||
 				!w.isReachable(agent.coords, entry, agent.getFuelLevel()).second) {
