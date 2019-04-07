@@ -9,7 +9,7 @@ import java.util.Random;
  * An example of how to simulate execution of a fleet of tanker agents in the sample
  * (task) environment.
  * <p>
- * Creates a default {@link Environment}, a {@link MyFleet} and a GUI window
+ * Creates a default {@link Environment}, a {@link DemoFleet} and a GUI window
  * (a {@link FleetViewer}) and executes the DemoFleet for DURATION days in the
  * environment.
  * 
@@ -50,7 +50,7 @@ public class MultiSimulator {
     	// Create an environment
     	Environment env = new Environment(Tanker.MAX_FUEL/2, r);
     	// Create a fleet
-    	Fleet fleet = new MyFleet(r);
+    	Fleet fleet = new DemoFleet(r);
     	// Create a GUI window to show the fleet
     	FleetViewer fv = new FleetViewer(fleet);
     	// TMP

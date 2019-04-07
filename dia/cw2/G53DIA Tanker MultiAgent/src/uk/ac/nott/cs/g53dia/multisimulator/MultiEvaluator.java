@@ -13,11 +13,11 @@ import java.util.Random;
 public class MultiEvaluator {
 
 	private static int DURATION = 10000;
-	private static int THREADS = 50;
+	private static int THREADS = 40;
 	
 	private static int DELAY = 20;
 	private static int SEED = 100;
-	private static int LEVEL = 200;
+	private static int LEVEL = 40;
 	
 	private static boolean actionFailed = false;
 	
@@ -28,11 +28,11 @@ public class MultiEvaluator {
 //		int actual = new Random().nextInt();
 		int actual = SEED + level + offset;
 		String error = "";
-		System.out.println("Running iteration " + actual);
+//		System.out.println("Running iteration " + actual);
 
 		Random r = new Random(actual);
 		Environment env = new Environment(Tanker.MAX_FUEL / 2, r);
-		Fleet fleet = new MyFleet(r);
+		Fleet fleet = new DemoFleet(r);
 
 		while (env.getTimestep() < DURATION) {
 		// Advance the environment timestep
@@ -68,7 +68,7 @@ public class MultiEvaluator {
 
 		}
 		}
-		System.out.println("Score: " + fleet.getScore());
+//		System.out.println("Score: " + fleet.getScore());
 
 		saved.add((int)fleet.getScore());
 		return iterate(level - 1, offset, saved);
@@ -82,7 +82,7 @@ public class MultiEvaluator {
 	//
 				for (int i = 0; i < THREADS; i += 1) {
 					final int index = i;
-					System.out.println("Batch: " + batchSize + " ,offset " + batchSize * index);
+//					System.out.println("Batch: " + batchSize + " ,offset " + batchSize * index);
 					final Simulate runner = new Simulate(index, batchSize);
 					runners.add(runner);
 					Thread t = new Thread(runner);

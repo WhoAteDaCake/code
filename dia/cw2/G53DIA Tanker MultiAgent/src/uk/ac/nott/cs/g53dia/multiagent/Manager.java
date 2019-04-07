@@ -361,7 +361,7 @@ public class Manager {
 		int toWell = Path.distance(agent.coords, well.first);
 		int toStation = Path.distance(agent.coords, station.first);
 		
-		if (toWell * 2 < toStation) {
+		if (toWell * wellRatio < toStation) {
 			return moveToWell(agent);
 		}
 		
