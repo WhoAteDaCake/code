@@ -38,10 +38,10 @@ void Draw()
     glUseProgram(program);
 
     // Update uniforms (if you need more than 1 texture)
-    glUniform1i(glGetUniformLocation(program, "texture0"), 0);
+    // glUniform1i(glGetUniformLocation(program, "texture0"), 0);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture0);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, texture0);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
@@ -65,7 +65,12 @@ void Initialize()
     // glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
     // MODEL
 
-    // VAO, VBO, EBO
+    /*
+     VAO,
+     VBO - Vertex buffer object (send positions of vertices)
+     EBO - Element buffer object (send indices of vertices)
+    */
+
     // GEN VAO AND BIND
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -73,6 +78,7 @@ void Initialize()
     // //GEN VBO AND BIND AND SEND DATA
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // GL_STATIC_DRAW because we won't modify the values
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     // //GEN EBO AND BIND AND SEND DATA
@@ -83,6 +89,7 @@ void Initialize()
 
     // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
     // Position
+    // Could use glGetAtrributeLocation
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (GLvoid *)offsetof(Vertex, position));
     glEnableVertexAttribArray(0);
@@ -90,7 +97,7 @@ void Initialize()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (GLvoid *)offsetof(Vertex, color));
     glEnableVertexAttribArray(1);
-    // Texcoord
+    // Texture coord
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (GLvoid *)offsetof(Vertex, texcoord));
     glEnableVertexAttribArray(2);
@@ -198,7 +205,7 @@ bool load_shaders(GLuint &program)
     glAttachShader(program, vertex_shader);
     glAttachShader(program, fragment_shader);
 
-    // Because of 1.30 glsl, we need to specify attributes manually
+    // Because of 1.30 glsl, we need to specify the order of attributes manually
     // https://stackoverflow.com/questions/21354301/glsl-syntax-problems-unexpected-new-identifier
     glBindAttribLocation(program, 0, "vertex_position");
     glBindAttribLocation(program, 1, "vertex_color");
@@ -240,17 +247,20 @@ int main(int iArgc, char **cppArgv)
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
     glutInitWindowSize(windowSize, windowSize);
     glutInitWindowPosition(200, 200);
-    glutCreateWindow("XoaX.net");
+    glutCreateWindow("My window");
 
     load_shaders(program);
 
     // GL options
     glEnable(GL_DEPTH_TEST);
+    // Not drawn if not seen
     glEnable(GL_CULL_FACE);
     glEnable(GL_COLOR_MATERIAL);
+
     glEnable(GL_BLEND);
     // Blend colors of polygons
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // Back will not be shown
     glCullFace(GL_BACK);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     // Set front face as shown one
