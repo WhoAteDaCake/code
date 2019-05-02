@@ -24,8 +24,9 @@ Vertex vertices[] = {glm::vec3(-size, size, 0.f), glm::vec3(1.f, 0.f, 0.f), glm:
 
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 
-GLuint indices[] = {0, 1, 2, // Triangle 1
-                    0, 2, 3};
+GLuint indices[] = {
+    0, 1, 2, // Triangle 1
+    0, 2, 3};
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
 
 std::string shader(std::string file) { return "./shaders/" + file; }
@@ -37,11 +38,11 @@ void Draw()
 
     glUseProgram(program);
 
-    // Update uniforms (if you need more than 1 texture)
-    // glUniform1i(glGetUniformLocation(program, "texture0"), 0);
+    // Update uniforms(if you need more than 1 texture)
+    glUniform1i(glGetUniformLocation(program, "texture0"), 0);
 
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, texture0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture0);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
