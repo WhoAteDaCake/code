@@ -11,13 +11,17 @@ out vec3 vs_position;
 out vec3 vs_color;
 out vec2 vs_texcoord;
 
+uniform mat4 model_matrix;
+
 void main()
 {
-	vs_position=vertex_position;
-	// vs_position = vec4(ModelMatrix * vec4(vertex_position, 1.f)).xyz;
+	// Because vs_pos is v3
+	vs_position=vec4(model_matrix*vec4(vertex_position,1.f)).xyz;
+	// vs_position = vec4(model_matrix * vec4(vertex_position, 1.f)).xyz;
 	vs_color=vertex_color;
 	// Image has to be flipped before loaded
 	vs_texcoord=vec2(vertex_texcoord.x,vertex_texcoord.y*-1.f);
-	gl_Position=vec4(vertex_position,1.f);
-	// gl_Position = ModelMatrix * vec4(vertex_position, 1.f);
+	// gl_Position=vec4(vertex_position,1.f);
+	
+	gl_Position=model_matrix*vec4(vertex_position,1.f);
 }
