@@ -7,7 +7,6 @@ GLuint EBO;
 GLuint texture0;
 GLuint texture1;
 
-float tmp = 0.f;
 glm::mat4 model_matrix = glm::mat4(1.f);
 /* report GL errors, if any, to stderr */
 void checkError(const char *name)
@@ -93,23 +92,23 @@ void Draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     glUseProgram(program);
-    // tmp += 1.f;
-    // model_matrix = glm::translate(model_matrix, glm::vec3(0.f));
-    // model_matrix = glm::rotate(model_matrix, glm::radians(0.0f), glm::vec3(1.0f, 0.f, 0.f));
-    // model_matrix = glm::rotate(model_matrix, glm::radians(tmp), glm::vec3(0.0f, 1.f, 0.f));
-    // model_matrix = glm::rotate(model_matrix, glm::radians(0.0f), glm::vec3(0.0f, 0.f, 1.f));
-    // model_matrix = glm::scale(model_matrix, glm::vec3(1.f));
 
-    // // Update uniforms(if you need more than 1 texture)
-    // glUniform1i(glGetUniformLocation(program, "texture0"), 0);
-    // // Send transformation matrix (move, scale)
-    // glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, glm::value_ptr(model_matrix));
+    model_matrix = glm::translate(model_matrix, glm::vec3(0.f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(0.0f), glm::vec3(1.0f, 0.f, 0.f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(1.f), glm::vec3(0.0f, 1.f, 0.f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(0.0f), glm::vec3(0.0f, 0.f, 1.f));
+    model_matrix = glm::scale(model_matrix, glm::vec3(1.f));
 
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, texture1);
+    // Update uniforms(if you need more than 1 texture)
+    glUniform1i(glGetUniformLocation(program, "texture0"), 0);
+    // Send transformation matrix (move, scale)
+    glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, glm::value_ptr(model_matrix));
 
-    // glBindVertexArray(VAO);
-    // glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture1);
+
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
 
     glutSwapBuffers();
     glFlush();
@@ -263,8 +262,15 @@ void handle_key(unsigned char key, int x, int y)
     // Escape key
     if (key == 27)
     {
+
+        glDeleteProgram(program);
         glutLeaveMainLoop();
     }
+}
+
+void idle_func()
+{
+    glutPostRedisplay();
 }
 
 int main(int iArgc, char **cppArgv)
@@ -299,13 +305,9 @@ int main(int iArgc, char **cppArgv)
     glutDisplayFunc(Draw);
     glutKeyboardFunc(handle_key);
 
-    std::cout << "Tes1\n";
+    glutIdleFunc(idle_func);
+
     glutMainLoop();
-
-    std::cout << "Tes1.5\n";
-    glDeleteProgram(program);
-
-    std::cout << "Tes2\n";
 
     return 0;
 }
