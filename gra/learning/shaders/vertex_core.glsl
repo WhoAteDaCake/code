@@ -12,6 +12,8 @@ out vec3 vs_color;
 out vec2 vs_texcoord;
 
 uniform mat4 model_matrix;
+uniform mat4 view_matrix;
+uniform mat4 projection_matrix;
 
 void main()
 {
@@ -23,5 +25,5 @@ void main()
 	vs_texcoord=vec2(vertex_texcoord.x,vertex_texcoord.y*-1.f);
 	// gl_Position=vec4(vertex_position,1.f);
 	
-	gl_Position=model_matrix*vec4(vertex_position,1.f);
+	gl_Position=projection_matrix*view_matrix*model_matrix*vec4(vertex_position,1.f);
 }

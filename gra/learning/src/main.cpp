@@ -1,13 +1,30 @@
 #include "libs.h"
 
+#define GET_VARIABLE_NAME(Variable) (#Variable)
+
 GLuint program;
 GLuint VAO;
 GLuint VBO;
 GLuint EBO;
 GLuint texture0;
 GLuint texture1;
+int window_w = 400;
+int window_h = 400;
 
-glm::mat4 model_matrix = glm::mat4(1.f);
+glm::mat4 model_matrix(1.f);
+// View matrix
+glm::vec3 cam_position(0.f, 0.f, 1.5f);
+glm::vec3 world_up(0.f, 1.f, 0.f);
+glm::vec3 cam_front(0.f, 0.f, -1.f);
+glm::mat4 view_matrix(1.f);
+// Projections
+float fov = 90.f;
+// Want this behind the camera to avoid clipping
+float near_plane = 0.1f;
+// Draw distance
+float far_plane = 100.f;
+glm::mat4 projection_matrix(1.f);
+
 /* report GL errors, if any, to stderr */
 void checkError(const char *name)
 {
@@ -102,6 +119,8 @@ void Draw()
     glUniform1i(glGetUniformLocation(program, "texture0"), 0);
     // Send transformation matrix (move, scale)
     glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, glm::value_ptr(model_matrix));
+    glUniformMatrix4fv(glGetUniformLocation(program, "view_matrix"), 1, GL_FALSE, glm::value_ptr(view_matrix));
+    glUniformMatrix4fv(glGetUniformLocation(program, "projection_matrix"), 1, GL_FALSE, glm::value_ptr(projection_matrix));
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -171,6 +190,13 @@ void Initialize()
     checkError("Initialize");
     texture0 = load_texture("box.png");
     texture1 = load_texture("robot.png");
+
+    view_matrix = glm::lookAt(cam_position, cam_position + cam_front, world_up);
+    projection_matrix = glm::perspective(
+        glm::radians(fov),
+        static_cast<float>(window_w) / static_cast<float>(window_h),
+        near_plane,
+        far_plane);
 }
 
 std::string load_file(std::string name)
@@ -274,11 +300,10 @@ void idle_func()
 
 int main(int iArgc, char **cppArgv)
 {
-    int windowSize = 400;
     glutInit(&iArgc, cppArgv);
 
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-    glutInitWindowSize(windowSize, windowSize);
+    glutInitWindowSize(window_w, window_h);
     glutInitWindowPosition(200, 200);
     glutCreateWindow("My window");
 
