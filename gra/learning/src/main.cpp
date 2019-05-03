@@ -1,8 +1,6 @@
 #include "libs.h"
+#include "Shaders.h"
 
-#define GET_VARIABLE_NAME(Variable) (#Variable)
-
-GLuint program;
 GLuint VAO;
 GLuint VBO;
 GLuint EBO;
@@ -28,20 +26,7 @@ float near_plane = 0.1f;
 float far_plane = 100.f;
 glm::mat4 projection_matrix(1.f);
 
-/* report GL errors, if any, to stderr */
-void checkError(const char *name)
-{
-    GLenum error;
-    while ((error = glGetError()) != GL_NO_ERROR)
-    {
-        fprintf(stderr, "GL error 0x%X detected in %s\n", error, name);
-    }
-}
-
-void checkError(std::basic_string<char> str)
-{
-    checkError(str.c_str());
-}
+Shaders shader = Shaders("vertex_core.glsl", "fragment_core.glsl", "");
 
 float size = 0.5f;
 
@@ -71,8 +56,6 @@ GLuint indices[] = {
     0, 2, 3};
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
 
-std::string shader(std::string file) { return "./shaders/" + file; }
-
 GLuint load_texture(std::string file)
 {
     std::string log_prefix = "Texture:" + file;
@@ -89,21 +72,21 @@ GLuint load_texture(std::string file)
 
     glGenTextures(1, &new_texture);
     glBindTexture(GL_TEXTURE_2D, new_texture);
-    checkError(log_prefix + ":bind");
+    Log::check_error(log_prefix + ":bind");
 
     // Set options
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    checkError(log_prefix + ":params");
+    Log::check_error(log_prefix + ":params");
 
     if (image)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_w, image_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
         // For automatic adjustment of size
         glGenerateMipmap(GL_TEXTURE_2D);
-        checkError(log_prefix + ":image");
+        Log::check_error(log_prefix + ":image");
     }
     else
     {
@@ -115,7 +98,7 @@ GLuint load_texture(std::string file)
     // Make sure no textures are bound
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, boundTexture);
-    checkError(log_prefix + ":reset");
+    Log::check_error(log_prefix + ":reset");
     return new_texture;
 }
 
@@ -127,8 +110,6 @@ void Draw()
     // Lights
     glm::vec3 light_pos0(0.f, 0.f, 1.f);
 
-    glUseProgram(program);
-
     model_matrix = glm::mat4(1.f);
     model_matrix = glm::translate(model_matrix, position);
     model_matrix = glm::rotate(model_matrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.f, 0.f));
@@ -137,10 +118,10 @@ void Draw()
     model_matrix = glm::scale(model_matrix, scale);
 
     // Update uniforms(if you need more than 1 texture)
-    glUniform1i(glGetUniformLocation(program, "texture0"), 0);
+    shader.use1i("texture0", 0);
     // Send transformation matrix (move, scale)
-    glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, glm::value_ptr(model_matrix));
-    glUniformMatrix4fv(glGetUniformLocation(program, "view_matrix"), 1, GL_FALSE, glm::value_ptr(view_matrix));
+    shader.useM4fv("model_matrix", model_matrix);
+    shader.useM4fv("view_matrix", view_matrix);
 
     projection_matrix = glm::mat4(1.f);
     projection_matrix = glm::perspective(
@@ -149,14 +130,13 @@ void Draw()
         near_plane,
         far_plane);
 
-    glUniformMatrix4fv(glGetUniformLocation(program, "projection_matrix"), 1, GL_FALSE, glm::value_ptr(projection_matrix));
-    checkError("projection_matrix");
+    shader.useM4fv("projection_matrix", projection_matrix);
+
     // send camera
-    glUniform3fv(glGetUniformLocation(program, "camera_pos"), 1, glm::value_ptr(cam_position));
+    shader.use3fv("camera_pos", cam_position);
 
     // Send light to the shaders
-    glUniform3fv(glGetUniformLocation(program, "light_pos0"), 1, glm::value_ptr(light_pos0));
-    checkError("light_pos");
+    shader.use3fv("light_pos0", light_pos0);
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -166,13 +146,13 @@ void Draw()
 
     glutSwapBuffers();
     glFlush();
-    checkError("display");
+    Log::check_error("display");
     // Reset
     glBindVertexArray(0);
     glUseProgram(0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
-    checkError("reset");
+    Log::check_error("reset");
 }
 
 void Initialize()
@@ -229,7 +209,7 @@ void Initialize()
 
     glViewport(0, 0, window_w, window_h);
 
-    checkError("Initialize");
+    Log::check_error("Initialize");
     texture0 = load_texture("box.png");
     texture1 = load_texture("robot.png");
 
@@ -241,91 +221,6 @@ void Initialize()
         far_plane);
 }
 
-std::string load_file(std::string name)
-{
-    std::string temp = "";
-    std::string src = "";
-
-    std::ifstream in_file;
-
-    in_file.open(name);
-
-    if (in_file.is_open())
-    {
-        std::cout << "INFO: Loading file: " << name << "\n";
-        while (std::getline(in_file, temp))
-        {
-            src += temp + "\n";
-        }
-    }
-    else
-    {
-        std::cout << "ERROR:Could not load " << name << "\n";
-    }
-    in_file.close();
-    return src;
-}
-
-GLuint load_shaders(std::string name, GLenum type)
-{
-    char logs[512];
-    GLint success;
-    std::string src = load_file(shader(name));
-    GLuint shader = glCreateShader(type);
-    const GLchar *s_src = src.c_str();
-    glShaderSource(shader, 1, &s_src, NULL);
-    glCompileShader(shader);
-
-    // Check whether it was successful
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(shader, 512, NULL, logs);
-        std::cout << "ERROR: could not compile vertex shader :" << name
-                  << std::endl;
-        std::cout << logs << std::endl;
-    }
-    return shader;
-}
-
-bool load_shaders(GLuint &program)
-{
-    GLuint vertex_shader = load_shaders("vertex_core.glsl", GL_VERTEX_SHADER);
-    GLuint fragment_shader =
-        load_shaders("fragment_core.glsl", GL_FRAGMENT_SHADER);
-
-    checkError("Load:shaders");
-    // Allocate space
-    program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-
-    // Because of 1.30 glsl, we need to specify the order of attributes manually
-    // https://stackoverflow.com/questions/21354301/glsl-syntax-problems-unexpected-new-identifier
-    glBindAttribLocation(program, 0, "vertex_position");
-    glBindAttribLocation(program, 1, "vertex_color");
-    glBindAttribLocation(program, 2, "vertex_texcoord");
-    glBindAttribLocation(program, 3, "vertex_normal");
-
-    glLinkProgram(program);
-
-    // Check for errors
-    char logs[512];
-    GLint success;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(program, 512, NULL, logs);
-        std::cout << "ERROR: could not link program \n";
-        std::cout << logs << std::endl;
-    }
-
-    glUseProgram(0);
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-    return true;
-}
-
 void handle_key(unsigned char key, int x, int y)
 {
     std::cout << "Key: " << key << std::endl;
@@ -334,7 +229,6 @@ void handle_key(unsigned char key, int x, int y)
     if (key == 27)
     {
 
-        glDeleteProgram(program);
         glutLeaveMainLoop();
     }
     else if (key == 'w')
@@ -361,7 +255,7 @@ void handle_key(unsigned char key, int x, int y)
 
 void idle_func()
 {
-    glutPostRedisplay();
+    // glutPostRedisplay();
 }
 
 void reshape_func(int w, int h)
@@ -381,8 +275,6 @@ int main(int iArgc, char **cppArgv)
     glutInitWindowSize(window_w, window_h);
     glutInitWindowPosition(200, 200);
     glutCreateWindow("My window");
-
-    load_shaders(program);
 
     // GL options
     glEnable(GL_DEPTH_TEST);
