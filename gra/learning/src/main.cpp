@@ -8,9 +8,12 @@ GLuint VBO;
 GLuint EBO;
 GLuint texture0;
 GLuint texture1;
-int window_w = 400;
+int window_w = 300;
 int window_h = 400;
 
+glm::vec3 position(0.f);
+glm::vec3 scale(1.f);
+glm::vec3 rotation(0.f);
 glm::mat4 model_matrix(1.f);
 // View matrix
 glm::vec3 cam_position(0.f, 0.f, 1.5f);
@@ -42,10 +45,24 @@ void checkError(std::basic_string<char> str)
 
 float size = 0.5f;
 
-Vertex vertices[] = {glm::vec3(-size, size, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec2(0.f, 1.f),  //
-                     glm::vec3(-size, -size, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 0.f), //
-                     glm::vec3(size, -size, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 0.f),  //
-                     glm::vec3(size, size, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 1.f)};
+Vertex vertices[] = {
+    glm::vec3(-size, size, 0.f),
+    glm::vec3(1.f, 0.f, 0.f),
+    glm::vec2(0.f, 1.f),
+    glm::vec3(0.f, 0.f, -1.f), // Part2
+    glm::vec3(-size, -size, 0.f),
+    glm::vec3(0.f, 1.f, 0.f),
+    glm::vec2(0.f, 0.f),
+    glm::vec3(0.f, 0.f, -1.f), // Part3
+    glm::vec3(size, -size, 0.f),
+    glm::vec3(0.f, 0.f, 1.f),
+    glm::vec2(1.f, 0.f),
+    glm::vec3(0.f, 0.f, -1.f), // Part4
+    glm::vec3(size, size, 0.f),
+    glm::vec3(0.f, 0.f, 1.f),
+    glm::vec2(1.f, 1.f),
+    glm::vec3(0.f, 0.f, -1.f),
+};
 
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
 
@@ -107,20 +124,36 @@ void Draw()
     glClearColor(0.f, 0.f, 0.f, 1.f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
+    // Lights
+    glm::vec3 light_pos0(0.f, 0.f, 1.f);
+
     glUseProgram(program);
 
-    model_matrix = glm::translate(model_matrix, glm::vec3(0.f));
-    model_matrix = glm::rotate(model_matrix, glm::radians(0.0f), glm::vec3(1.0f, 0.f, 0.f));
-    model_matrix = glm::rotate(model_matrix, glm::radians(1.f), glm::vec3(0.0f, 1.f, 0.f));
-    model_matrix = glm::rotate(model_matrix, glm::radians(0.0f), glm::vec3(0.0f, 0.f, 1.f));
-    model_matrix = glm::scale(model_matrix, glm::vec3(1.f));
+    model_matrix = glm::mat4(1.f);
+    model_matrix = glm::translate(model_matrix, position);
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.f, 0.f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.f, 0.f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.f, 1.f));
+    model_matrix = glm::scale(model_matrix, scale);
 
     // Update uniforms(if you need more than 1 texture)
     glUniform1i(glGetUniformLocation(program, "texture0"), 0);
     // Send transformation matrix (move, scale)
     glUniformMatrix4fv(glGetUniformLocation(program, "model_matrix"), 1, GL_FALSE, glm::value_ptr(model_matrix));
     glUniformMatrix4fv(glGetUniformLocation(program, "view_matrix"), 1, GL_FALSE, glm::value_ptr(view_matrix));
+
+    projection_matrix = glm::mat4(1.f);
+    projection_matrix = glm::perspective(
+        glm::radians(fov),
+        static_cast<float>(window_w) / static_cast<float>(window_h),
+        near_plane,
+        far_plane);
+
     glUniformMatrix4fv(glGetUniformLocation(program, "projection_matrix"), 1, GL_FALSE, glm::value_ptr(projection_matrix));
+    checkError("projection_matrix");
+    // Send light to the shaders
+    glUniform3fv(glGetUniformLocation(program, "light_pos0"), 1, glm::value_ptr(light_pos0));
+    checkError("light_pos");
 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -161,13 +194,13 @@ void Initialize()
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     // GL_STATIC_DRAW because we won't modify the values
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
     // //GEN EBO AND BIND AND SEND DATA
     glGenBuffers(1, &EBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-                 GL_STATIC_DRAW);
+                 GL_DYNAMIC_DRAW);
 
     // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
     // Position
@@ -183,9 +216,15 @@ void Initialize()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           (GLvoid *)offsetof(Vertex, texcoord));
     glEnableVertexAttribArray(2);
+    // Normals
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, normal));
+    glEnableVertexAttribArray(3);
 
     // BIND VAO 0
     glBindVertexArray(0);
+
+    glViewport(0, 0, window_w, window_h);
 
     checkError("Initialize");
     texture0 = load_texture("box.png");
@@ -252,6 +291,7 @@ bool load_shaders(GLuint &program)
     GLuint fragment_shader =
         load_shaders("fragment_core.glsl", GL_FRAGMENT_SHADER);
 
+    checkError("Load:shaders");
     // Allocate space
     program = glCreateProgram();
     glAttachShader(program, vertex_shader);
@@ -262,6 +302,7 @@ bool load_shaders(GLuint &program)
     glBindAttribLocation(program, 0, "vertex_position");
     glBindAttribLocation(program, 1, "vertex_color");
     glBindAttribLocation(program, 2, "vertex_texcoord");
+    glBindAttribLocation(program, 3, "vertex_normal");
 
     glLinkProgram(program);
 
@@ -284,6 +325,8 @@ bool load_shaders(GLuint &program)
 
 void handle_key(unsigned char key, int x, int y)
 {
+    std::cout << "Key: " << key << std::endl;
+    float change = 0.1f;
     // Escape key
     if (key == 27)
     {
@@ -291,11 +334,40 @@ void handle_key(unsigned char key, int x, int y)
         glDeleteProgram(program);
         glutLeaveMainLoop();
     }
+    else if (key == 'w')
+    {
+        position.z -= change;
+    }
+    else if (key == 's')
+    {
+        position.z += change;
+    }
+    else if (key == 'a')
+    {
+        position.x -= change;
+    }
+    else if (key == 'd')
+    {
+        position.x += change;
+    }
+    else if (key == 'q')
+    {
+        rotation.y += change * 100;
+    }
 }
 
 void idle_func()
 {
     glutPostRedisplay();
+}
+
+void reshape_func(int w, int h)
+{
+    window_w = w;
+    window_h = h;
+    // std::cout << "New sizes " << window_w << " " << window_h << std::endl;
+    glutPostRedisplay();
+    glViewport(0, 0, w, h);
 }
 
 int main(int iArgc, char **cppArgv)
@@ -328,6 +400,7 @@ int main(int iArgc, char **cppArgv)
     Initialize();
     glutDisplayFunc(Draw);
     glutKeyboardFunc(handle_key);
+    glutReshapeFunc(reshape_func);
 
     glutIdleFunc(idle_func);
 
