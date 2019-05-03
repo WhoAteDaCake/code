@@ -78,6 +78,7 @@ GLuint Shaders::link_shaders(std::string vertex, std::string fragment, std::stri
   glBindAttribLocation(program, 3, "vertex_normal");
 
   glLinkProgram(program);
+  Log::check_error("Shader link");
 
   // Check for errors
   char logs[512];
@@ -98,5 +99,6 @@ GLuint Shaders::link_shaders(std::string vertex, std::string fragment, std::stri
   {
     glDeleteShader(geometry_shader);
   }
+  Log::check_error("Shader cleanup");
   return program;
 }

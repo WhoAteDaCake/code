@@ -26,7 +26,7 @@ float near_plane = 0.1f;
 float far_plane = 100.f;
 glm::mat4 projection_matrix(1.f);
 
-Shaders shader = Shaders("vertex_core.glsl", "fragment_core.glsl", "");
+Shaders shader;
 
 float size = 0.5f;
 
@@ -138,6 +138,8 @@ void Draw()
     // Send light to the shaders
     shader.use3fv("light_pos0", light_pos0);
 
+    shader.use();
+
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
 
@@ -219,6 +221,8 @@ void Initialize()
         static_cast<float>(window_w) / static_cast<float>(window_h),
         near_plane,
         far_plane);
+
+    shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 }
 
 void handle_key(unsigned char key, int x, int y)
@@ -251,11 +255,13 @@ void handle_key(unsigned char key, int x, int y)
     {
         rotation.y += change * 100;
     }
+
+    glutPostRedisplay();
 }
 
 void idle_func()
 {
-    // glutPostRedisplay();
+    glutPostRedisplay();
 }
 
 void reshape_func(int w, int h)

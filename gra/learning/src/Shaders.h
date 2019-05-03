@@ -17,14 +17,19 @@ private:
   GLuint link_shaders(std::string vertex, std::string fragment, std::string geometry);
 
 public:
-  Shaders(std::string vertex, std::string fragment, std::string geometry = "")
+  Shaders()
   {
-    this->id = link_shaders(vertex, fragment, geometry);
+    this->id = 0; //link_shaders(vertex, fragment, geometry);
   }
 
   ~Shaders()
   {
     glDeleteProgram(this->id);
+  }
+
+  void set_shaders(std::string vertex, std::string fragment, std::string geometry = "")
+  {
+    this->id = link_shaders(vertex, fragment, geometry);
   }
 
   void use()
@@ -42,7 +47,7 @@ public:
   void use1i(const GLchar *name, int i)
   {
     use();
-    glUniform1i(glGetUniformLocation(this->id, name), 0);
+    glUniform1i(glGetUniformLocation(this->id, name), i);
     Log::check_error(name);
     stop_use();
   }
