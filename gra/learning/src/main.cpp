@@ -151,6 +151,9 @@ void Draw()
 
     glUniformMatrix4fv(glGetUniformLocation(program, "projection_matrix"), 1, GL_FALSE, glm::value_ptr(projection_matrix));
     checkError("projection_matrix");
+    // send camera
+    glUniform3fv(glGetUniformLocation(program, "camera_pos"), 1, glm::value_ptr(cam_position));
+
     // Send light to the shaders
     glUniform3fv(glGetUniformLocation(program, "light_pos0"), 1, glm::value_ptr(light_pos0));
     checkError("light_pos");
