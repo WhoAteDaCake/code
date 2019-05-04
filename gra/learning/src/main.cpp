@@ -5,7 +5,7 @@
 GLuint VAO;
 GLuint VBO;
 GLuint EBO;
-Texture texture(GL_TEXTURE_2D);
+Texture texture(GL_TEXTURE_2D, 0);
 int window_w = 300;
 int window_h = 400;
 
@@ -72,7 +72,7 @@ void Draw()
     model_matrix = glm::scale(model_matrix, scale);
 
     // Update uniforms(if you need more than 1 texture)
-    shader.use1i("texture0", 0);
+    shader.use1i("texture0", texture.get_unit());
     // Send transformation matrix (move, scale)
     shader.useM4fv("model_matrix", model_matrix);
     shader.useM4fv("view_matrix", view_matrix);
@@ -94,7 +94,7 @@ void Draw()
 
     shader.use();
 
-    texture.bind(GL_TEXTURE0);
+    texture.bind();
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);

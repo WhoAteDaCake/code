@@ -16,16 +16,18 @@ private:
   int height;
   GLuint id;
   GLenum type;
+  unsigned int unit;
 
   GLuint load_texture(std::string file, GLenum type);
 
 public:
-  Texture(GLenum type)
+  Texture(GLenum type, GLint unit)
   {
     this->width = 0;
     this->height = 0;
     this->id = 0;
     this->type = type;
+    this->unit = unit;
   }
 
   ~Texture()
@@ -38,9 +40,9 @@ public:
     this->id = load_texture(name, this->type);
   }
 
-  void bind(GLint unit)
+  void bind()
   {
-    glActiveTexture(unit);
+    glActiveTexture(GL_TEXTURE0 + this->unit);
     glBindTexture(this->type, this->id);
     Log::check_error("Failed to bind texture: " + this->id);
   }
@@ -55,6 +57,11 @@ public:
   inline GLuint get_id() const
   {
     return this->id;
+  }
+
+  inline unsigned int get_unit() const
+  {
+    return this->unit;
   }
 };
 
