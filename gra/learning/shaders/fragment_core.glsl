@@ -1,13 +1,4 @@
 #version 130
-
-struct Material {
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
-	sampler2D diffuse_tex;
-	sampler2D specular_tex;
-};
-
 in vec3 vs_position;
 in vec3 vs_color;
 in vec2 vs_texcoord;
@@ -15,7 +6,17 @@ in vec3 vs_normal;
 
 out vec4 fs_color;
 
+
+struct Material {
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
 uniform Material material;
+// Because 130 doesn't support samplers structs
+uniform sampler2D mat_diffuse_tex;
+uniform sampler2D mat_specular_tex;
 
 
 uniform sampler2D texture0;
@@ -42,5 +43,6 @@ void main()
 	
 	// Output
 	vec4 light_final=vec4(ambient,1.f)+vec4(diffuse,1.f)+vec4(specular,1.f);
-	fs_color=texture(material.diffuse_tex,vs_texcoord)*vec4(vs_color,1.f)*light_final;
+	fs_color=texture(mat_diffuse_tex,vs_texcoord) * vec4(vs_color,1.f)*light_final;
+	// fs_color=texture(texture0,vs_texcoord)*light_final;
 }

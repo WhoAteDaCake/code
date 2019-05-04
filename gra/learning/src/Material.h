@@ -38,8 +38,8 @@ public:
     program.use3fv("material.ambient", this->ambient);
     program.use3fv("material.diffuse", this->diffuse);
     program.use3fv("material.specular", this->specular);
-    program.use1i("material.diffuse_tex", this->diffuse_tex);
-    program.use1i("material.specular_tex", this->specular_tex);
+    program.use1i("mat_diffuse_tex", this->diffuse_tex);
+    program.use1i("mat_specular_tex", this->specular_tex);
     Log::check_error("Sending to shader");
   }
 };

@@ -60,19 +60,19 @@ GLuint indices[] = {
     0, 2, 3};
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
 
-void GLAPIENTRY
-MessageCallback(GLenum source,
-                GLenum type,
-                GLuint id,
-                GLenum severity,
-                GLsizei length,
-                const GLchar *message,
-                const void *userParam)
-{
-    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-            (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-            type, severity, message);
-}
+// void GLAPIENTRY
+// MessageCallback(GLenum source,
+//                 GLenum type,
+//                 GLuint id,
+//                 GLenum severity,
+//                 GLsizei length,
+//                 const GLchar *message,
+//                 const void *userParam)
+// {
+//     fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+//             (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+//             type, severity, message);
+// }
 
 void Draw()
 {
@@ -91,6 +91,7 @@ void Draw()
 
     // Update uniforms(if you need more than 1 texture)
     shader.use1i("texture0", texture0.get_unit());
+    shader.use1i("texture1", texture1.get_unit());
 
     material0.send_to_shader(shader);
 
@@ -116,6 +117,7 @@ void Draw()
     shader.use();
 
     texture0.bind();
+    texture1.bind();
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
@@ -126,7 +128,10 @@ void Draw()
     // Reset
     glBindVertexArray(0);
     glUseProgram(0);
+
     texture0.unbind();
+    texture1.unbind();
+
     Log::check_error("reset");
 }
 
@@ -134,8 +139,8 @@ void Initialize()
 {
     glClearColor(0.f, 0.f, 0.f, 0.0);
 
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(MessageCallback, 0);
+    // glEnable(GL_DEBUG_OUTPUT);
+    // glDebugMessageCallback(MessageCallback, 0);
 
     /*
      VAO,
@@ -184,8 +189,8 @@ void Initialize()
     glViewport(0, 0, window_w, window_h);
 
     Log::check_error("Initialize");
-    texture0.load("robot.png");
-    texture1.load("pusheen.png");
+    texture0.load("pusheen.png");
+    texture1.load("container.png");
     material0.set_specs(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f), texture0.get_unit(), texture1.get_unit());
 
     view_matrix = glm::lookAt(cam_position, cam_position + cam_front, world_up);
