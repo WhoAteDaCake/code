@@ -1,11 +1,11 @@
 #include "libs.h"
 #include "Shaders.h"
+#include "Texture.h"
 
 GLuint VAO;
 GLuint VBO;
 GLuint EBO;
-GLuint texture0;
-GLuint texture1;
+Texture texture(GL_TEXTURE_2D);
 int window_w = 300;
 int window_h = 400;
 
@@ -56,52 +56,6 @@ GLuint indices[] = {
     0, 2, 3};
 unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
 
-GLuint load_texture(std::string file)
-{
-    std::string log_prefix = "Texture:" + file;
-    std::string full_path = "./images/" + file;
-    // Textures
-    int image_w = 0;
-    int image_h = 0;
-    unsigned char *image = SOIL_load_image(full_path.c_str(), &image_w, &image_h, NULL, SOIL_LOAD_RGBA);
-
-    // Make sure previous texture is saved
-    GLuint boundTexture = 0;
-    GLuint new_texture;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint *)&boundTexture);
-
-    glGenTextures(1, &new_texture);
-    glBindTexture(GL_TEXTURE_2D, new_texture);
-    Log::check_error(log_prefix + ":bind");
-
-    // Set options
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    Log::check_error(log_prefix + ":params");
-
-    if (image)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_w, image_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-        // For automatic adjustment of size
-        glGenerateMipmap(GL_TEXTURE_2D);
-        Log::check_error(log_prefix + ":image");
-    }
-    else
-    {
-        std::cout << "ERROR: failed to load texture\n";
-        return 0;
-    }
-
-    SOIL_free_image_data(image);
-    // Make sure no textures are bound
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, boundTexture);
-    Log::check_error(log_prefix + ":reset");
-    return new_texture;
-}
-
 void Draw()
 {
     glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -140,8 +94,7 @@ void Draw()
 
     shader.use();
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+    texture.bind(GL_TEXTURE0);
 
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
@@ -152,18 +105,13 @@ void Draw()
     // Reset
     glBindVertexArray(0);
     glUseProgram(0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
+    texture.unbind();
     Log::check_error("reset");
 }
 
 void Initialize()
 {
     glClearColor(0.f, 0.f, 0.f, 0.0);
-    // glMatrixMode(GL_PROJECTION);
-    // glLoadIdentity();
-    // glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-    // MODEL
 
     /*
      VAO,
@@ -212,8 +160,7 @@ void Initialize()
     glViewport(0, 0, window_w, window_h);
 
     Log::check_error("Initialize");
-    texture0 = load_texture("box.png");
-    texture1 = load_texture("robot.png");
+    texture.load("robot.png");
 
     view_matrix = glm::lookAt(cam_position, cam_position + cam_front, world_up);
     projection_matrix = glm::perspective(
