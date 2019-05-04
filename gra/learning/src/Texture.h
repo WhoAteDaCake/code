@@ -49,8 +49,8 @@ public:
 
   void unbind()
   {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(this->type, GL_TEXTURE0);
+    // glActiveTexture(0);
+    glBindTexture(this->type, 0);
     Log::check_error("Failed to unbind texture: " + this->id);
   }
 
