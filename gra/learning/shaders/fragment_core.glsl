@@ -1,11 +1,22 @@
 #version 130
 
+struct Material {
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	sampler2D diffuse_tex;
+	sampler2D specular_tex;
+};
+
 in vec3 vs_position;
 in vec3 vs_color;
 in vec2 vs_texcoord;
 in vec3 vs_normal;
 
 out vec4 fs_color;
+
+uniform Material material;
+
 
 uniform sampler2D texture0;
 uniform vec3 light_pos0;
