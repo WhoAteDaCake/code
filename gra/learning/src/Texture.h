@@ -16,7 +16,7 @@ private:
   int height;
   GLuint id;
   GLenum type;
-  unsigned int unit;
+  GLuint unit;
 
   GLuint load_texture(std::string file, GLenum type);
 
@@ -59,7 +59,7 @@ public:
     return this->id;
   }
 
-  inline unsigned int get_unit() const
+  inline GLuint get_unit() const
   {
     return this->unit;
   }
