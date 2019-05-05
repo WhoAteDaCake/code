@@ -6,7 +6,7 @@
       "request": "launch",
       "preLaunchTask": "build",
       "cwd": "${workspaceRoot}",
-		"program": "${workspaceRoot}/program.exe",
+		"program": "${workspaceRoot}/bin/program.exe",
 		"stopAtEntry": false,
 		"launchCompleteCommand": "exec-run",
 		"linux": {
