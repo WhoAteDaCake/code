@@ -17,9 +17,6 @@ class Mesh
 private:
   std::string name;
 
-  std::vector<Vertex> vertices;
-  std::vector<GLuint> indices;
-
   GLuint VAO;
   GLuint VBO;
   GLuint EBO;
@@ -28,9 +25,6 @@ private:
 
   // Transofrmations
   glm::mat4 model_matrix;
-  glm::vec3 position;
-  glm::vec3 rotation;
-  glm::vec3 scale;
 
   // Setup
   void bind_buffers();
@@ -45,6 +39,13 @@ private:
   }
 
 public:
+  std::vector<Vertex> vertices;
+  std::vector<GLuint> indices;
+
+  glm::vec3 position;
+  glm::vec3 rotation;
+  glm::vec3 scale;
+
   Mesh(std::string name) : vertices(std::vector<Vertex>()),
                            indices(std::vector<GLuint>()),
                            draw_type(GL_DYNAMIC_DRAW),
@@ -61,15 +62,12 @@ public:
     glDeleteBuffers(1, &this->EBO);
   }
 
-  inline void set_vertices(std::vector<Vertex> &vertices)
-  {
-    this->vertices = vertices;
-  }
+  // Setup
+  void initialize();
 
-  inline void set_inidices(std::vector<GLuint> &indices)
-  {
-    this->indices = indices;
-  }
+  // Actions
+  void render(Shaders *program);
+  void update();
 
   inline void set_draw_type(GLenum draw_type)
   {
@@ -79,13 +77,6 @@ public:
     }
     this->draw_type = draw_type;
   }
-
-  // Setup
-  void initialize();
-
-  // Actions
-  void render(Shaders *program);
-  void update();
 };
 
 #endif
