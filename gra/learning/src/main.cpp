@@ -1,7 +1,4 @@
 #include "libs.h"
-#include "Shaders.h"
-#include "Texture.h"
-#include "Material.h"
 
 GLuint VAO;
 GLuint VBO;
@@ -82,12 +79,12 @@ void Draw()
     // Lights
     glm::vec3 light_pos0(0.f, 0.f, 1.f);
 
-    model_matrix = glm::mat4(1.f);
-    model_matrix = glm::translate(model_matrix, position);
-    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.f, 0.f));
-    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.f, 0.f));
-    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.f, 1.f));
-    model_matrix = glm::scale(model_matrix, scale);
+    // model_matrix = glm::mat4(1.f);
+    // model_matrix = glm::translate(model_matrix, position);
+    // model_matrix = glm::rotate(model_matrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.f, 0.f));
+    // model_matrix = glm::rotate(model_matrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.f, 0.f));
+    // model_matrix = glm::rotate(model_matrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.f, 1.f));
+    // model_matrix = glm::scale(model_matrix, scale);
 
     // Update uniforms(if you need more than 1 texture)
     // shader.use1i("texture0", texture0.get_unit());
@@ -148,40 +145,40 @@ void Initialize()
      EBO - Element buffer object (send indices of vertices)
     */
 
-    // GEN VAO AND BIND
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    // // GEN VAO AND BIND
+    // glGenVertexArrays(1, &VAO);
+    // glBindVertexArray(VAO);
 
-    // //GEN VBO AND BIND AND SEND DATA
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // GL_STATIC_DRAW because we won't modify the values
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+    // // //GEN VBO AND BIND AND SEND DATA
+    // glGenBuffers(1, &VBO);
+    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // // GL_STATIC_DRAW because we won't modify the values
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
-    // //GEN EBO AND BIND AND SEND DATA
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-                 GL_DYNAMIC_DRAW);
+    // // //GEN EBO AND BIND AND SEND DATA
+    // glGenBuffers(1, &EBO);
+    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+    //              GL_DYNAMIC_DRAW);
 
-    // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
-    // Position
-    // Could use glGetAtrributeLocation
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, position));
-    glEnableVertexAttribArray(0);
-    // Color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, color));
-    glEnableVertexAttribArray(1);
-    // Texture coord
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, texcoord));
-    glEnableVertexAttribArray(2);
-    // Normals
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, normal));
-    glEnableVertexAttribArray(3);
+    // // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
+    // // Position
+    // // Could use glGetAtrributeLocation
+    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    //                       (GLvoid *)offsetof(Vertex, position));
+    // glEnableVertexAttribArray(0);
+    // // Color
+    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    //                       (GLvoid *)offsetof(Vertex, color));
+    // glEnableVertexAttribArray(1);
+    // // Texture coord
+    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    //                       (GLvoid *)offsetof(Vertex, texcoord));
+    // glEnableVertexAttribArray(2);
+    // // Normals
+    // glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+    //                       (GLvoid *)offsetof(Vertex, normal));
+    // glEnableVertexAttribArray(3);
 
     // BIND VAO 0
     glBindVertexArray(0);

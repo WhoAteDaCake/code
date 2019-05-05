@@ -4,5 +4,4 @@
 #include <cstdio>
 #include "SOIL.h"
 
-#include "gl.h"
-#include "Vertex.h"
+#include "Mesh.h"
