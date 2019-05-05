@@ -14,12 +14,11 @@ struct Material {
 };
 
 uniform Material material;
-// Because 130 doesn't support samplers structs
+// Because 130 doesn't support samplers inside structs
 uniform sampler2D mat_diffuse_tex;
 uniform sampler2D mat_specular_tex;
 
 
-uniform sampler2D texture0;
 uniform vec3 light_pos0;
 uniform vec3 camera_pos;
 

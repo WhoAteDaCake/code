@@ -90,8 +90,8 @@ void Draw()
     model_matrix = glm::scale(model_matrix, scale);
 
     // Update uniforms(if you need more than 1 texture)
-    shader.use1i("texture0", texture0.get_unit());
-    shader.use1i("texture1", texture1.get_unit());
+    // shader.use1i("texture0", texture0.get_unit());
+    // shader.use1i("texture1", texture1.get_unit());
 
     material0.send_to_shader(shader);
 
