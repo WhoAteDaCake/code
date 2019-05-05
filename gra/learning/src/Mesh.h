@@ -38,7 +38,7 @@ private:
   void init_transforms();
 
   // Actions
-  void update_uniforms(Shaders &program);
+  void update_uniforms(Shaders *program);
 
   std::string error_msg(std::string message)
   {
@@ -82,7 +82,7 @@ public:
   void initialize();
 
   // Actions
-  void render(Shaders &program);
+  void render(Shaders *program);
   void update();
 };
 

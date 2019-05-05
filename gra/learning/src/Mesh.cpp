@@ -68,17 +68,20 @@ void Mesh::initialize()
   calculate_matrix();
 }
 
-void Mesh::update_uniforms(Shaders &program)
+void Mesh::update_uniforms(Shaders *program)
 {
-  program.useM4fv("model_matrix", this->model_matrix);
+  program->useM4fv("model_matrix", this->model_matrix);
 }
 
-void Mesh::render(Shaders &program)
+void Mesh::render(Shaders *program)
 {
   // Make sure matrix gets injected
   this->update_uniforms(program);
+
+  program->use();
+
   glBindVertexArray(this->VAO);
-  glDrawElements(GL_TRIANGLES, this.indices.size(), GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 void Mesh::update()

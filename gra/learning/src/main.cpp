@@ -6,6 +6,7 @@ GLuint EBO;
 Texture texture0(GL_TEXTURE_2D, 0);
 Texture texture1(GL_TEXTURE_2D, 1);
 Material material0;
+Mesh mesh0("test");
 
 int window_w = 300;
 int window_h = 400;
@@ -35,19 +36,19 @@ Vertex vertices[] = {
     glm::vec3(-size, size, 0.f),
     glm::vec3(1.f, 0.f, 0.f),
     glm::vec2(0.f, 1.f),
-    glm::vec3(0.f, 0.f, -1.f), // Part2
+    glm::vec3(0.f, 0.f, 1.f), // Part2
     glm::vec3(-size, -size, 0.f),
     glm::vec3(0.f, 1.f, 0.f),
     glm::vec2(0.f, 0.f),
-    glm::vec3(0.f, 0.f, -1.f), // Part3
+    glm::vec3(0.f, 0.f, 1.f), // Part3
     glm::vec3(size, -size, 0.f),
     glm::vec3(0.f, 0.f, 1.f),
     glm::vec2(1.f, 0.f),
-    glm::vec3(0.f, 0.f, -1.f), // Part4
+    glm::vec3(0.f, 0.f, 1.f), // Part4
     glm::vec3(size, size, 0.f),
     glm::vec3(0.f, 0.f, 1.f),
     glm::vec2(1.f, 1.f),
-    glm::vec3(0.f, 0.f, -1.f),
+    glm::vec3(0.f, 0.f, 1.f),
 };
 
 unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
@@ -79,12 +80,12 @@ void Draw()
     // Lights
     glm::vec3 light_pos0(0.f, 0.f, 1.f);
 
-    // model_matrix = glm::mat4(1.f);
-    // model_matrix = glm::translate(model_matrix, position);
-    // model_matrix = glm::rotate(model_matrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.f, 0.f));
-    // model_matrix = glm::rotate(model_matrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.f, 0.f));
-    // model_matrix = glm::rotate(model_matrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.f, 1.f));
-    // model_matrix = glm::scale(model_matrix, scale);
+    model_matrix = glm::mat4(1.f);
+    model_matrix = glm::translate(model_matrix, position);
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.x), glm::vec3(1.0f, 0.f, 0.f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.y), glm::vec3(0.0f, 1.f, 0.f));
+    model_matrix = glm::rotate(model_matrix, glm::radians(rotation.z), glm::vec3(0.0f, 0.f, 1.f));
+    model_matrix = glm::scale(model_matrix, scale);
 
     // Update uniforms(if you need more than 1 texture)
     // shader.use1i("texture0", texture0.get_unit());
@@ -116,8 +117,10 @@ void Draw()
     texture0.bind();
     texture1.bind();
 
-    // glBindVertexArray(VAO);
-    // glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
+
+    mesh0.render(&shader);
 
     glutSwapBuffers();
     glFlush();
@@ -135,6 +138,23 @@ void Draw()
 void Initialize()
 {
     glClearColor(0.f, 0.f, 0.f, 0.0);
+    // TEMP
+
+    std::vector<Vertex> v_temp;
+    std::vector<GLuint> g_temp;
+
+    for (int i = 0; i < nrOfIndices; i += 1)
+    {
+        v_temp.push_back(vertices[i]);
+    }
+    for (int i = 0; i < nrOfIndices; i += 1)
+    {
+        g_temp.push_back(indices[i]);
+    }
+
+    mesh0.set_vertices(v_temp);
+    mesh0.set_inidices(g_temp);
+    mesh0.initialize();
 
     // glEnable(GL_DEBUG_OUTPUT);
     // glDebugMessageCallback(MessageCallback, 0);
@@ -145,40 +165,40 @@ void Initialize()
      EBO - Element buffer object (send indices of vertices)
     */
 
-    // // GEN VAO AND BIND
-    // glGenVertexArrays(1, &VAO);
-    // glBindVertexArray(VAO);
+    // GEN VAO AND BIND
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
 
-    // // //GEN VBO AND BIND AND SEND DATA
-    // glGenBuffers(1, &VBO);
-    // glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // // GL_STATIC_DRAW because we won't modify the values
-    // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+    // //GEN VBO AND BIND AND SEND DATA
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // GL_STATIC_DRAW because we won't modify the values
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
-    // // //GEN EBO AND BIND AND SEND DATA
-    // glGenBuffers(1, &EBO);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-    //              GL_DYNAMIC_DRAW);
+    // //GEN EBO AND BIND AND SEND DATA
+    glGenBuffers(1, &EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+                 GL_DYNAMIC_DRAW);
 
-    // // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
-    // // Position
-    // // Could use glGetAtrributeLocation
-    // glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-    //                       (GLvoid *)offsetof(Vertex, position));
-    // glEnableVertexAttribArray(0);
-    // // Color
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-    //                       (GLvoid *)offsetof(Vertex, color));
-    // glEnableVertexAttribArray(1);
-    // // Texture coord
-    // glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-    //                       (GLvoid *)offsetof(Vertex, texcoord));
-    // glEnableVertexAttribArray(2);
-    // // Normals
-    // glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-    //                       (GLvoid *)offsetof(Vertex, normal));
-    // glEnableVertexAttribArray(3);
+    // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
+    // Position
+    // Could use glGetAtrributeLocation
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, position));
+    glEnableVertexAttribArray(0);
+    // Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, color));
+    glEnableVertexAttribArray(1);
+    // Texture coord
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, texcoord));
+    glEnableVertexAttribArray(2);
+    // Normals
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
+                          (GLvoid *)offsetof(Vertex, normal));
+    glEnableVertexAttribArray(3);
 
     // BIND VAO 0
     glBindVertexArray(0);
