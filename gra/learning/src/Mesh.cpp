@@ -40,7 +40,7 @@ void Mesh::bind_buffers()
   glBindVertexArray(0);
 }
 
-void Mesh::init_matrix()
+void Mesh::calculate_matrix()
 {
   this->model_matrix = glm::mat4(1.f);
   this->model_matrix = glm::translate(this->model_matrix, this->position);
@@ -48,4 +48,39 @@ void Mesh::init_matrix()
   this->model_matrix = glm::rotate(this->model_matrix, glm::radians(this->rotation.y), glm::vec3(0.0f, 1.f, 0.f));
   this->model_matrix = glm::rotate(this->model_matrix, glm::radians(this->rotation.z), glm::vec3(0.0f, 0.f, 1.f));
   this->model_matrix = glm::scale(this->model_matrix, this->scale);
+}
+
+void Mesh::init_transforms()
+{
+  this->position = glm::vec3(0.f);
+  this->rotation = glm::vec3(0.f);
+  this->scale = glm::vec3(1.f);
+}
+
+void Mesh::initialize()
+{
+  if (this->vertices.empty() || this->indices.empty())
+  {
+    throw error_msg("Has not initialized vertices and indices");
+  }
+  bind_buffers();
+  init_transforms();
+  calculate_matrix();
+}
+
+void Mesh::update_uniforms(Shaders &program)
+{
+  program.useM4fv("model_matrix", this->model_matrix);
+}
+
+void Mesh::render(Shaders &program)
+{
+  // Make sure matrix gets injected
+  this->update_uniforms(program);
+  glBindVertexArray(this->VAO);
+  glDrawElements(GL_TRIANGLES, this.indices.size(), GL_UNSIGNED_INT, 0);
+}
+
+void Mesh::update()
+{
 }

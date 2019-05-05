@@ -15,6 +15,8 @@
 class Mesh
 {
 private:
+  std::string name;
+
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
 
@@ -30,6 +32,33 @@ private:
   glm::vec3 rotation;
   glm::vec3 scale;
 
+  // Setup
+  void bind_buffers();
+  void calculate_matrix();
+  void init_transforms();
+
+  // Actions
+  void update_uniforms(Shaders &program);
+
+  std::string error_msg(std::string message)
+  {
+    return this->name + ": " + message;
+  }
+
+public:
+  Mesh(std::string name) : vertices(std::vector<Vertex>()),
+                           indices(std::vector<GLuint>()),
+                           draw_type(GL_DYNAMIC_DRAW),
+                           name(name){
+
+                           };
+  ~Mesh()
+  {
+    glDeleteVertexArrays(1, &this->VAO);
+    glDeleteBuffers(1, &this->VBO);
+    glDeleteBuffers(1, &this->EBO);
+  }
+
   inline void set_vertices(std::vector<Vertex> &vertices)
   {
     this->vertices = vertices;
@@ -44,15 +73,17 @@ private:
   {
     if (draw_type != GL_STATIC_DRAW && draw_type != GL_DYNAMIC_DRAW)
     {
-      throw "Incorrect draw type received";
+      throw error_msg("Incorrect draw type received");
     }
     this->draw_type = draw_type;
   }
 
-  void bind_buffers();
-  void init_matrix();
+  // Setup
+  void initialize();
 
-public:
+  // Actions
+  void render(Shaders &program);
+  void update();
 };
 
 #endif
