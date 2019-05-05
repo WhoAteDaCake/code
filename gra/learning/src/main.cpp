@@ -4,6 +4,7 @@ Texture texture0(GL_TEXTURE_2D, 0);
 Texture texture1(GL_TEXTURE_2D, 1);
 Material material0;
 Mesh mesh0("test");
+Square square(0.5f);
 
 int window_w = 300;
 int window_h = 400;
@@ -21,48 +22,6 @@ float far_plane = 100.f;
 glm::mat4 projection_matrix(1.f);
 
 Shaders shader;
-
-float size = 0.5f;
-
-Vertex vertices[] = {
-    glm::vec3(-size, size, 0.f),
-    glm::vec3(1.f, 0.f, 0.f),
-    glm::vec2(0.f, 1.f),
-    glm::vec3(0.f, 0.f, 1.f), // Part2
-    glm::vec3(-size, -size, 0.f),
-    glm::vec3(0.f, 1.f, 0.f),
-    glm::vec2(0.f, 0.f),
-    glm::vec3(0.f, 0.f, 1.f), // Part3
-    glm::vec3(size, -size, 0.f),
-    glm::vec3(0.f, 0.f, 1.f),
-    glm::vec2(1.f, 0.f),
-    glm::vec3(0.f, 0.f, 1.f), // Part4
-    glm::vec3(size, size, 0.f),
-    glm::vec3(0.f, 0.f, 1.f),
-    glm::vec2(1.f, 1.f),
-    glm::vec3(0.f, 0.f, 1.f),
-};
-
-unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
-
-GLuint indices[] = {
-    0, 1, 2, // Triangle 1
-    0, 2, 3};
-unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
-
-// void GLAPIENTRY
-// MessageCallback(GLenum source,
-//                 GLenum type,
-//                 GLuint id,
-//                 GLenum severity,
-//                 GLsizei length,
-//                 const GLchar *message,
-//                 const void *userParam)
-// {
-//     fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-//             (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-//             type, severity, message);
-// }
 
 void Draw()
 {
@@ -97,7 +56,7 @@ void Draw()
     texture0.bind();
     texture1.bind();
 
-    mesh0.render(&shader);
+    square.render(&shader);
 
     glutSwapBuffers();
     glFlush();
@@ -117,21 +76,22 @@ void Initialize()
     glClearColor(0.f, 0.f, 0.f, 0.0);
     // TEMP
 
-    std::vector<Vertex> v_temp;
-    std::vector<GLuint> g_temp;
+    // std::vector<Vertex> v_temp;
+    // std::vector<GLuint> g_temp;
 
-    for (int i = 0; i < nrOfIndices; i += 1)
-    {
-        v_temp.push_back(vertices[i]);
-    }
-    for (int i = 0; i < nrOfIndices; i += 1)
-    {
-        g_temp.push_back(indices[i]);
-    }
+    // for (int i = 0; i < nrOfIndices; i += 1)
+    // {
+    //     v_temp.push_back(vertices[i]);
+    // }
+    // for (int i = 0; i < nrOfIndices; i += 1)
+    // {
+    //     g_temp.push_back(indices[i]);
+    // }
 
-    mesh0.vertices = v_temp;
-    mesh0.indices = g_temp;
-    mesh0.initialize();
+    // mesh0.vertices = v_temp;
+    // mesh0.indices = g_temp;
+    // mesh0.initialize();
+    square.initialize();
 
     // glEnable(GL_DEBUG_OUTPUT);
     // glDebugMessageCallback(MessageCallback, 0);
@@ -157,8 +117,8 @@ void handle_key(unsigned char key, int x, int y)
 {
     std::cout << "Key: " << key << std::endl;
     float change = 0.1f;
-    glm::vec3 position = mesh0.position;
-    glm::vec3 rotation = mesh0.rotation;
+    glm::vec3 position = square.position;
+    glm::vec3 rotation = square.rotation;
     // Escape key
     if (key == 27)
     {
@@ -186,9 +146,9 @@ void handle_key(unsigned char key, int x, int y)
         rotation.y += change * 100;
     }
 
-    mesh0.position = position;
-    mesh0.rotation = rotation;
-    mesh0.update();
+    square.position = position;
+    square.rotation = rotation;
+    square.update();
 
     glutPostRedisplay();
 }

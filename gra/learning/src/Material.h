@@ -6,6 +6,8 @@
 #include <iostream>
 #include "gl.h"
 #include "Shaders.h"
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
 
 class Material
 {
