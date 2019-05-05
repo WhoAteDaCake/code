@@ -50,13 +50,6 @@ void Mesh::calculate_matrix()
   this->model_matrix = glm::scale(this->model_matrix, this->scale);
 }
 
-void Mesh::init_transforms()
-{
-  this->position = glm::vec3(0.f);
-  this->rotation = glm::vec3(0.f);
-  this->scale = glm::vec3(1.f);
-}
-
 void Mesh::initialize()
 {
   if (this->vertices.empty() || this->indices.empty())
@@ -64,7 +57,6 @@ void Mesh::initialize()
     throw error_msg("Has not initialized vertices and indices");
   }
   bind_buffers();
-  init_transforms();
   calculate_matrix();
 }
 

@@ -35,7 +35,6 @@ private:
   // Setup
   void bind_buffers();
   void calculate_matrix();
-  void init_transforms();
 
   // Actions
   void update_uniforms(Shaders *program);
@@ -49,6 +48,9 @@ public:
   Mesh(std::string name) : vertices(std::vector<Vertex>()),
                            indices(std::vector<GLuint>()),
                            draw_type(GL_DYNAMIC_DRAW),
+                           position(glm::vec3(0.f)),
+                           rotation(glm::vec3(0.f)),
+                           scale(glm::vec3(1.f)),
                            name(name){
 
                            };
