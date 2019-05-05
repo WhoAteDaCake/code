@@ -78,4 +78,5 @@ void Mesh::render(Shaders *program)
 
 void Mesh::update()
 {
+  calculate_matrix();
 }
