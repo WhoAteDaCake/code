@@ -40,7 +40,7 @@ vec4 get_specular(Material material, vec3 position, vec3 normal, vec3 light_pos,
 	vec3 reflect_dir=normalize(reflect(light_to_pos,normalize(normal)));
 	vec3 pos_to_view=normalize(camera_pos - position);
 	float specular_const=pow(max(dot(pos_to_view,reflect_dir),0),30);
-	vec3 specular=material.specular*specular_const;
+	vec3 specular=material.specular*specular_const * texture(mat_specular_tex, vs_texcoord).rgb;
 	return vec4(specular, 1.f);
 }
 

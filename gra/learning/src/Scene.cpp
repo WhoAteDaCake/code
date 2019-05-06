@@ -63,7 +63,7 @@ void Scene::clear()
 void Scene::create_textures()
 {
   this->texture_manager->add("pusheen.png", GL_TEXTURE_2D);
-  this->texture_manager->add("container.png", GL_TEXTURE_2D);
+  this->texture_manager->add("pusheen_specular.png", GL_TEXTURE_2D);
 }
 
 void Scene::create_objects()
@@ -79,7 +79,7 @@ void Scene::create_objects()
       // nullptr,
       // nullptr,
       this->texture_manager->get("pusheen.png"),
-      this->texture_manager->get("container.png"),
+      this->texture_manager->get("pusheen_specular.png"),
       material,
       mySquare));
 
