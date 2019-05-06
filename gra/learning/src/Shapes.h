@@ -15,16 +15,11 @@ public:
 
   Square(std::string name, float size) : Mesh(name)
   {
-    // Currently broken, no clue why
-    // std::string my_id = std::to_string(Square::ID);
-    // this->name.append(my_id);
-    // Square::ID += 1;
     this->size = size;
   }
 
   virtual void initialize()
   {
-    Log::log("Square\n");
     float size = this->size;
     Vertex v_arr[] = {
         glm::vec3(-size, size, 0.f),
