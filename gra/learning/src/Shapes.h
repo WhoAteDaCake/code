@@ -13,7 +13,7 @@ private:
 public:
   static unsigned int ID;
 
-  Square(float size) : Mesh("Triangle_" + std::to_string(Square::ID))
+  Square(float size) : Mesh("Square_" + std::to_string(Square::ID))
   {
     Square::ID += 1;
     this->size = size;
