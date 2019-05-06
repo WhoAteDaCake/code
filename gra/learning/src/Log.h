@@ -17,7 +17,9 @@ public:
   {
     if (should_send)
     {
-      std::cout << prefix << ": " << message;
+      // Append new line if it doesn't exist so we flush
+      std::string last_msg = message.back() == '\n' ? "" : "\n";
+      std::cout << prefix << ": " << message << last_msg;
     }
   }
 
