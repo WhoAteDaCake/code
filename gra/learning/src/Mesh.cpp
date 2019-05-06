@@ -58,6 +58,9 @@ void Mesh::initialize()
   }
   bind_buffers();
   calculate_matrix();
+#ifdef GRA_DEBUG
+  Log::log("Mesh:" + this->name + ":initialize\n");
+#endif // DEBUG
 }
 
 void Mesh::draw(Shaders *program)
@@ -69,6 +72,9 @@ void Mesh::draw(Shaders *program)
 
   glBindVertexArray(this->VAO);
   glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+#ifdef GRA_DEBUG
+  Log::log("Mesh:" + this->name + ":draw\n");
+#endif // DEBUG
 }
 
 void Mesh::update()
