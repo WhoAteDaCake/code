@@ -51,6 +51,4 @@ public:
   }
 };
 
-unsigned int Square::ID = 0;
-
 #endif
