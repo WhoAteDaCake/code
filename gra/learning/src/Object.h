@@ -12,17 +12,17 @@ class Object
 {
 private:
   std::string name;
-  Texture diffuse;
-  Texture specular;
-  Material material;
+  Texture *diffuse;
+  Texture *specular;
+  Material *material;
   Mesh *mesh;
 
 public:
   Object(
       std::string name,
-      Texture diffuse,
-      Texture specular,
-      Material material,
+      Texture *diffuse,
+      Texture *specular,
+      Material *material,
       Mesh *mesh) : name(name),
                     diffuse(diffuse),
                     specular(specular),
@@ -33,6 +33,12 @@ public:
   ~Object()
   {
     delete this->mesh;
+    delete this->diffuse;
+    delete this->specular;
+    delete this->material;
+#ifdef GRA_DEBUG
+    Log::log(name + ":" + "destructor");
+#endif // DEBUG
   }
 
   void draw(Shaders *program);

@@ -148,11 +148,11 @@
 
 int main(int iArgc, char **cppArgv)
 {
-    Engine engine = Engine(iArgc, cppArgv, "Test window", 300, 300);
+    std::unique_ptr<Engine> engine(new Engine(iArgc, cppArgv, "Test window", 400, 400));
 
     try
     {
-        engine.initialize();
+        engine->initialize();
     }
     catch (std::string message)
     {

@@ -35,6 +35,10 @@ public:
   ~Texture()
   {
     glDeleteTextures(1, &this->id);
+
+#ifdef GRA_DEBUG
+    Log::log("Texture:destructor");
+#endif // DEBUG
   }
 
   void load()

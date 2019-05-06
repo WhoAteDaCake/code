@@ -12,13 +12,15 @@ private:
   int w_width;
   int w_height;
   Camera camera;
-  Scene scene;
+  std::unique_ptr<Scene> scene;
 
   void update_viewport();
 
 public:
   Engine(int argc, char **argv, const char *title, const int &width, const int &height);
   virtual ~Engine();
+  Engine(const Engine &) = delete;            // non construction-copyable
+  Engine &operator=(const Engine &) = delete; // non copyable
 
   void initialize();
 

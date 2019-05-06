@@ -19,19 +19,17 @@ void Scene::initialize()
   this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 
   Square *mySquare = new Square("test-square", 0.5f);
+  Texture *diffuse = new Texture(GL_TEXTURE_2D, 0, "pusheen.png");
+  Texture *specular = new Texture(GL_TEXTURE_2D, 1, "container.png");
+  Material *material = new Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f));
 
-  Object testObj = Object(
-      "test-obj",
-      Texture(GL_TEXTURE_2D, 0, "pusheen.png"),
-      Texture(GL_TEXTURE_2D, 1, "container.png"),
-      Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f)),
-      mySquare);
+  std::unique_ptr<Object> testObj(new Object("test-obj", diffuse, specular, material, mySquare));
 
-  this->objects.push_back(testObj);
+  this->objects.push_back(std::move(testObj));
 
-  for (Object &item : this->objects)
+  for (std::unique_ptr<Object> &item : this->objects)
   {
-    item.initialize();
+    item->initialize();
   }
 
 #ifdef GRA_DEBUG
@@ -50,9 +48,9 @@ void Scene::draw()
   shader.use3fv("light_pos0", this->light_pos);
 
   // Render items
-  for (Object &item : this->objects)
+  for (std::unique_ptr<Object> &item : this->objects)
   {
-    item.draw(&this->shader);
+    item->draw(&this->shader);
   }
 #ifdef GRA_DEBUG
   Log::check_error("Scene:draw");
@@ -61,8 +59,8 @@ void Scene::draw()
 
 void Scene::clear()
 {
-  for (Object &item : this->objects)
+  for (std::unique_ptr<Object> &item : this->objects)
   {
-    item.clear();
+    item->clear();
   }
 }

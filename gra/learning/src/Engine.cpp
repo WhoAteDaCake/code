@@ -31,9 +31,12 @@ Engine::Engine(int argc, char **argv, const char *title, const int &width, const
 {
   glutInit(&argc, argv);
 
+  this->camera = Camera();
   this->w_width = width;
   this->w_height = height;
-  this->scene.set_camera(&this->camera);
+  // Because of unique ptr, need to create it manually
+  this->scene = std::unique_ptr<Scene>(new Scene());
+  this->scene->set_camera(&(this->camera));
 
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutInitWindowSize(this->w_width, this->w_height);
@@ -73,7 +76,7 @@ void Engine::draw_cb()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // DO RENDERS HERE
-  this->scene.draw();
+  this->scene->draw();
 
   glutSwapBuffers();
   glFlush();
@@ -84,7 +87,7 @@ void Engine::draw_cb()
   glBindVertexArray(0);
   glUseProgram(0);
 
-  this->scene.clear();
+  this->scene->clear();
 
 #ifdef GRA_DEBUG
   Log::check_error("Engine:clear");
@@ -119,7 +122,7 @@ void Engine::initialize()
 #endif // DEBUG
 
   // Will initialize scenes here
-  this->scene.initialize();
+  this->scene->initialize();
 
   glutDisplayFunc(Engine::draw);
   glutKeyboardFunc(Engine::handle_key);

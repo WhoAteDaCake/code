@@ -23,7 +23,12 @@ public:
                                  specular(specular)
   {
   }
-  ~Material() {}
+  ~Material()
+  {
+#ifdef GRA_DEBUG
+    Log::log("Material:destructor");
+#endif // DEBUG
+  }
 
   void set_specs(glm::vec3 ambient,
                  glm::vec3 diffuse,
