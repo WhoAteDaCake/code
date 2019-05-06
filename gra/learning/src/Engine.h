@@ -7,6 +7,7 @@
 
 #include "Log.h"
 #include "Scene.h"
+#include <memory>
 
 class Engine
 {
