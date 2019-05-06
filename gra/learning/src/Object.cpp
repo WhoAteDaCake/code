@@ -14,6 +14,8 @@ void Object::initialize()
 void Object::draw(Shaders *program)
 {
   this->material.send_to_shader(program);
+
+  program->use();
   this->diffuse.bind();
   this->specular.bind();
 
