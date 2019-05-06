@@ -65,7 +65,6 @@ void Mesh::initialize()
 void Mesh::draw(Shaders *program)
 {
 
-  calculate_matrix();
   // Make sure matrix gets injected
   program->useM4fv("model_matrix", this->model_matrix);
 
