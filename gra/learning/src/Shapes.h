@@ -13,7 +13,7 @@ private:
 public:
   static unsigned int ID;
 
-  Square(float size) : Mesh("Triangle_" + ID)
+  Square(float size) : Mesh("Triangle_" + std::to_string(Square::ID))
   {
     Square::ID += 1;
     this->size = size;
@@ -21,6 +21,7 @@ public:
 
   virtual void initialize()
   {
+    Log::log("Square\n");
     float size = this->size;
     Vertex v_arr[] = {
         glm::vec3(-size, size, 0.f),
