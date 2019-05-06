@@ -3,6 +3,7 @@
 Scene::Scene()
 {
   this->shader = Shaders();
+  this->texture_manager = std::unique_ptr<TextureManager>(new TextureManager());
 }
 
 Scene::~Scene() {}
@@ -18,12 +19,20 @@ void Scene::initialize()
   this->light_pos = glm::vec3(0.f, 0.f, 1.f);
   this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 
+  this->texture_manager->add("pusheen.png", GL_TEXTURE_2D);
+  this->texture_manager->add("container.png", GL_TEXTURE_2D);
+
   Square *mySquare = new Square("test-square", 0.5f);
-  Texture *diffuse = new Texture(GL_TEXTURE_2D, 0, "pusheen.png");
-  Texture *specular = new Texture(GL_TEXTURE_2D, 1, "container.png");
+  // Texture *diffuse = new Texture(GL_TEXTURE_2D, 0, "pusheen.png");
+  // Texture *specular = new Texture(GL_TEXTURE_2D, 1, "container.png");
   Material *material = new Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f));
 
-  std::unique_ptr<Object> testObj(new Object("test-obj", diffuse, specular, material, mySquare));
+  std::unique_ptr<Object> testObj(new Object(
+      "test-obj",
+      this->texture_manager->get("pusheen.png"),
+      this->texture_manager->get("container.png"),
+      material,
+      mySquare));
 
   this->objects.push_back(std::move(testObj));
 

@@ -7,21 +7,24 @@
 #include "Texture.h"
 #include "Material.h"
 #include "Log.h"
+#include <memory>
 
 class Object
 {
 private:
+  typedef std::shared_ptr<Texture> SharedTexture;
+
   std::string name;
-  Texture *diffuse;
-  Texture *specular;
+  SharedTexture diffuse;
+  SharedTexture specular;
   Material *material;
   Mesh *mesh;
 
 public:
   Object(
       std::string name,
-      Texture *diffuse,
-      Texture *specular,
+      SharedTexture diffuse,
+      SharedTexture specular,
       Material *material,
       Mesh *mesh) : name(name),
                     diffuse(diffuse),
@@ -33,8 +36,6 @@ public:
   ~Object()
   {
     delete this->mesh;
-    delete this->diffuse;
-    delete this->specular;
     delete this->material;
 #ifdef GRA_DEBUG
     Log::log(name + ":" + "destructor");

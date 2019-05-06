@@ -6,7 +6,7 @@
 #include "Camera.h"
 #include "Object.h"
 #include "Shapes.h"
-#include "memory"
+#include "TextureManager.h"
 
 class Scene
 {
@@ -14,6 +14,7 @@ private:
   Camera *camera;
   Shaders shader;
   std::vector<std::unique_ptr<Object>> objects;
+  std::unique_ptr<TextureManager> texture_manager;
 
   // TEMPORARY
   glm::vec3 light_pos;
