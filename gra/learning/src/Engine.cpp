@@ -1,33 +1,13 @@
 #include "Engine.h"
 
-Engine *Engine::activeEngine = NULL;
+Engine::Engine(
+    int argc,
+    char **argv,
+    const char *title,
+    const int &width,
+    const int &height) : last_mouse_x(-1),
+                         last_mouse_y(-1)
 
-void Engine::idle()
-{
-  Engine::activeEngine->idle_cb();
-}
-
-void Engine::reshape(int width, int height)
-{
-  Engine::activeEngine->reshape_cb(width, height);
-}
-
-void Engine::handle_key(unsigned char key, int x, int y)
-{
-  Engine::activeEngine->handle_key_cb(key, x, y);
-}
-
-void Engine::draw()
-{
-  Engine::activeEngine->draw_cb();
-}
-
-void Engine::message(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
-{
-  Engine::activeEngine->message_cb(source, type, id, severity, length, message, userParam);
-}
-
-Engine::Engine(int argc, char **argv, const char *title, const int &width, const int &height)
 {
   glutInit(&argc, argv);
 
@@ -37,6 +17,12 @@ Engine::Engine(int argc, char **argv, const char *title, const int &width, const
   // Because of unique ptr, need to create it manually
   this->scene = std::unique_ptr<Scene>(new Scene());
   this->scene->set_camera(&(this->camera));
+
+  // Make sure button states are initialized
+  for (int i = 0; i < MOUSE_STATES_N; i += 1)
+  {
+    this->is_button_down[i] = false;
+  }
 
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutInitWindowSize(this->w_width, this->w_height);
@@ -60,7 +46,6 @@ Engine::Engine(int argc, char **argv, const char *title, const int &width, const
   // Set to fill the whole shape
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-  Engine::activeEngine = this;
 #ifdef GRA_DEBUG
   Log::check_error("Engine:creation");
 #endif // DEBUG
@@ -123,17 +108,6 @@ void Engine::initialize()
 
   // Will initialize scenes here
   this->scene->initialize();
-
-  glutDisplayFunc(Engine::draw);
-  glutKeyboardFunc(Engine::handle_key);
-  glutReshapeFunc(Engine::reshape);
-  glutIdleFunc(Engine::idle);
-
-#ifdef GRA_DEBUG
-  glEnable(GL_DEBUG_OUTPUT);
-  glDebugMessageCallback(Engine::message, 0);
-#endif // DEBUG
-
   glutMainLoop();
 }
 
@@ -150,4 +124,21 @@ void Engine::message_cb(GLenum source, GLenum type, GLuint id, GLenum severity, 
   fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
           (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
           type, severity, message);
+}
+
+void Engine::mouse_button_cb(int button, int state, int x, int y)
+{
+  if (state == GLUT_DOWN)
+  {
+    last_mouse_x = x;
+    last_mouse_y = y;
+  }
+  is_button_down[button] = state == GLUT_DOWN;
+}
+
+void Engine::mouse_move_cb(int x, int y)
+{
+
+  last_mouse_x = x;
+  last_mouse_y = y;
 }

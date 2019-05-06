@@ -3,6 +3,8 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#define MOUSE_STATES_N 5
+
 #include "Log.h"
 #include "Scene.h"
 
@@ -11,6 +13,12 @@ class Engine
 private:
   int w_width;
   int w_height;
+
+  // Mouse
+  int last_mouse_x;
+  int last_mouse_y;
+  bool is_button_down[MOUSE_STATES_N];
+
   Camera camera;
   std::unique_ptr<Scene> scene;
 
@@ -24,21 +32,13 @@ public:
 
   void initialize();
 
-  // GLUT specific handlers
-  // Because glut uses callbacks, it's more straight forward
-  // To use static function callbacks
-  static Engine *activeEngine;
-  static void idle();
-  static void reshape(int width, int height);
-  static void handle_key(unsigned char key, int x, int y);
-  static void draw();
-  static void message(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
-
   void idle_cb();
   void reshape_cb(int width, int height);
   void handle_key_cb(unsigned char key, int x, int y);
   void draw_cb();
   void message_cb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
+  void mouse_button_cb(int button, int state, int x, int y);
+  void mouse_move_cb(int x, int y);
 };
 
 #endif
