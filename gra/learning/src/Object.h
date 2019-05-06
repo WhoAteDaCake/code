@@ -15,7 +15,7 @@ private:
   Texture diffuse;
   Texture specular;
   Material material;
-  Mesh mesh;
+  Mesh *mesh;
 
 public:
   Object(
@@ -23,14 +23,17 @@ public:
       Texture diffuse,
       Texture specular,
       Material material,
-      Mesh mesh) : name(name),
-                   diffuse(diffuse),
-                   specular(specular),
-                   material(material),
-                   mesh(mesh)
+      Mesh *mesh) : name(name),
+                    diffuse(diffuse),
+                    specular(specular),
+                    material(material),
+                    mesh(mesh)
   {
   }
-  ~Object() {}
+  ~Object()
+  {
+    delete this->mesh;
+  }
 
   void draw(Shaders *program);
   void clear();

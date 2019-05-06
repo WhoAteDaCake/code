@@ -4,7 +4,7 @@ void Object::initialize()
 {
   this->diffuse.load();
   this->specular.load();
-  this->mesh.initialize();
+  this->mesh->initialize();
   this->material.set_textures(this->diffuse.get_unit(), this->specular.get_unit());
 #ifdef GRA_DEBUG
   Log::check_error("Object:" + this->name + ":initialize");
@@ -19,7 +19,7 @@ void Object::draw(Shaders *program)
   this->diffuse.bind();
   this->specular.bind();
 
-  this->mesh.draw(program);
+  this->mesh->draw(program);
 #ifdef GRA_DEBUG
   Log::check_error("Object:" + this->name + ":draw");
 #endif
