@@ -5,6 +5,9 @@
 
 #define GLM_ENABLE_EXPERIMENTAL
 
+// Usually defined in the compiler
+// #define GRA_DEBUG
+
 #include <GL/freeglut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
