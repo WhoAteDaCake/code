@@ -4,20 +4,24 @@
 #define ENGINE_H
 
 #include "Log.h"
+#include "Camera.h"
 
 class Engine
 {
 private:
   int w_width;
   int w_height;
+  Camera camera;
+
+  void update_viewport();
 
 public:
   Engine(int argc, char **argv, const char *title, const int &width, const int &height);
   virtual ~Engine();
+
   void initialize();
 
   // GLUT specific handlers
-
   // Because glut uses callbacks, it's more straight forward
   // To use static function callbacks
   static Engine *activeEngine;

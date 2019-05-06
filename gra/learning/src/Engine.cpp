@@ -22,62 +22,13 @@ void Engine::draw()
   Engine::activeEngine->draw_cb();
 }
 
-void Engine::draw_cb()
-{
-  glClearColor(0.f, 0.f, 0.f, 1.f);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-  // DO RENDERS HERE
-
-  glutSwapBuffers();
-  glFlush();
-  Log::check_error("display");
-  // DO RESETS HERE
-  glBindVertexArray(0);
-  glUseProgram(0);
-
-  Log::check_error("reset");
-}
-
-void Engine::handle_key_cb(unsigned char key, int x, int y)
-{
-  // TODO
-}
-
-void Engine::reshape_cb(int width, int height)
-{
-  this->w_width = width;
-  this->w_height = height;
-  glViewport(0, 0, width, height);
-}
-
-void Engine::idle_cb()
-{
-  glutPostRedisplay();
-}
-
-void Engine::initialize()
-{
-
-  glClearColor(0.f, 0.f, 0.f, 0.f);
-  glViewport(0, 0, this->w_width, this->w_height);
-
-  Log::check_error("Initialize");
-  // Will initialize scenes here
-
-  glutDisplayFunc(Engine::draw);
-  glutKeyboardFunc(Engine::handle_key);
-  glutReshapeFunc(Engine::reshape);
-  glutIdleFunc(Engine::idle);
-  glutMainLoop();
-}
-
 Engine::Engine(int argc, char **argv, const char *title, const int &width, const int &height)
 {
   glutInit(&argc, argv);
 
   this->w_width = width;
   this->w_height = height;
+  this->camera = Camera();
 
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutInitWindowSize(this->w_width, this->w_height);
@@ -106,4 +57,62 @@ Engine::Engine(int argc, char **argv, const char *title, const int &width, const
 
 Engine::~Engine()
 {
+}
+
+void Engine::draw_cb()
+{
+  glClearColor(0.f, 0.f, 0.f, 1.f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+  // DO RENDERS HERE
+
+  glutSwapBuffers();
+  glFlush();
+  Log::check_error("display");
+  // DO RESETS HERE
+  glBindVertexArray(0);
+  glUseProgram(0);
+
+  Log::check_error("reset");
+}
+
+void Engine::handle_key_cb(unsigned char key, int x, int y)
+{
+  // TODO
+}
+
+void Engine::reshape_cb(int width, int height)
+{
+  this->w_width = width;
+  this->w_height = height;
+  update_viewport();
+}
+
+void Engine::idle_cb()
+{
+  glutPostRedisplay();
+}
+
+void Engine::initialize()
+{
+
+  glClearColor(0.f, 0.f, 0.f, 0.f);
+  update_viewport();
+
+  Log::check_error("Initialize");
+  // Will initialize scenes here
+
+  glutDisplayFunc(Engine::draw);
+  glutKeyboardFunc(Engine::handle_key);
+  glutReshapeFunc(Engine::reshape);
+  glutIdleFunc(Engine::idle);
+  glutMainLoop();
+}
+
+void Engine::update_viewport()
+{
+  int width = this->w_width;
+  int height = this->w_height;
+  glViewport(0, 0, width, height);
+  this->camera.update_projection(width, height);
 }

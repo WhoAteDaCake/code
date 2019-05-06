@@ -88,13 +88,6 @@
 //     texture1.load("container.png");
 //     material0.set_specs(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f), texture0.get_unit(), texture1.get_unit());
 
-//     view_matrix = glm::lookAt(cam_position, cam_position + cam_front, world_up);
-//     projection_matrix = glm::perspective(
-//         glm::radians(fov),
-//         static_cast<float>(window_w) / static_cast<float>(window_h),
-//         near_plane,
-//         far_plane);
-
 //     shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 // }
 
