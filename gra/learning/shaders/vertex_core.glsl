@@ -1,8 +1,6 @@
 #version 130
 
-// layout (location = 0) in vec3 vertex_position;
-// layout (location = 1) in vec3 vertex_color;
-// layout (location = 2) in vec2 vertex_texcoord;
+
 in vec3 vertex_position;
 in vec3 vertex_color;
 in vec2 vertex_texcoord;
