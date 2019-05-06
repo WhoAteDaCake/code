@@ -14,13 +14,15 @@ private:
   glm::vec3 specular;
   GLint diffuse_tex;
   GLint specular_tex;
+  bool has_textures;
 
 public:
   Material(glm::vec3 ambient,
            glm::vec3 diffuse,
            glm::vec3 specular) : ambient(ambient),
                                  diffuse(diffuse),
-                                 specular(specular)
+                                 specular(specular),
+                                 has_textures(false)
   {
   }
   ~Material()
@@ -43,6 +45,7 @@ public:
   {
     this->diffuse_tex = diffuse_tex;
     this->specular_tex = specular_tex;
+    this->has_textures = true;
   }
 
   void send_to_shader(Shaders *program)
@@ -52,6 +55,7 @@ public:
     program->use3fv("material.specular", this->specular);
     program->use1i("mat_diffuse_tex", this->diffuse_tex);
     program->use1i("mat_specular_tex", this->specular_tex);
+    program->use1i("mat_has_tex", this->has_textures ? 1 : 0);
 #ifdef GRA_DEBUG
     Log::check_error("Sending to shader");
 #endif // DEBUG

@@ -17,6 +17,7 @@ uniform Material material;
 // Because 130 doesn't support samplers inside structs
 uniform sampler2D mat_diffuse_tex;
 uniform sampler2D mat_specular_tex;
+uniform int mat_has_tex;
 
 
 uniform vec3 light_pos0;
@@ -44,6 +45,10 @@ vec4 get_specular(Material material, vec3 position, vec3 normal, vec3 light_pos,
 
 void main()
 {
+	vec4 texture_color = vec4(1.f);
+	if (mat_has_tex == 1) {
+		texture_color = texture(mat_diffuse_tex,vs_texcoord);
+	}
 	// fs_color = vec4(vec3(1.f, 0.f, 0.f), 1.f);
 	// Output
 	vec4 light_final=
@@ -51,7 +56,7 @@ void main()
 		get_diffuse(material, vs_position, vs_normal, light_pos0)+
 		get_specular(material, vs_position, vs_normal, light_pos0, camera_pos);
 	fs_color=
-		texture(mat_diffuse_tex,vs_texcoord)*
-		// vec4(vs_color,1.f)*
+		texture_color *
+		vec4(vs_color,1.f)*
 		light_final;
 }

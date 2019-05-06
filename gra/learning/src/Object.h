@@ -42,6 +42,7 @@ public:
 #endif // DEBUG
   }
 
+  bool has_textures();
   void draw(Shaders *program);
   void clear();
   void initialize();
