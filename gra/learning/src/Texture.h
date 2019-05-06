@@ -17,17 +17,19 @@ private:
   GLuint id;
   GLenum type;
   GLuint unit;
+  std::string file_name;
 
   GLuint load_texture(std::string file, GLenum type);
 
 public:
-  Texture(GLenum type, GLint unit)
+  Texture(GLenum type, GLint unit, std::string file_name)
   {
     this->width = 0;
     this->height = 0;
     this->id = 0;
     this->type = type;
     this->unit = unit;
+    this->file_name = file_name;
   }
 
   ~Texture()
@@ -35,9 +37,9 @@ public:
     glDeleteTextures(1, &this->id);
   }
 
-  void load(std::string name)
+  void load()
   {
-    this->id = load_texture(name, this->type);
+    this->id = load_texture(this->file_name, this->type);
   }
 
   void bind()
