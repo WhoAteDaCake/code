@@ -47,7 +47,9 @@ public:
     program->use3fv("material.specular", this->specular);
     program->use1i("mat_diffuse_tex", this->diffuse_tex);
     program->use1i("mat_specular_tex", this->specular_tex);
+#ifdef GRA_DEBUG
     Log::check_error("Sending to shader");
+#endif // DEBUG
   }
 };
 
