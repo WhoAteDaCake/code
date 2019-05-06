@@ -4,7 +4,7 @@ TARGET=program.exe
 CC = g++
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
-CFLAGS = -I./src -I./external -g -std=c++11 -DGL_GLEXT_PROTOTYPES
+CFLAGS = -I./src -I./external -g -std=c++11 -DGL_GLEXT_PROTOTYPES -DGRA_DEBUG
 
 LINKER= g++
 #LINKER_FLAGS specifies the libraries we're linking against
