@@ -72,9 +72,6 @@ void Mesh::draw(Shaders *program)
 
   glBindVertexArray(this->VAO);
   glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
-#ifdef GRA_DEBUG
-  Log::log(message("draw"));
-#endif // DEBUG
 }
 
 void Mesh::update()
