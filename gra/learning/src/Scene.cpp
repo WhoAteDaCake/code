@@ -17,12 +17,16 @@ void Scene::initialize()
 {
   this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 
-  this->objects.push_back(Object(
+  Square *mySquare = new Square(0.5f);
+
+  Object testObj = Object(
       "test-obj",
       Texture(GL_TEXTURE_2D, 0, "pusheen.png"),
       Texture(GL_TEXTURE_2D, 1, "container.png"),
       Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f)),
-      Square(0.5f)));
+      mySquare);
+
+  this->objects.push_back(testObj);
 
   for (Object &item : this->objects)
   {
