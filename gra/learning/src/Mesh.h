@@ -47,7 +47,7 @@ public:
 
   Mesh(std::string name) : vertices(std::vector<Vertex>()),
                            indices(std::vector<GLuint>()),
-                           draw_type(GL_DYNAMIC_DRAW),
+                           draw_type(GL_STATIC_DRAW),
                            position(glm::vec3(0.f)),
                            rotation(glm::vec3(0.f)),
                            scale(glm::vec3(1.f)),
