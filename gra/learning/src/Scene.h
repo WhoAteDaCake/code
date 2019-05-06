@@ -29,6 +29,8 @@ public:
   Scene &operator=(const Scene &) = delete; // non copyable
   Scene(const Scene &) = delete;            // non construction-copyable
 
+  void create_objects();
+  void create_textures();
   void set_camera(Camera *camera);
   void draw();
   void initialize();
