@@ -63,7 +63,7 @@ public:
   }
 
   // Setup
-  void initialize();
+  virtual void initialize();
 
   // Actions
   void render(Shaders *program);

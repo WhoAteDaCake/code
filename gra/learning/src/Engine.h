@@ -4,7 +4,7 @@
 #define ENGINE_H
 
 #include "Log.h"
-#include "Camera.h"
+#include "Scene.h"
 
 class Engine
 {
@@ -12,6 +12,7 @@ private:
   int w_width;
   int w_height;
   Camera camera;
+  Scene scene;
 
   void update_viewport();
 

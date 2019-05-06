@@ -50,6 +50,9 @@ void main()
 		get_ambient(material)+
 		get_diffuse(material, vs_position, vs_normal, light_pos0)+
 		get_specular(material, vs_position, vs_normal, light_pos0, camera_pos);
-	fs_color=texture(mat_diffuse_tex,vs_texcoord)* vec4(vs_color,1.f)*light_final;
+	fs_color=
+		texture(mat_diffuse_tex,vs_texcoord)*
+		// vec4(vs_color,1.f)*
+		light_final;
 	// fs_color=texture(texture0,vs_texcoord)*light_final;
 }

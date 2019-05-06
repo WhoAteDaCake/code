@@ -19,7 +19,7 @@ public:
     this->size = size;
   }
 
-  void initialize()
+  virtual void initialize()
   {
     float size = this->size;
     Vertex v_arr[] = {

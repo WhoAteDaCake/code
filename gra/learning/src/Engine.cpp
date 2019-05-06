@@ -28,7 +28,7 @@ Engine::Engine(int argc, char **argv, const char *title, const int &width, const
 
   this->w_width = width;
   this->w_height = height;
-  this->camera = Camera();
+  this->scene.set_camera(&this->camera);
 
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutInitWindowSize(this->w_width, this->w_height);
@@ -65,6 +65,7 @@ void Engine::draw_cb()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // DO RENDERS HERE
+  this->scene.draw();
 
   glutSwapBuffers();
   glFlush();
@@ -101,6 +102,7 @@ void Engine::initialize()
 
   Log::check_error("Initialize");
   // Will initialize scenes here
+  this->scene.initialize();
 
   glutDisplayFunc(Engine::draw);
   glutKeyboardFunc(Engine::handle_key);
