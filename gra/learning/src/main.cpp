@@ -25,7 +25,7 @@ void draw()
 
 void message(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
-    active->message_cb(source, type, id, severity, length, message, userParam);
+    // active->message_cb(source, type, id, severity, length, message, userParam);
 }
 
 // Called when a mouse button event occurs

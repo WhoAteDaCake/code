@@ -4,10 +4,12 @@
 #define OBJECT_H
 
 #include "Mesh.h"
-#include "Texture.h"
+#include "TextureManager.h"
 #include "Material.h"
 #include "Log.h"
 #include <memory>
+// TMP
+#include "Shapes.h"
 
 class Object
 {
@@ -21,6 +23,8 @@ private:
   Mesh *mesh;
 
 public:
+  static Object *from_file(std::string file_name, std::unique_ptr<TextureManager> &manager);
+
   Object(
       std::string name,
       SharedTexture diffuse,

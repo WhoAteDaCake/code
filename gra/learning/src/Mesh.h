@@ -58,7 +58,11 @@ public:
   {
     glDeleteVertexArrays(1, &this->VAO);
     glDeleteBuffers(1, &this->VBO);
-    glDeleteBuffers(1, &this->EBO);
+    if (has_indices())
+    {
+      glDeleteBuffers(1, &this->EBO);
+    }
+
 #ifdef GRA_DEBU
     Log::log(message("destructor call"));
 #endif // DEBUG
@@ -70,6 +74,11 @@ public:
   // Actions
   void draw(Shaders *program);
   void update();
+
+  inline bool has_indices()
+  {
+    return this->indices.size() != 0;
+  }
 
   inline void set_draw_type(GLenum draw_type)
   {

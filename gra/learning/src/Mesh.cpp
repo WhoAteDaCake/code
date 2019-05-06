@@ -12,10 +12,12 @@ void Mesh::bind_buffers()
   glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), vertices.data(), this->draw_type);
 
   // //GEN EBO AND BIND AND SEND DATA
-  glGenBuffers(1, &this->EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), indices.data(), this->draw_type);
-
+  if (has_indices())
+  {
+    glGenBuffers(1, &this->EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), indices.data(), this->draw_type);
+  }
   // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
   // Position
   // Could use glGetAtrributeLocation
@@ -51,9 +53,9 @@ void Mesh::calculate_matrix()
 
 void Mesh::initialize()
 {
-  if (this->vertices.empty() || this->indices.empty())
+  if (this->vertices.empty())
   {
-    throw message("Has not initialized vertices and indices");
+    throw message("Has not initialized vertices");
   }
   bind_buffers();
   calculate_matrix();
@@ -71,7 +73,15 @@ void Mesh::draw(Shaders *program)
   program->use();
 
   glBindVertexArray(this->VAO);
-  glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+
+  if (!has_indices())
+  {
+    glDrawArrays(GL_TRIANGLES, 0, this->vertices.size());
+  }
+  else
+  {
+    glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+  }
 }
 
 void Mesh::update()

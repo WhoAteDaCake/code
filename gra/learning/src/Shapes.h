@@ -22,22 +22,26 @@ public:
   {
     float size = this->size;
     Vertex v_arr[] = {
-        glm::vec3(-size, size, 0.f),
-        glm::vec3(1.f, 0.f, 0.f),
-        glm::vec2(0.f, 1.f),
-        glm::vec3(0.f, 0.f, 1.f), // Part2
-        glm::vec3(-size, -size, 0.f),
-        glm::vec3(0.f, 1.f, 0.f),
-        glm::vec2(0.f, 0.f),
-        glm::vec3(0.f, 0.f, 1.f), // Part3
-        glm::vec3(size, -size, 0.f),
-        glm::vec3(0.f, 0.f, 1.f),
-        glm::vec2(1.f, 0.f),
-        glm::vec3(0.f, 0.f, 1.f), // Part4
-        glm::vec3(size, size, 0.f),
-        glm::vec3(0.f, 0.f, 1.f),
-        glm::vec2(1.f, 1.f),
-        glm::vec3(0.f, 0.f, 1.f),
+        Vertex(
+            glm::vec3(-size, size, 0.f),
+            glm::vec3(1.f, 0.f, 0.f),
+            glm::vec2(0.f, 1.f),
+            glm::vec3(0.f, 0.f, 1.f)), // Part2
+        Vertex(
+            glm::vec3(-size, -size, 0.f),
+            glm::vec3(0.f, 1.f, 0.f),
+            glm::vec2(0.f, 0.f),
+            glm::vec3(0.f, 0.f, 1.f)), // Part3
+        Vertex(
+            glm::vec3(size, -size, 0.f),
+            glm::vec3(0.f, 0.f, 1.f),
+            glm::vec2(1.f, 0.f),
+            glm::vec3(0.f, 0.f, 1.f)), // Part4
+        Vertex(
+            glm::vec3(size, size, 0.f),
+            glm::vec3(0.f, 0.f, 1.f),
+            glm::vec2(1.f, 1.f),
+            glm::vec3(0.f, 0.f, 1.f)),
     };
 
     GLint i_arr[] = {
