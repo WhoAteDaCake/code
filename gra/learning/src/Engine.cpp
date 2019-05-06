@@ -103,3 +103,7 @@ Engine::Engine(int argc, char **argv, const char *title, const int &width, const
 
   Engine::activeEngine = this;
 }
+
+Engine::~Engine()
+{
+}
