@@ -35,13 +35,19 @@ public:
   void use()
   {
     glUseProgram(this->id);
+#ifdef GRA_DEBUG
+
     Log::check_error("Using shader");
+#endif // DEBUG
   }
 
   void stop_use()
   {
     glUseProgram(0);
+#ifdef DEBUG
+
     Log::check_error("Stopping shader use");
+#endif // DEBUG
   }
 
   void use1i(const GLchar *name, int i)
