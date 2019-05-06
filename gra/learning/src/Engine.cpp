@@ -43,14 +43,14 @@ Engine::Engine(int argc, char **argv, const char *title, const int &width, const
   // GL options
   glEnable(GL_DEPTH_TEST);
   // Not drawn if not seen
-  glEnable(GL_CULL_FACE);
+  // glEnable(GL_CULL_FACE);
   glEnable(GL_COLOR_MATERIAL);
 
   glEnable(GL_BLEND);
   // Blend colors of polygons
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   // Back will not be shown
-  glCullFace(GL_BACK);
+  // glCullFace(GL_BACK);
   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   // Set front face as shown one
   glFrontFace(GL_CCW);
@@ -58,6 +58,9 @@ Engine::Engine(int argc, char **argv, const char *title, const int &width, const
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
   Engine::activeEngine = this;
+#ifdef GRA_DEBUG
+  Log::check_error("Engine:creation");
+#endif // DEBUG
 }
 
 Engine::~Engine()
