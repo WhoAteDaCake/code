@@ -13,9 +13,12 @@ private:
 public:
   static unsigned int ID;
 
-  Square(float size) : Mesh("Square_" + std::to_string(Square::ID))
+  Square(std::string name, float size) : Mesh(name)
   {
-    Square::ID += 1;
+    // Currently broken, no clue why
+    // std::string my_id = std::to_string(Square::ID);
+    // this->name.append(my_id);
+    // Square::ID += 1;
     this->size = size;
   }
 

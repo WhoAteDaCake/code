@@ -1,4 +1,3 @@
-#define GRA_DEBUG
 
 #include "Engine.h"
 
@@ -151,7 +150,15 @@ int main(int iArgc, char **cppArgv)
 {
     Engine engine = Engine(iArgc, cppArgv, "Test window", 300, 300);
 
-    engine.initialize();
+    try
+    {
+        engine.initialize();
+    }
+    catch (std::string message)
+    {
+        std::cout << message << "\n";
+    }
+
     // glutInit(&iArgc, cppArgv);
 
     // glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);

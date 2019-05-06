@@ -54,12 +54,12 @@ void Mesh::initialize()
 {
   if (this->vertices.empty() || this->indices.empty())
   {
-    throw error_msg("Has not initialized vertices and indices");
+    throw message("Has not initialized vertices and indices");
   }
   bind_buffers();
   calculate_matrix();
 #ifdef GRA_DEBUG
-  Log::log("Mesh:" + this->name + ":initialize\n");
+  Log::log(message("initialize"));
 #endif // DEBUG
 }
 
@@ -73,7 +73,7 @@ void Mesh::draw(Shaders *program)
   glBindVertexArray(this->VAO);
   glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 #ifdef GRA_DEBUG
-  Log::log("Mesh:" + this->name + ":draw\n");
+  Log::log(message("draw"));
 #endif // DEBUG
 }
 

@@ -14,9 +14,10 @@
 
 class Mesh
 {
-private:
+protected:
   std::string name;
 
+private:
   GLuint VAO;
   GLuint VBO;
   GLuint EBO;
@@ -30,9 +31,10 @@ private:
   void bind_buffers();
   void calculate_matrix();
 
-  std::string error_msg(std::string message)
+  std::string message(std::string message)
   {
-    return this->name + ": " + message;
+    std::string ending = ":" + message;
+    return this->name + ending;
   }
 
 public:
@@ -70,7 +72,7 @@ public:
   {
     if (draw_type != GL_STATIC_DRAW && draw_type != GL_DYNAMIC_DRAW)
     {
-      throw error_msg("Incorrect draw type received");
+      throw message("Incorrect draw type received");
     }
     this->draw_type = draw_type;
   }

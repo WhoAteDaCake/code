@@ -20,16 +20,10 @@ void Object::draw(Shaders *program)
   this->specular.bind();
 
   this->mesh->draw(program);
-#ifdef GRA_DEBUG
-  Log::check_error("Object:" + this->name + ":draw");
-#endif
 }
 
 void Object::clear()
 {
   this->diffuse.unbind();
   this->specular.unbind();
-#ifdef GRA_DEBUG
-  Log::check_error("Object:" + this->name + ":clear")
-#endif
 }

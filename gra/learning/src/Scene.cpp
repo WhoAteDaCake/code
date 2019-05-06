@@ -17,7 +17,7 @@ void Scene::initialize()
 {
   this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 
-  Square *mySquare = new Square(0.5f);
+  Square *mySquare = new Square("test-square", 0.5f);
 
   Object testObj = Object(
       "test-obj",
@@ -32,6 +32,10 @@ void Scene::initialize()
   {
     item.initialize();
   }
+
+#ifdef GRA_DEBUG
+  Log::log("Scene:initialize:end");
+#endif // DEBUG
 }
 
 void Scene::draw()
@@ -47,7 +51,18 @@ void Scene::draw()
   // Render items
   for (Object &item : this->objects)
   {
-    item.draw(&shader);
+    item.draw(&this->shader);
   }
+#ifdef GRA_DEBUG
+  Log::check_error("Scene:draw");
+#endif // DEBUG
   // square.render(&shader);
+}
+
+void Scene::clear()
+{
+  for (Object &item : this->objects)
+  {
+    item.clear();
+  }
 }

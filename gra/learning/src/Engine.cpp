@@ -69,12 +69,18 @@ void Engine::draw_cb()
 
   glutSwapBuffers();
   glFlush();
-  Log::check_error("display");
+#ifdef GRA_DEBUG
+  Log::check_error("Engine:flush");
+#endif // DEBUG
   // DO RESETS HERE
   glBindVertexArray(0);
   glUseProgram(0);
 
-  Log::check_error("reset");
+  this->scene.clear();
+
+#ifdef GRA_DEBUG
+  Log::check_error("Engine:clear");
+#endif // DEBUG
 }
 
 void Engine::handle_key_cb(unsigned char key, int x, int y)
@@ -100,7 +106,10 @@ void Engine::initialize()
   glClearColor(0.f, 0.f, 0.f, 0.f);
   update_viewport();
 
-  Log::check_error("Initialize");
+#ifdef GRA_DEBUG
+  Log::check_error("Engine:pre:initalize");
+#endif // DEBUG
+
   // Will initialize scenes here
   this->scene.initialize();
 

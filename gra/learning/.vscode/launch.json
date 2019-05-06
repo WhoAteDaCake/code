@@ -3,15 +3,29 @@
 	"configurations": [{
 		"name": "C++ Launch",
 		"type": "cppdbg",
-      "request": "launch",
-      "preLaunchTask": "build",
-      "cwd": "${workspaceRoot}",
+		"request": "launch",
+		"preLaunchTask": "build",
+		"cwd": "${workspaceRoot}",
 		"program": "${workspaceRoot}/bin/program.exe",
 		"stopAtEntry": false,
 		"launchCompleteCommand": "exec-run",
 		"linux": {
 			"MIMode": "gdb",
-			"miDebuggerPath": "/usr/bin/gdb"
+			"miDebuggerPath": "/usr/bin/gdb",
+			"setupCommands": [
+
+				{
+					"text": "-enable-pretty-printing",
+					"description": "enable pretty printing",
+					"ignoreFailures": true
+				},
+
+				{
+					"text": "handle SIGPIPE nostop noprint pass",
+					"description": "ignore SIGPIPE",
+					"ignoreFailures": true
+				}
+			]
 		}
 	}]
 }

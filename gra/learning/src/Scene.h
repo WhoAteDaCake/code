@@ -4,7 +4,6 @@
 #define SCENE_H
 
 #include "Camera.h"
-#include "Shaders.h"
 #include "Object.h"
 #include "Shapes.h"
 
@@ -27,6 +26,7 @@ public:
   void set_camera(Camera *camera);
   void draw();
   void initialize();
+  void clear();
 };
 
 #endif
