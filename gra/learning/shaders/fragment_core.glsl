@@ -18,6 +18,7 @@ uniform Material material;
 uniform sampler2D mat_diffuse_tex;
 uniform sampler2D mat_specular_tex;
 uniform int mat_has_tex;
+uniform int show_color;
 
 
 uniform vec3 light_pos0;
@@ -49,6 +50,11 @@ void main()
 	if (mat_has_tex == 1) {
 		texture_color = texture(mat_diffuse_tex,vs_texcoord);
 	}
+	vec4 color = vec4(1.f);
+	if (show_color == 1) {
+		color = vec4(vs_color,1.f);
+	}
+
 	// fs_color = vec4(vec3(1.f, 0.f, 0.f), 1.f);
 	// Output
 	vec4 light_final=
@@ -57,6 +63,6 @@ void main()
 		get_specular(material, vs_position, vs_normal, light_pos0, camera_pos);
 	fs_color=
 		texture_color *
-		vec4(vs_color,1.f)*
+		color*
 		light_final;
 }

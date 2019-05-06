@@ -69,16 +69,17 @@ void Scene::create_textures()
 void Scene::create_objects()
 {
   Square *mySquare = new Square("test-square", 0.5f);
-  // Texture *diffuse = new Texture(GL_TEXTURE_2D, 0, "pusheen.png");
-  // Texture *specular = new Texture(GL_TEXTURE_2D, 1, "container.png");
+  Texture *diffuse = new Texture(GL_TEXTURE_2D, 0, "pusheen.png");
+  Texture *specular = new Texture(GL_TEXTURE_2D, 1, "container.png");
   Material *material = new Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f));
+  material->toggle_color(false);
 
   std::unique_ptr<Object> testObj(new Object(
       "test-obj",
-      nullptr,
-      nullptr,
-      // this->texture_manager->get("pusheen.png"),
-      // this->texture_manager->get("container.png"),
+      // nullptr,
+      // nullptr,
+      this->texture_manager->get("pusheen.png"),
+      this->texture_manager->get("container.png"),
       material,
       mySquare));
 

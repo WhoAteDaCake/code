@@ -15,6 +15,7 @@ private:
   GLint diffuse_tex;
   GLint specular_tex;
   bool has_textures;
+  bool show_color;
 
 public:
   Material(glm::vec3 ambient,
@@ -22,7 +23,8 @@ public:
            glm::vec3 specular) : ambient(ambient),
                                  diffuse(diffuse),
                                  specular(specular),
-                                 has_textures(false)
+                                 has_textures(false),
+                                 show_color(true)
   {
   }
   ~Material()
@@ -30,6 +32,11 @@ public:
 #ifdef GRA_DEBUG
     Log::log("Material:destructor");
 #endif // DEBUG
+  }
+
+  void toggle_color(bool show_color)
+  {
+    this->show_color = show_color;
   }
 
   void set_specs(glm::vec3 ambient,
@@ -59,6 +66,7 @@ public:
       program->use1i("mat_specular_tex", this->specular_tex);
     }
     program->use1i("mat_has_tex", this->has_textures ? 1 : 0);
+    program->use1i("show_color", this->show_color ? 1 : 0);
 #ifdef GRA_DEBUG
     Log::check_error("Sending to shader");
 #endif // DEBUG
