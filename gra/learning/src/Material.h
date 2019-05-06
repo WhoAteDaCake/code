@@ -53,8 +53,11 @@ public:
     program->use3fv("material.ambient", this->ambient);
     program->use3fv("material.diffuse", this->diffuse);
     program->use3fv("material.specular", this->specular);
-    program->use1i("mat_diffuse_tex", this->diffuse_tex);
-    program->use1i("mat_specular_tex", this->specular_tex);
+    if (has_textures)
+    {
+      program->use1i("mat_diffuse_tex", this->diffuse_tex);
+      program->use1i("mat_specular_tex", this->specular_tex);
+    }
     program->use1i("mat_has_tex", this->has_textures ? 1 : 0);
 #ifdef GRA_DEBUG
     Log::check_error("Sending to shader");
