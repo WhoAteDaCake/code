@@ -16,7 +16,13 @@ private:
   GLint specular_tex;
 
 public:
-  Material() {}
+  Material(glm::vec3 ambient,
+           glm::vec3 diffuse,
+           glm::vec3 specular) : ambient(ambient),
+                                 diffuse(diffuse),
+                                 specular(specular)
+  {
+  }
   ~Material() {}
 
   void set_specs(glm::vec3 ambient,

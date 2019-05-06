@@ -1,3 +1,5 @@
+#define GRA_DEBUG
+
 #include "Engine.h"
 
 // Texture texture0(GL_TEXTURE_2D, 0);

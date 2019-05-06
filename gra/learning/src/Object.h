@@ -30,7 +30,7 @@ public:
                    mesh(mesh)
   {
   }
-  ~Object();
+  ~Object() {}
 
   void draw(Shaders *program);
   void clear();

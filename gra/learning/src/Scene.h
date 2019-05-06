@@ -5,12 +5,15 @@
 
 #include "Camera.h"
 #include "Shaders.h"
+#include "Object.h"
+#include "Shapes.h"
 
 class Scene
 {
 private:
   Camera *camera;
   Shaders shader;
+  std::vector<Object> objects;
 
   // TEMPORARY
   glm::vec3 light_pos;
