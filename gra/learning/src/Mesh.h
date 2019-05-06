@@ -30,9 +30,6 @@ private:
   void bind_buffers();
   void calculate_matrix();
 
-  // Actions
-  void update_uniforms(Shaders *program);
-
   std::string error_msg(std::string message)
   {
     return this->name + ": " + message;
@@ -66,7 +63,7 @@ public:
   virtual void initialize();
 
   // Actions
-  void render(Shaders *program);
+  void draw(Shaders *program);
   void update();
 
   inline void set_draw_type(GLenum draw_type)

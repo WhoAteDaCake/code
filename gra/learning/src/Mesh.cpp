@@ -60,15 +60,10 @@ void Mesh::initialize()
   calculate_matrix();
 }
 
-void Mesh::update_uniforms(Shaders *program)
-{
-  program->useM4fv("model_matrix", this->model_matrix);
-}
-
-void Mesh::render(Shaders *program)
+void Mesh::draw(Shaders *program)
 {
   // Make sure matrix gets injected
-  this->update_uniforms(program);
+  program->useM4fv("model_matrix", this->model_matrix);
 
   program->use();
 
