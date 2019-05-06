@@ -13,6 +13,7 @@ private:
 
 public:
   Engine(int argc, char **argv, const char *title, const int &width, const int &height);
+  virtual ~Engine();
   void initialize();
 
   // GLUT specific handlers
