@@ -4,6 +4,7 @@
 #define CAMERA_H
 
 #include "gl.h"
+#include "Log.h"
 
 class Camera
 {

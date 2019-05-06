@@ -9,7 +9,6 @@ void Mesh::bind_buffers()
   // //GEN VBO AND BIND AND SEND DATA
   glGenBuffers(1, &this->VBO);
   glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-  // GL_STATIC_DRAW because we won't modify the values
   glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), vertices.data(), this->draw_type);
 
   // //GEN EBO AND BIND AND SEND DATA

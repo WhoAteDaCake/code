@@ -59,6 +59,9 @@ public:
     glDeleteVertexArrays(1, &this->VAO);
     glDeleteBuffers(1, &this->VBO);
     glDeleteBuffers(1, &this->EBO);
+#ifdef GRA_DEBU
+    Log::log(message("destructor call"));
+#endif // DEBUG
   }
 
   // Setup

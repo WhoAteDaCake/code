@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-Camera::Camera() : position(glm::vec3(0.f, 0.f, 1.f)),
+Camera::Camera() : position(glm::vec3(0.f, 0.f, 1.5f)),
                    world_up(glm::vec3(0.f, 1.f, 0.f)),
                    front(glm::vec3(0.f, 0.f, -1.f)),
                    view_matrix(glm::mat4(1.f)),
@@ -17,6 +17,9 @@ Camera::~Camera() {}
 void Camera::update_view()
 {
   this->view_matrix = glm::lookAt(this->position, this->position + this->front, this->world_up);
+#ifdef GRA_DEBUG
+  Log::log("Camera: updating view matrix");
+#endif // DEBUG
 }
 
 void Camera::update_projection(int width, int height)
@@ -26,4 +29,8 @@ void Camera::update_projection(int width, int height)
       static_cast<float>(width) / static_cast<float>(height),
       this->near_plane,
       this->far_plane);
+
+#ifdef GRA_DEBUG
+  Log::log("Camera: updating view projection");
+#endif // DEBUG
 }

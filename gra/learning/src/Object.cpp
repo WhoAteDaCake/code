@@ -13,12 +13,13 @@ void Object::initialize()
 
 void Object::draw(Shaders *program)
 {
+
+  // program->use();
   this->material.send_to_shader(program);
 
   program->use();
   this->diffuse.bind();
   this->specular.bind();
-
   this->mesh->draw(program);
 }
 

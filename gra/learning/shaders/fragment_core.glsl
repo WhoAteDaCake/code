@@ -44,15 +44,14 @@ vec4 get_specular(Material material, vec3 position, vec3 normal, vec3 light_pos,
 
 void main()
 {
-
+	fs_color = vec4(vec3(1.f, 0.f, 0.f), 1.f);
 	// Output
-	vec4 light_final=
-		get_ambient(material)+
-		get_diffuse(material, vs_position, vs_normal, light_pos0)+
-		get_specular(material, vs_position, vs_normal, light_pos0, camera_pos);
-	fs_color=
-		texture(mat_diffuse_tex,vs_texcoord)*
-		// vec4(vs_color,1.f)*
-		light_final;
-	// fs_color=texture(texture0,vs_texcoord)*light_final;
+	// vec4 light_final=
+	// 	get_ambient(material)+
+	// 	get_diffuse(material, vs_position, vs_normal, light_pos0)+
+	// 	get_specular(material, vs_position, vs_normal, light_pos0, camera_pos);
+	// fs_color=
+	// 	texture(mat_diffuse_tex,vs_texcoord)*
+	// 	// vec4(vs_color,1.f)*
+	// 	light_final;
 }

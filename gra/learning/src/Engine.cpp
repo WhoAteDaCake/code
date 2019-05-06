@@ -22,6 +22,11 @@ void Engine::draw()
   Engine::activeEngine->draw_cb();
 }
 
+void Engine::message(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+{
+  Engine::activeEngine->message_cb(source, type, id, severity, length, message, userParam);
+}
+
 Engine::Engine(int argc, char **argv, const char *title, const int &width, const int &height)
 {
   glutInit(&argc, argv);
@@ -61,7 +66,7 @@ Engine::~Engine()
 
 void Engine::draw_cb()
 {
-  glClearColor(0.f, 0.f, 0.f, 1.f);
+  glClearColor(1.f, 1.f, 1.f, 1.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // DO RENDERS HERE
@@ -117,6 +122,12 @@ void Engine::initialize()
   glutKeyboardFunc(Engine::handle_key);
   glutReshapeFunc(Engine::reshape);
   glutIdleFunc(Engine::idle);
+
+#ifdef GRA_DEBUG
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(Engine::message, 0);
+#endif // DEBUG
+
   glutMainLoop();
 }
 
@@ -126,4 +137,11 @@ void Engine::update_viewport()
   int height = this->w_height;
   glViewport(0, 0, width, height);
   this->camera.update_projection(width, height);
+}
+
+void Engine::message_cb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+{
+  fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+          (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+          type, severity, message);
 }

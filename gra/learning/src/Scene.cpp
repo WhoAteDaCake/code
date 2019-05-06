@@ -2,7 +2,6 @@
 
 Scene::Scene()
 {
-
   this->shader = Shaders();
 }
 
@@ -15,6 +14,8 @@ void Scene::set_camera(Camera *camera)
 
 void Scene::initialize()
 {
+
+  this->light_pos = glm::vec3(0.f, 0.f, 1.f);
   this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 
   Square *mySquare = new Square("test-square", 0.5f);
@@ -56,7 +57,6 @@ void Scene::draw()
 #ifdef GRA_DEBUG
   Log::check_error("Scene:draw");
 #endif // DEBUG
-  // square.render(&shader);
 }
 
 void Scene::clear()

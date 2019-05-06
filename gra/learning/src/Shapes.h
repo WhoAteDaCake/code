@@ -44,8 +44,24 @@ public:
         0, 1, 2, // Triangle 1
         0, 2, 3};
 
-    this->vertices = std::vector<Vertex>(v_arr, v_arr + sizeof(v_arr) / sizeof(v_arr[0]));
-    this->indices = std::vector<GLuint>(i_arr, i_arr + sizeof(i_arr) / sizeof(i_arr[0]));
+    unsigned nrOfVertices = sizeof(v_arr) / sizeof(Vertex);
+    unsigned nrOfIndices = sizeof(i_arr) / sizeof(GLuint);
+
+    std::vector<Vertex> v;
+    std::vector<GLuint> ind;
+
+    for (int i = 0; i < nrOfVertices; i += 1)
+    {
+      v.push_back(v_arr[i]);
+    }
+    for (int i = 0; i < nrOfIndices; i += 1)
+    {
+      ind.push_back(i_arr[i]);
+    }
+    this->vertices = v;
+    this->indices = ind;
+    // this->vertices = std::vector<Vertex>(v_arr, v_arr + sizeof(v_arr) / sizeof(v_arr[0]));
+    // this->indices = std::vector<GLuint>(i_arr, i_arr + sizeof(i_arr) / sizeof(i_arr[0]));
     Mesh::initialize();
   }
 };

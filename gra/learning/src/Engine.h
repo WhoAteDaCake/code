@@ -30,11 +30,13 @@ public:
   static void reshape(int width, int height);
   static void handle_key(unsigned char key, int x, int y);
   static void draw();
+  static void message(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 
   void idle_cb();
   void reshape_cb(int width, int height);
   void handle_key_cb(unsigned char key, int x, int y);
   void draw_cb();
+  void message_cb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 };
 
 #endif
