@@ -76,21 +76,6 @@ void Initialize()
     glClearColor(0.f, 0.f, 0.f, 0.0);
     // TEMP
 
-    // std::vector<Vertex> v_temp;
-    // std::vector<GLuint> g_temp;
-
-    // for (int i = 0; i < nrOfIndices; i += 1)
-    // {
-    //     v_temp.push_back(vertices[i]);
-    // }
-    // for (int i = 0; i < nrOfIndices; i += 1)
-    // {
-    //     g_temp.push_back(indices[i]);
-    // }
-
-    // mesh0.vertices = v_temp;
-    // mesh0.indices = g_temp;
-    // mesh0.initialize();
     square.initialize();
 
     // glEnable(GL_DEBUG_OUTPUT);
@@ -169,37 +154,40 @@ void reshape_func(int w, int h)
 
 int main(int iArgc, char **cppArgv)
 {
-    glutInit(&iArgc, cppArgv);
+    Engine engine = Engine(iArgc, cppArgv, "Test window", 300, 300);
 
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-    glutInitWindowSize(window_w, window_h);
-    glutInitWindowPosition(200, 200);
-    glutCreateWindow("My window");
+    engine.initialize();
+    // glutInit(&iArgc, cppArgv);
 
-    // GL options
-    glEnable(GL_DEPTH_TEST);
-    // Not drawn if not seen
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_COLOR_MATERIAL);
+    // glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+    // glutInitWindowSize(window_w, window_h);
+    // glutInitWindowPosition(200, 200);
+    // glutCreateWindow("My window");
 
-    glEnable(GL_BLEND);
-    // Blend colors of polygons
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // Back will not be shown
-    glCullFace(GL_BACK);
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    // Set front face as shown one
-    glFrontFace(GL_CCW);
-    // Set to fill the whole shape
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    Initialize();
-    glutDisplayFunc(Draw);
-    glutKeyboardFunc(handle_key);
-    glutReshapeFunc(reshape_func);
+    // // GL options
+    // glEnable(GL_DEPTH_TEST);
+    // // Not drawn if not seen
+    // glEnable(GL_CULL_FACE);
+    // glEnable(GL_COLOR_MATERIAL);
 
-    glutIdleFunc(idle_func);
+    // glEnable(GL_BLEND);
+    // // Blend colors of polygons
+    // glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    // // Back will not be shown
+    // glCullFace(GL_BACK);
+    // glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+    // // Set front face as shown one
+    // glFrontFace(GL_CCW);
+    // // Set to fill the whole shape
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // Initialize();
+    // glutDisplayFunc(Draw);
+    // glutKeyboardFunc(handle_key);
+    // glutReshapeFunc(reshape_func);
 
-    glutMainLoop();
+    // glutIdleFunc(idle_func);
+
+    // glutMainLoop();
 
     return 0;
 }
