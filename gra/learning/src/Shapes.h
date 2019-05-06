@@ -60,8 +60,6 @@ public:
     }
     this->vertices = v;
     this->indices = ind;
-    // this->vertices = std::vector<Vertex>(v_arr, v_arr + sizeof(v_arr) / sizeof(v_arr[0]));
-    // this->indices = std::vector<GLuint>(i_arr, i_arr + sizeof(i_arr) / sizeof(i_arr[0]));
     Mesh::initialize();
   }
 };
