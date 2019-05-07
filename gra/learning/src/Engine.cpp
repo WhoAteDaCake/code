@@ -81,7 +81,33 @@ void Engine::draw_cb()
 
 void Engine::handle_key_cb(unsigned char key, int x, int y)
 {
-  // TODO
+  float change = 0.5f;
+  glm::vec3 current_position = this->camera.position;
+  if (key == 'w')
+  {
+    current_position.z -= change;
+  }
+  else if (key == 's')
+  {
+    current_position.z += change;
+  }
+  else if (key == 'a')
+  {
+    current_position.x -= change;
+  }
+  else if (key == 'd')
+  {
+    current_position.x += change;
+  }
+  else if (key == 'q')
+  {
+    current_position.y += change;
+  }
+  else if (key == 'e')
+  {
+    current_position.y -= change;
+  }
+  this->camera.update_position(current_position);
 }
 
 void Engine::reshape_cb(int width, int height)
@@ -132,13 +158,27 @@ void Engine::mouse_button_cb(int button, int state, int x, int y)
   {
     last_mouse_x = x;
     last_mouse_y = y;
+    camera.mouse_to_sphere(x, y, this->w_width, this->w_height);
+  }
+  else
+  {
+    // No more drag, so we should reset
+    camera.is_point_valid = false;
   }
   is_button_down[button] = state == GLUT_DOWN;
+  glutPostRedisplay();
 }
 
 void Engine::mouse_move_cb(int x, int y)
 {
-
+  // Drag is happening, so we want to rotate
+  if (is_button_down[GLUT_LEFT_BUTTON])
+  {
+    this->camera.rotate(x, y, this->w_width, this->w_height);
+  }
   last_mouse_x = x;
   last_mouse_y = y;
+  this->camera.mouse_to_sphere(x, y, this->w_width, this->w_height);
+
+  glutPostRedisplay();
 }

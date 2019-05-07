@@ -92,7 +92,7 @@ Object *Object::from_file(std::string file_name, std::unique_ptr<TextureManager>
       for (int k = 0; k < 3; k += 1)
       {
         // TEMP
-        vertices[k].color = glm::vec3(1.f, 1.f, 1.f);
+        vertices[k].color = glm::vec3(1.f, 0.f, 0.f);
         vertices_all.push_back(vertices[k]);
       }
     }
@@ -115,7 +115,7 @@ Object *Object::from_file(std::string file_name, std::unique_ptr<TextureManager>
   cube->vertices = vertices_all;
 
   // Square *mySquare = new Square("test-square", 0.5f);
-  Material *material = new Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f));
+  Material *material = new Material(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
 
   return new Object(
       file_name + "_object",

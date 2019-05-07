@@ -20,6 +20,7 @@ private:
   int last_mouse_y;
   bool is_button_down[MOUSE_STATES_N];
 
+  // Camera views
   Camera camera;
   std::unique_ptr<Scene> scene;
 
