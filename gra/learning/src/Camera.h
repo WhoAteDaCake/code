@@ -13,10 +13,6 @@ private:
   glm::mat4 view_matrix;
 
 public:
-  // For transformations
-  glm::vec3 sphere_point;
-  bool is_point_valid;
-
   glm::vec3 position;
   glm::vec3 world_up;
   glm::vec3 front;
@@ -26,21 +22,38 @@ public:
   float near_plane;
   // Draw distance
   float far_plane;
+  // X rotation
+  float yaw;
+  // Z rotation
+  float pitch;
+  // For rotation
+  float sensitivity;
+
   Camera();
   ~Camera();
 
   void update_view();
   void update_projection(int width, int height);
+  void update_front();
+  void update_position(glm::vec3 position);
 
-  // For rotation
-  void mouse_to_sphere(int x, int y, int width, int height);
-  void rotate_itself(glm::vec3 axis, float angle);
-  void rotate(int x, int y, int width, int height);
-
-  inline void update_position(glm::vec3 position)
+  inline void add_to_yaw(float value)
   {
-    this->position = position;
-    update_view();
+    this->yaw += value;
+  }
+
+  inline void add_to_pitch(float value)
+  {
+    float new_pitch = this->pitch + value;
+    if (new_pitch > 89.f)
+    {
+      new_pitch = 89.f;
+    }
+    if (pitch < -89.f)
+    {
+      new_pitch = -89.f;
+    }
+    this->pitch = new_pitch;
   }
 
   inline glm::mat4 get_projection_matrix()

@@ -19,6 +19,7 @@ private:
   int last_mouse_x;
   int last_mouse_y;
   bool is_button_down[MOUSE_STATES_N];
+  bool is_first_drag_move;
 
   // Camera views
   Camera camera;
