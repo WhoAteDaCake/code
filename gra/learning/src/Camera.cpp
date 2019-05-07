@@ -13,7 +13,7 @@ Camera::Camera() : position(glm::vec3(0.f, 0.f, 6.f)),
                    projection_matrix(glm::mat4(1.f)),
                    yaw(-90.f),
                    pitch(0.f),
-                   sensitivity(0.4f)
+                   sensitivity(0.6f)
 {
   update_front();
 }

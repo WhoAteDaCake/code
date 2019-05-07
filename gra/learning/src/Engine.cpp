@@ -7,7 +7,9 @@ Engine::Engine(
     const int &width,
     const int &height) : last_mouse_x(-1),
                          last_mouse_y(-1),
-                         is_first_drag_move(true)
+                         is_first_drag_move(true),
+                         delta_time(0),
+                         last_frame(0)
 
 {
   glutInit(&argc, argv);
@@ -58,6 +60,9 @@ Engine::~Engine()
 
 void Engine::draw_cb()
 {
+  int frame = glutGet(GLUT_ELAPSED_TIME);
+  this->delta_time = frame - this->last_frame;
+  this->last_frame = frame;
   glClearColor(1.f, 1.f, 1.f, 1.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
@@ -82,7 +87,7 @@ void Engine::draw_cb()
 
 void Engine::handle_key_cb(unsigned char key, int x, int y)
 {
-  float change = 0.5f;
+  float change = 0.05f * static_cast<float>(this->delta_time);
   glm::vec3 current_position = this->camera.position;
   if (key == 'w')
   {

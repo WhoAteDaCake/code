@@ -23,7 +23,12 @@ private:
 
   // Camera views
   Camera camera;
+  // Scene
   std::unique_ptr<Scene> scene;
+
+  // Global time
+  int delta_time;
+  int last_frame;
 
   void update_viewport();
 
