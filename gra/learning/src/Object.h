@@ -39,6 +39,17 @@ public:
   {
     add_mesh(mesh);
   }
+  Object(
+      std::string name,
+      SharedTexture diffuse,
+      SharedTexture specular,
+      Material *material) : name(name),
+                            diffuse(diffuse),
+                            specular(specular),
+                            material(material)
+  {
+  }
+
   ~Object()
   {
     delete this->material;
@@ -61,6 +72,11 @@ public:
   inline void add_mesh(Mesh *mesh)
   {
     this->mesh.push_back(mesh);
+  }
+
+  inline void set_mesh(std::vector<Mesh *> mesh)
+  {
+    this->mesh = mesh;
   }
 };
 

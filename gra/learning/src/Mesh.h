@@ -40,6 +40,7 @@ private:
 public:
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
+  std::string texture_name;
 
   glm::vec3 position;
   glm::vec3 rotation;
@@ -51,7 +52,8 @@ public:
                            position(glm::vec3(0.f)),
                            rotation(glm::vec3(0.f)),
                            scale(glm::vec3(1.f)),
-                           name(name){
+                           name(name),
+                           texture_name(""){
 
                            };
   ~Mesh()
