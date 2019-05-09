@@ -1,36 +1,37 @@
-#include "Object.h"
+#include "FileLoader.h"
 
-// #define TINYOBJLOADER_IMPLEMENTATION
-// #include "tiny_obj_loader.h"
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
 
-Object *Object::from_file(std::string file_name, std::unique_ptr<TextureManager> &manager)
+std::string FileLoader::BASE_DIR = "./exports/";
+
+void FileLoader::load(std::string file_name, std::unique_ptr<TextureManager> &manager)
 {
-  FileLoader::load(file_name, manager);
-  // std::string input_file = "./exports/" + file_name;
-  // tinyobj::attrib_t attrib;
-  // std::vector<tinyobj::shape_t> shapes;
-  // std::vector<tinyobj::material_t> materials;
+  std::string input_file = FileLoader::BASE_DIR + file_name;
+  tinyobj::attrib_t attrib;
+  std::vector<tinyobj::shape_t> shapes;
+  std::vector<tinyobj::material_t> materials;
 
-  // std::string warn;
-  // std::string err;
+  std::string warn;
+  std::string err;
 
-  // bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, input_file.c_str(), "./exports");
-  // if (!warn.empty())
-  // {
-  //   Log::warn(warn);
-  // }
+  bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, input_file.c_str(), FileLoader::BASE_DIR.c_str());
+  if (!warn.empty())
+  {
+    Log::warn(warn);
+  }
 
-  // if (!err.empty())
-  // {
-  //   Log::error(err);
-  // }
+  if (!err.empty())
+  {
+    Log::error(err);
+  }
 
-  // if (!ret)
-  // {
-  //   throw std::string("Could not read object file\n");
-  // }
+  if (!ret)
+  {
+    throw std::string("Could not read object file\n");
+  }
 
-  // Log::log("Materials: " + std::to_string(materials.size()));
+  Log::log("Materials: " + std::to_string(materials.size()));
 
   // std::vector<Vertex> vertices_all;
   // std::vector<GLuint> indices;
@@ -104,67 +105,4 @@ Object *Object::from_file(std::string file_name, std::unique_ptr<TextureManager>
   //   //   diffuse[i] = materials[current_material_id].diffuse[i];
   //   // }
   // }
-
-  // for (size_t i = 0; i < materials.size(); i++)
-  // {
-  //   printf("material[%d].diffuse_texname = %s\n", int(i),
-  //          materials[i].diffuse_texname.c_str());
-  // }
-
-  // TMP
-  // Mesh *cube = new Mesh(file_name + "_mesh");
-  // // cube->vertices = vertices_all;
-
-  Square *mySquare = new Square("test-square", 0.5f);
-  Material *material = new Material(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
-
-  return new Object(
-      file_name + "_object",
-      nullptr,
-      nullptr,
-      material,
-      // cube);
-      mySquare);
-}
-
-bool Object::has_textures()
-{
-  return this->diffuse != nullptr && this->specular != nullptr;
-}
-
-void Object::initialize()
-{
-  this->mesh->initialize();
-
-  if (has_textures())
-  {
-    this->material->set_textures(this->diffuse->get_unit(), this->specular->get_unit());
-  }
-
-#ifdef GRA_DEBUG
-  Log::check_error("Object:" + this->name + ":initialize");
-#endif
-}
-
-void Object::draw(Shaders *program)
-{
-
-  this->material->send_to_shader(program);
-
-  program->use();
-  if (has_textures())
-  {
-    this->diffuse->bind();
-    this->specular->bind();
-  }
-  this->mesh->draw(program);
-}
-
-void Object::clear()
-{
-  if (has_textures())
-  {
-    this->diffuse->unbind();
-    this->specular->unbind();
-  }
 }

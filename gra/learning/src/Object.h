@@ -10,6 +10,7 @@
 #include <memory>
 // TMP
 #include "Shapes.h"
+#include "FileLoader.h"
 
 class Object
 {

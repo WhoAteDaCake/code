@@ -6,7 +6,6 @@ in vec3 vs_normal;
 
 out vec4 fs_color;
 
-
 struct Material {
 	vec3 ambient;
 	vec3 diffuse;
@@ -40,7 +39,14 @@ vec4 get_specular(Material material, vec3 position, vec3 normal, vec3 light_pos,
 	vec3 reflect_dir=normalize(reflect(light_to_pos,normalize(normal)));
 	vec3 pos_to_view=normalize(camera_pos - position);
 	float specular_const=pow(max(dot(pos_to_view,reflect_dir),0),30);
-	vec3 specular=material.specular*specular_const * texture(mat_specular_tex, vs_texcoord).rgb;
+	// TODO use light color
+	// And check for optional specular textures
+	vec3 tex_color = vec3(1.f);
+	if (mat_has_tex == 1) {
+		tex_color = texture(mat_specular_tex, vs_texcoord).rgb;
+	}
+
+	vec3 specular=material.specular*specular_const * tex_color;
 	return vec4(specular, 1.f);
 }
 
