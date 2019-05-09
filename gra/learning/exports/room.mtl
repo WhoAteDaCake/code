@@ -1,5 +1,5 @@
-# Blender MTL File: 'room--bake--cleaned.blend'
-# Material Count: 3
+# Blender MTL File: 'room--bake--high.blend'
+# Material Count: 5
 
 newmtl Material.000
 Ns 96.078431
@@ -21,6 +21,26 @@ Ni 1.000000
 d 1.000000
 illum 2
 
+newmtl Material.003
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+newmtl Material.004
+Ns 96.078431
+Ka 1.000000 1.000000 1.000000
+Kd 0.640000 0.640000 0.640000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
 newmtl lambert0
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
@@ -30,4 +50,4 @@ Ke 0.000000 0.000000 0.000000
 Ni -1.000000
 d 1.000000
 illum 2
-/home/august/uni/code/gra/learning/exports/voxelshop/bedroom_texture0.png
+map_Kd bedroom_texture0.png

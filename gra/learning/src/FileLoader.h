@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include "TextureManager.h"
+#include <stdio.h>
 
 class FileLoader
 {

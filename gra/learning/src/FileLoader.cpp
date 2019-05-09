@@ -31,7 +31,29 @@ void FileLoader::load(std::string file_name, std::unique_ptr<TextureManager> &ma
     throw std::string("Could not read object file\n");
   }
 
+  printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
+  printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
+  printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
+  printf("# of materials = %d\n", (int)materials.size());
+  printf("# of shapes    = %d\n", (int)shapes.size());
+
   Log::log("Materials: " + std::to_string(materials.size()));
+
+  for (size_t m = 0; m < materials.size(); m++)
+  {
+    tinyobj::material_t *mp = &materials[m];
+
+    // std::cout << "Name: " << mp->diffuse_texname << std::endl;
+    // std::cout << "Name2: " << mp->diffuse_texname << std::endl;
+    // std::cout << "Name2: " << mp->diffuse_texname << std::endl;
+    // std::cout << endl;
+    if (mp->diffuse_texname.size() < 1)
+    {
+      continue;
+    }
+    std::string texture_filename = mp->diffuse_texname;
+    // std::cout << texture_filename << std::endl;
+  }
 
   // std::vector<Vertex> vertices_all;
   // std::vector<GLuint> indices;

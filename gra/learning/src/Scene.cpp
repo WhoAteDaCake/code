@@ -62,8 +62,8 @@ void Scene::clear()
 
 void Scene::create_textures()
 {
-  this->texture_manager->add("pusheen.png", GL_TEXTURE_2D);
-  this->texture_manager->add("pusheen_specular.png", GL_TEXTURE_2D);
+  // this->texture_manager->add("pusheen.png", GL_TEXTURE_2D);
+  // this->texture_manager->add("pusheen_specular.png", GL_TEXTURE_2D);
 }
 
 void Scene::create_objects()
@@ -72,7 +72,7 @@ void Scene::create_objects()
   // Material *material = new Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f));
   // material->toggle_color(false);
 
-  std::unique_ptr<Object> testObj(Object::from_file(std::string("room--bake--cleaned.obj"), this->texture_manager));
+  std::unique_ptr<Object> testObj(Object::from_file(std::string("Bedroom.obj"), this->texture_manager));
   // std::unique_ptr<Object> testObj(new Object(
   //     "test-obj",
   //     // nullptr,
