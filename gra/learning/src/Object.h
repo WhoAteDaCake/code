@@ -8,6 +8,7 @@
 #include "Material.h"
 #include "Log.h"
 #include <memory>
+#include <vector>
 // TMP
 #include "Shapes.h"
 #include "FileLoader.h"
@@ -21,7 +22,7 @@ private:
   SharedTexture diffuse;
   SharedTexture specular;
   Material *material;
-  Mesh *mesh;
+  std::vector<Mesh *> mesh;
 
 public:
   static Object *from_file(std::string file_name, std::unique_ptr<TextureManager> &manager);
@@ -34,14 +35,19 @@ public:
       Mesh *mesh) : name(name),
                     diffuse(diffuse),
                     specular(specular),
-                    material(material),
-                    mesh(mesh)
+                    material(material)
   {
+    add_mesh(mesh);
   }
   ~Object()
   {
-    delete this->mesh;
     delete this->material;
+
+    for (std::vector<Mesh *>::iterator it = this->mesh.begin(); it != this->mesh.end(); ++it)
+    {
+      delete (*it);
+    }
+    this->mesh.clear();
 #ifdef GRA_DEBUG
     Log::log(name + ":" + "destructor");
 #endif // DEBUG
@@ -51,6 +57,11 @@ public:
   void draw(Shaders *program);
   void clear();
   void initialize();
+
+  inline void add_mesh(Mesh *mesh)
+  {
+    this->mesh.push_back(mesh);
+  }
 };
 
 #endif // OBJECT_H

@@ -42,17 +42,12 @@ void FileLoader::load(std::string file_name, std::unique_ptr<TextureManager> &ma
   for (size_t m = 0; m < materials.size(); m++)
   {
     tinyobj::material_t *mp = &materials[m];
-
-    // std::cout << "Name: " << mp->diffuse_texname << std::endl;
-    // std::cout << "Name2: " << mp->diffuse_texname << std::endl;
-    // std::cout << "Name2: " << mp->diffuse_texname << std::endl;
-    // std::cout << endl;
-    if (mp->diffuse_texname.size() < 1)
+    std::string diffuse_tex = mp->diffuse_texname;
+    if (diffuse_tex.size() < 1)
     {
       continue;
     }
-    std::string texture_filename = mp->diffuse_texname;
-    // std::cout << texture_filename << std::endl;
+    manager->add(diffuse_tex, GL_TEXTURE_2D);
   }
 
   // std::vector<Vertex> vertices_all;

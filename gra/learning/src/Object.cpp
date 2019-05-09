@@ -134,8 +134,11 @@ bool Object::has_textures()
 
 void Object::initialize()
 {
-  this->mesh->initialize();
-
+  for (int i = 0; i < this->mesh.size(); i += 1)
+  {
+    Mesh *mesh = this->mesh[i];
+    mesh->initialize();
+  }
   if (has_textures())
   {
     this->material->set_textures(this->diffuse->get_unit(), this->specular->get_unit());
@@ -157,7 +160,11 @@ void Object::draw(Shaders *program)
     this->diffuse->bind();
     this->specular->bind();
   }
-  this->mesh->draw(program);
+  for (int i = 0; i < this->mesh.size(); i += 1)
+  {
+    Mesh *mesh = this->mesh[i];
+    mesh->draw(program);
+  }
 }
 
 void Object::clear()

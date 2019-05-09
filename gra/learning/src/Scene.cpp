@@ -72,7 +72,7 @@ void Scene::create_objects()
   // Material *material = new Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f));
   // material->toggle_color(false);
 
-  std::unique_ptr<Object> testObj(Object::from_file(std::string("Bedroom.obj"), this->texture_manager));
+  std::unique_ptr<Object> testObj(Object::from_file(std::string("room.obj"), this->texture_manager));
   // std::unique_ptr<Object> testObj(new Object(
   //     "test-obj",
   //     // nullptr,
