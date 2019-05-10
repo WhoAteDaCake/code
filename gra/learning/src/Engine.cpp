@@ -17,7 +17,8 @@ Engine::Engine(
   this->camera = Camera();
   this->camera.yaw = -180.f;
   this->camera.update_front();
-  this->camera.update_position(glm::vec3(26.f, 26.5f, -27.4f));
+  // this->camera.update_position(glm::vec3(26.f, 26.5f, -27.4f));
+  this->camera.update_position(glm::vec3(4.f, 0.f, 0.f));
 
   this->w_width = width;
   this->w_height = height;
@@ -39,14 +40,14 @@ Engine::Engine(
   // GL options
   glEnable(GL_DEPTH_TEST);
   // Not drawn if not seen
-  // glEnable(GL_CULL_FACE);
+  glEnable(GL_CULL_FACE);
   glEnable(GL_COLOR_MATERIAL);
 
   glEnable(GL_BLEND);
   // Blend colors of polygons
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   // Back will not be shown
-  // glCullFace(GL_BACK);
+  glCullFace(GL_BACK);
   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
   // Set front face as shown one
   glFrontFace(GL_CCW);
@@ -67,7 +68,7 @@ void Engine::draw_cb()
   int frame = glutGet(GLUT_ELAPSED_TIME);
   this->delta_time = frame - this->last_frame;
   this->last_frame = frame;
-  glClearColor(1.f, 1.f, 1.f, 1.f);
+  glClearColor(0.f, 0.f, 0.f, 0.f);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
   // DO RENDERS HERE
@@ -140,7 +141,7 @@ void Engine::idle_cb()
 void Engine::initialize()
 {
 
-  glClearColor(0.f, 0.f, 0.f, 0.f);
+  // glClearColor(0.f, 0.f, 0.f, 0.f);
   update_viewport();
 
 #ifdef GRA_DEBUG

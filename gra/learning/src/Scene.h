@@ -8,6 +8,7 @@
 #include "Shapes.h"
 #include "TextureManager.h"
 #include "MaterialManager.h"
+#include "CommonObjects.h"
 
 class Scene
 {

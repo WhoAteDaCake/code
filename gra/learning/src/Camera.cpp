@@ -3,7 +3,7 @@
 #include <math.h>
 #include <limits>
 
-Camera::Camera() : position(glm::vec3(0.f, 0.f, 6.f)),
+Camera::Camera() : position(glm::vec3(0.f, 0.f, 0.f)),
                    world_up(glm::vec3(0.f, 1.f, 0.f)),
                    front(glm::vec3(0.f, 0.f, -1.f)),
                    view_matrix(glm::mat4(1.f)),
