@@ -36,6 +36,7 @@ public:
   void update_projection(int width, int height);
   void update_front();
   void update_position(glm::vec3 position);
+  std::string to_string();
 
   inline void add_to_yaw(float value)
   {
@@ -45,13 +46,13 @@ public:
   inline void add_to_pitch(float value)
   {
     float new_pitch = this->pitch + value;
-    if (new_pitch > 89.f)
+    if (new_pitch > 88.f)
     {
-      new_pitch = 89.f;
+      new_pitch = 88.f;
     }
-    if (pitch < -89.f)
+    if (pitch < -88.f)
     {
-      new_pitch = -89.f;
+      new_pitch = -88.f;
     }
     this->pitch = new_pitch;
   }

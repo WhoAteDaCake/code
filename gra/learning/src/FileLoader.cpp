@@ -33,70 +33,6 @@ bool has_smoothing(const tinyobj::shape_t &shape)
   return false;
 }
 
-// int vi_i(int entry, int offset)
-// {
-//   return 3 * entry + offset;
-// }
-
-// std::map<int, glm::vec3> get_smoothing_normals(const tinyobj::attrib_t &attrib, const tinyobj::shape_t &shape)
-// {
-//   std::map<int, glm::vec3> s_normals;
-//   if (!has_smoothing(shape))
-//   {
-//     return s_normals;
-//   }
-
-//   int vertices_n = attrib.vertices.size();
-
-//   for (size_t f = 0; f < shape.mesh.indices.size() / 3; f++)
-//   {
-//     tinyobj::index_t idx0 = shape.mesh.indices[vi_i(f, 0)];
-//     tinyobj::index_t idx1 = shape.mesh.indices[vi_i(f, 1)];
-//     tinyobj::index_t idx2 = shape.mesh.indices[vi_i(f, 2)];
-//     int vi[3];     // indexes
-//     float v[3][3]; // coordinates
-
-//     for (int k = 0; k < 3; k++)
-//     {
-//       vi[0] = idx0.vertex_index;
-//       vi[1] = idx1.vertex_index;
-//       vi[2] = idx2.vertex_index;
-//       int v1 = vi_i(vi[0], k);
-//       int v2 = vi_i(vi[1], k);
-//       int v3 = vi_i(vi[2], k);
-//       // Validate indices
-//       assert(vi[0] >= 0);
-//       assert(vi[1] >= 0);
-//       assert(vi[2] >= 0);
-//       assert(v1 < vertices_n);
-//       assert(v2 < vertices_n);
-//       assert(v3 < vertices_n);
-
-//       v[0][k] = attrib.vertices[v1];
-//       v[1][k] = attrib.vertices[v2];
-//       v[2][k] = attrib.vertices[v3];
-//     }
-
-//     // Compute the normal of the face
-//     glm::vec3 normal = get_normal(to_vec(v[0]), to_vec(v[1]), to_vec(v[2]));
-
-//     // Add the normal to the three vertexes
-//     for (size_t i = 0; i < 3; ++i)
-//     {
-//       auto iter = s_normals.find(vi[i]);
-//       if (iter != s_normals.end())
-//       {
-//         iter->second += normal;
-//       }
-//       else
-//       {
-//         iter->second = normal;
-//       }
-//     }
-//   }
-//   return s_normals;
-// }
-
 void register_materials(std::unique_ptr<TextureManager> &tex_manager, std::unique_ptr<MaterialManager> &mat_manager, std::vector<tinyobj::material_t> &materials)
 {
 #ifdef GRA_DEBUG
@@ -133,11 +69,6 @@ std::vector<Mesh *> FileLoader::load(
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
-
-  tinyobj::material_t default_mat = tinyobj::material_t();
-  default_mat.name = "default";
-  // Append `default` material
-  // materials.push_back(default_mat);
 
   std::string warn;
   std::string err;

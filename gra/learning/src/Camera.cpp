@@ -9,7 +9,7 @@ Camera::Camera() : position(glm::vec3(0.f, 0.f, 6.f)),
                    view_matrix(glm::mat4(1.f)),
                    fov(90.f),
                    near_plane(0.1f),
-                   far_plane(100.f),
+                   far_plane(150.f),
                    projection_matrix(glm::mat4(1.f)),
                    yaw(-90.f),
                    pitch(0.f),
@@ -48,4 +48,12 @@ void Camera::update_position(glm::vec3 position)
 {
   this->position = position;
   update_view();
+}
+
+std::string Camera::to_string()
+{
+  std::string result = "";
+  result += "Position: " + glm::to_string(this->position) + "\n";
+  result += "Front: " + glm::to_string(this->front);
+  return result;
 }
