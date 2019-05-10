@@ -53,7 +53,9 @@ void Camera::update_position(glm::vec3 position)
 std::string Camera::to_string()
 {
   std::string result = "";
-  result += "Position: " + glm::to_string(this->position) + "\n";
-  result += "Front: " + glm::to_string(this->front);
+  result += "CAMERA:Position: " + glm::to_string(this->position) + "\n";
+  result += "CAMERA:Front: " + glm::to_string(this->front) + "\n";
+  result += "CAMERA:yaw: " + std::to_string(this->yaw) + "\n";
+  result += "CAMERA:pitch: " + std::to_string(this->pitch) + "\n";
   return result;
 }

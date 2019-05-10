@@ -69,12 +69,20 @@ void Scene::create_textures()
 
 void Scene::create_objects()
 {
-  // std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room-high.obj"), this->texture_manager, this->material_manager);
-  // std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
+  std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room-high.obj"), this->texture_manager, this->material_manager);
+  std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 
   float limit = 255.f;
-  auto blue = glm::vec3(255.f / limit, 12.f / limit, 11.f / limit);
-  std::string cubeName = "cube1";
-  auto cube = make_cube(cubeName, this->material_manager, blue, glm::vec3(0.f, 0.f, -2.f), glm::vec3(0.f), glm::vec3(1.f));
+  auto blue = glm::vec3(20.f / limit, 47.f / limit, 90.f / limit);
+  auto cube = make_cube(
+      std::string("wall-right"),
+      this->material_manager,
+      blue,
+      // Position
+      glm::vec3(-10.f, 33.5f, -69.f),
+      glm::vec3(0.f, 0.f, 0.f),
+      // glm::vec3(0.f, 90.f, 0),
+      // Scale
+      glm::vec3(51.f, 35.f, 2.f));
   this->objects.push_back(std::move(cube));
 }
