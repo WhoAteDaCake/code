@@ -76,6 +76,15 @@ std::vector<Mesh *> FileLoader::load(std::string file_name, std::unique_ptr<Text
       tinyobj::index_t idx0 = shapes[s].mesh.indices[3 * f + 0];
       tinyobj::index_t idx1 = shapes[s].mesh.indices[3 * f + 1];
       tinyobj::index_t idx2 = shapes[s].mesh.indices[3 * f + 2];
+
+      int current_material_id = shapes[s].mesh.material_ids[f];
+
+      float diffuse[3];
+      for (size_t i = 0; i < 3; i++)
+      {
+        diffuse[i] = materials[current_material_id].diffuse[i];
+      }
+
       // Texture coordinates
       if (
           attrib.texcoords.size() > 0 &&
@@ -100,6 +109,8 @@ std::vector<Mesh *> FileLoader::load(std::string file_name, std::unique_ptr<Text
       {
         vertices[k].position = glm::vec3(v[k][0], v[k][1], v[k][2]);
       }
+
+      float n[3][3];
       if (
           attrib.normals.size() > 0 &&
           idx0.normal_index >= 0 &&
@@ -107,7 +118,6 @@ std::vector<Mesh *> FileLoader::load(std::string file_name, std::unique_ptr<Text
           idx2.normal_index >= 0)
       {
         // Normals
-        float n[3][3];
         for (int k = 0; k < 3; k += 1)
         {
           n[0][k] = attrib.normals[3 * idx0.normal_index + k];
@@ -120,10 +130,23 @@ std::vector<Mesh *> FileLoader::load(std::string file_name, std::unique_ptr<Text
         }
       }
 
+      float normal_factor = 0.2;
+      float diffuse_factor = 1 - normal_factor;
       for (int k = 0; k < 3; k += 1)
       {
-        // TEMP
-        vertices[k].color = glm::vec3(1.f, 0.f, 0.f);
+        float c[3] = {n[k][0] * normal_factor + diffuse[0] * diffuse_factor,
+                      n[k][1] * normal_factor + diffuse[1] * diffuse_factor,
+                      n[k][2] * normal_factor + diffuse[2] * diffuse_factor};
+        float len2 = c[0] * c[0] + c[1] * c[1] + c[2] * c[2];
+        if (len2 > 0.0f)
+        {
+          float len = sqrtf(len2);
+
+          c[0] /= len;
+          c[1] /= len;
+          c[2] /= len;
+        }
+        vertices[k].color = glm::vec3(c[0], c[1], c[2]);
         vertices_all.push_back(vertices[k]);
       }
     }
