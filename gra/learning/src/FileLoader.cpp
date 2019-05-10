@@ -17,7 +17,7 @@ bool hasSmoothingGroup(const tinyobj::shape_t &shape)
   return false;
 }
 
-std::vector<Mesh *> FileLoader::load(std::string file_name, std::unique_ptr<TextureManager> &manager)
+std::vector<Mesh *> FileLoader::load(std::string file_name, std::unique_ptr<TextureManager> &manager, std::vector<std::shared_ptr<Material>> &materials)
 {
   std::string input_file = FileLoader::BASE_DIR + file_name;
   tinyobj::attrib_t attrib;

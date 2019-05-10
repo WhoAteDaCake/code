@@ -6,7 +6,8 @@
 std::vector<std::unique_ptr<Object>> Object::from_file(std::string file_name, std::unique_ptr<TextureManager> &manager)
 {
   std::vector<std::unique_ptr<Object>> output;
-  std::vector<Mesh *> meshes = FileLoader::load(file_name, manager);
+  std::vector<std::shared_ptr<Material>> mats;
+  std::vector<Mesh *> meshes = FileLoader::load(file_name, manager, mats);
 
   for (Mesh *mesh : meshes)
   {
