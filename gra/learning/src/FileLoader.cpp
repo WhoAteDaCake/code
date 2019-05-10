@@ -173,7 +173,6 @@ std::vector<Mesh *> FileLoader::load(
     for (size_t f = 0; f < shapes[s].mesh.indices.size() / 3; f++)
     {
       Vertex vertices[3] = {Vertex(), Vertex(), Vertex()};
-      GLuint indices[3] = {0, 0, 0};
       tinyobj::index_t ids[3];
 
       loop3(i)
@@ -210,12 +209,15 @@ std::vector<Mesh *> FileLoader::load(
       }
       // Vertices
       float v[3][3];
-      loop3(i)
+      loop3(k)
       {
-        loop3(k)
-        {
-          v[k][i] = attrib.vertices[3 * ids[k].vertex_index + i];
-        }
+        v[0][k] = attrib.vertices[3 * ids[0].vertex_index + k];
+        v[1][k] = attrib.vertices[3 * ids[1].vertex_index + k];
+        v[2][k] = attrib.vertices[3 * ids[2].vertex_index + k];
+        // loop3(k)
+        // {
+        //   v[k][i] = attrib.vertices[3 * ids[k].vertex_index + i];
+        // }
       }
       loop3(i)
       {
