@@ -4,6 +4,7 @@
 #include "CommonObjects.h"
 
 std::unique_ptr<Object> make_cube(
+    std::string name,
     std::unique_ptr<MaterialManager> &mat_manager,
     glm::vec3 color,
     glm::vec3 position,
@@ -11,55 +12,50 @@ std::unique_ptr<Object> make_cube(
     glm::vec3 scale)
 {
   float size = 1.f;
-  float start = 0.f;
-  auto make_vertex = [&, color](glm::vec3 pos) { return Vertex(pos, color, glm::vec2(0.f), glm::vec3(0.f)); };
+  auto make_vertex = [&, color](float f1, float f2, float f3) { return Vertex(glm::vec3(f1, f2, f3), color, glm::vec2(0.f), glm::vec3(0.f)); };
 
   // Will require 8 corners
   Vertex vertices[] = {
-      make_vertex(glm::vec3(-size, -size, -size)), // 0
-      make_vertex(glm::vec3(-size, -size, size)),  // 1
-      make_vertex(glm::vec3(size, -size, size)),   // 2
-      make_vertex(glm::vec3(size, -size, -size)),  // 3
-      //
-      make_vertex(glm::vec3(-size, size, -size)), // 4
-      make_vertex(glm::vec3(-size, size, size)),  // 5
-      make_vertex(glm::vec3(size, size, size)),   // 6
-      make_vertex(glm::vec3(size, size, -size)),  // 7
-
-      // Left side
-      // make_vertex(glm::vec3(start, start, start)), // 0
-      // make_vertex(glm::vec3(start, size, start)),  // 1
-      // make_vertex(glm::vec3(start, size, size)),   // 2
-      // make_vertex(glm::vec3(start, start, size)),  // 3
-      // // Right side
-      // make_vertex(glm::vec3(size, start, start)), // 4
-      // make_vertex(glm::vec3(size, size, start)),  // 5
-      // make_vertex(glm::vec3(size, size, size)),   // 6
-      // make_vertex(glm::vec3(size, start, size)),  // 7
+      // Front
+      make_vertex(-size, size, size),
+      make_vertex(-size, -size, size),
+      make_vertex(size, -size, size),
+      make_vertex(size, size, size),
+      // Back
+      make_vertex(-size, size, -size),
+      make_vertex(-size, -size, -size),
+      make_vertex(size, -size, -size),
+      make_vertex(size, size, -size),
   };
 
   glm::vec3 normals[] = {
-      glm::vec3(1.f, 0.f, 0.f),
-      glm::vec3(-1.f, 0.f, 0.f),
-      glm::vec3(0.f, 1.f, 0.f),
-      glm::vec3(0.f, -1.f, 0.f),
+      glm::vec3(0.f, 0.f, 1.f),  // F
+      glm::vec3(1.f, 0.f, 0.f),  // R
+      glm::vec3(0.f, 0.f, -1.f), // B
+      glm::vec3(-1.f, 0.f, 0.f), // L
+      glm::vec3(0.f, 1.f, 0.f),  // T
+      glm::vec3(0.f, -1.f, 0.f), // Bot
   };
-
   GLuint indices[] = {
+      // FRONT
+      0, 1, 2,
+      0, 2, 3,
+      // RIGHT
+      3, 2, 6,
+      3, 6, 7,
+      // BACK
+      7, 6, 5,
+      4, 7, 5,
+      // LEFT
+      0, 4, 5,
+      0, 5, 1,
       // TOP
-      4,
-      5,
-      6,
-      6,
-      7,
-      4,
+      7, 4, 0,
+      7, 0, 3,
       // BOTTOM
-      0,
-      3,
-      2,
-      2,
-      1,
-      0};
+      6, 2, 1,
+      6, 1, 5};
+
   // We dont use idices here because it's easier to calculate normals this way
   std::vector<Vertex> v_vector;
   for (int i = 0; i < sizeof(indices) / sizeof(GLuint); i += 3)
@@ -72,10 +68,6 @@ std::unique_ptr<Object> make_cube(
       faces[k] = vertices[indices[i + k]];
     }
     // glm::vec3 normal = glm::triangleNormal(faces[0].position, faces[1].position, faces[2].position);
-    // Push the vertices
-    faces[i + 0].color = glm::vec3(1.f, 0.f, 0.f);
-    faces[i + 1].color = glm::vec3(0.f, 1.f, 0.f);
-    faces[i + 2].color = glm::vec3(0.f, 0.f, 1.f);
     loop3(k)
     {
       faces[k].normal = normals[normal_i];
@@ -83,12 +75,12 @@ std::unique_ptr<Object> make_cube(
     }
   }
 
-  Mesh *mesh = new Mesh("Cube");
+  Mesh *mesh = new Mesh(name);
   mesh->vertices = v_vector;
   mesh->position = position;
   mesh->scale = scale;
   mesh->rotation = rotation;
 
   std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f), true);
-  return std::unique_ptr<Object>(new Object("Cube_object", nullptr, nullptr, material, mesh));
+  return std::unique_ptr<Object>(new Object(name, nullptr, nullptr, material, mesh));
 }
