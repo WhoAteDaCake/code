@@ -4,8 +4,8 @@
 #include <memory>
 #include <map>
 
-#ifndef TEXTURE_MANAGER_H
-#define TEXTURE_MANAGER_H
+#ifndef MATERIAL_MANAGER_H
+#define MATERIAL_MANAGER_H
 
 class MaterialManager
 {
@@ -21,8 +21,7 @@ public:
            glm::vec3 diffuse,
            glm::vec3 specular)
   {
-    std::shared_ptr<Material> texture = std::make_shared<Material>(ambient, diffuse, special);
-    texture->load();
+    std::shared_ptr<Material> texture = std::make_shared<Material>(ambient, diffuse, specular);
     this->items.insert(std::pair<std::string, std::shared_ptr<Material>>(name, std::move(texture)));
     MaterialManager::ID += 1;
   }

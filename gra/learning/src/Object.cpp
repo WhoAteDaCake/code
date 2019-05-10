@@ -3,29 +3,31 @@
 // #define TINYOBJLOADER_IMPLEMENTATION
 // #include "tiny_obj_loader.h"
 
-std::vector<std::unique_ptr<Object>> Object::from_file(std::string file_name, std::unique_ptr<TextureManager> &manager)
+std::vector<std::unique_ptr<Object>> Object::from_file(
+    std::string file_name,
+    std::unique_ptr<TextureManager> &manager,
+    std::unique_ptr<MaterialManager> &mat_manager)
 {
   std::vector<std::unique_ptr<Object>> output;
-  std::vector<std::shared_ptr<Material>> mats;
-  std::vector<Mesh *> meshes = FileLoader::load(file_name, manager, mats);
+  std::vector<Mesh *> meshes = FileLoader::load(file_name, manager, mat_manager);
 
-  for (Mesh *mesh : meshes)
-  {
-    Material *material = new Material(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
-    if (mesh->texture_name.size() != 0)
-    {
-      material->set_textures(manager->get(mesh->texture_name)->get_unit(), (GLint)-1);
-      material->toggle_color(false);
-    }
+  // for (Mesh *mesh : meshes)
+  // {
+  //   Material *material = new Material(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
+  //   if (mesh->texture_name.size() != 0)
+  //   {
+  //     material->set_textures(manager->get(mesh->texture_name)->get_unit(), (GLint)-1);
+  //     material->toggle_color(false);
+  //   }
 
-    std::unique_ptr<Object> object(new Object(
-        mesh->get_name() + "_object",
-        nullptr,
-        nullptr,
-        material, mesh));
+  //   std::unique_ptr<Object> object(new Object(
+  //       mesh->get_name() + "_object",
+  //       nullptr,
+  //       nullptr,
+  //       material, mesh));
 
-    output.push_back(std::move(object));
-  }
+  //   output.push_back(std::move(object));
+  // }
   // // Square *mySquare = new Square("test-square", 0.5f);
   return output;
 }

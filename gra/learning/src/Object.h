@@ -25,7 +25,10 @@ private:
   std::vector<Mesh *> mesh;
 
 public:
-  static std::vector<std::unique_ptr<Object>> from_file(std::string file_name, std::unique_ptr<TextureManager> &manager);
+  static std::vector<std::unique_ptr<Object>> from_file(
+      std::string file_name,
+      std::unique_ptr<TextureManager> &manager,
+      std::unique_ptr<MaterialManager> &mat_manager);
 
   Object(
       std::string name,

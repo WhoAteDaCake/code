@@ -7,6 +7,7 @@
 #include "Object.h"
 #include "Shapes.h"
 #include "TextureManager.h"
+#include "MaterialManager.h"
 
 class Scene
 {
@@ -15,6 +16,7 @@ private:
   Shaders shader;
   std::vector<std::unique_ptr<Object>> objects;
   std::unique_ptr<TextureManager> texture_manager;
+  std::unique_ptr<MaterialManager> material_manager;
 
   // TEMPORARY
   glm::vec3 light_pos;
