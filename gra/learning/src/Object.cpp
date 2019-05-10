@@ -14,8 +14,8 @@ std::vector<std::unique_ptr<Object>> Object::from_file(
   for (Mesh *mesh : meshes)
   {
     // TODO texture loading ?
-    std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
-    // std::shared_ptr<Material> material = mat_manager->get(mesh->mat_name);
+    // std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
+    std::shared_ptr<Material> material = mat_manager->get(mesh->mat_name);
 
     std::unique_ptr<Object> object(new Object(
         mesh->get_name() + "_" + mesh->mat_name + "_object",

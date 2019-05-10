@@ -97,18 +97,14 @@ bool has_smoothing(const tinyobj::shape_t &shape)
 //   return s_normals;
 // }
 
-void register_materials(std::unique_ptr<MaterialManager> &mat_manager, std::vector<tinyobj::material_t> &materials)
+void register_materials(std::unique_ptr<TextureManager> &tex_manager, std::unique_ptr<MaterialManager> &mat_manager, std::vector<tinyobj::material_t> &materials)
 {
 #ifdef GRA_DEBUG
   Log::log("MATERIALS:total:" + std::to_string(materials.size()));
 #endif // DEBUG
   for (auto const &material : materials)
   {
-    // TODO load textures in the future
-    if (material.diffuse_texname.size() != 0)
-    {
-      throw std::string("Didn't load existing texture");
-    }
+
 #ifdef GRA_DEBUG
     Log::log("MATERIALS:adding:" + material.name);
 #endif // DEBUG
@@ -116,7 +112,14 @@ void register_materials(std::unique_ptr<MaterialManager> &mat_manager, std::vect
         to_vec(material.ambient),
         to_vec(material.diffuse),
         to_vec(material.specular),
-        false);
+        true);
+    // TODO load textures in the future
+    if (material.diffuse_texname.size() != 0)
+    {
+      tex_manager->add(material.diffuse_texname, GL_TEXTURE_2D);
+      mat->set_textures(tex_manager->get(material.diffuse_texname)->get_unit(), -1);
+    }
+
     mat_manager->add(material.name, mat);
   }
 }
@@ -134,7 +137,7 @@ std::vector<Mesh *> FileLoader::load(
   tinyobj::material_t default_mat = tinyobj::material_t();
   default_mat.name = "default";
   // Append `default` material
-  materials.push_back(default_mat);
+  // materials.push_back(default_mat);
 
   std::string warn;
   std::string err;
@@ -162,7 +165,7 @@ std::vector<Mesh *> FileLoader::load(
   printf("# of materials = %d\n", (int)materials.size());
   printf("# of shapes    = %d\n", (int)shapes.size());
 
-  register_materials(mat_manager, materials);
+  register_materials(tex_manager, mat_manager, materials);
   std::vector<Mesh *> meshes;
 
   for (size_t s = 0; s < shapes.size(); s++)
@@ -246,9 +249,6 @@ std::vector<Mesh *> FileLoader::load(
 #ifdef GRA_DEBUG
         Log::warn("No normals for " + shapes[s].name);
 #endif
-        // loop3(i) {
-        //   vetrices[]
-        // }
       }
 
       float normal_factor = 0.2;
@@ -269,7 +269,8 @@ std::vector<Mesh *> FileLoader::load(
           c[1] /= len;
           c[2] /= len;
         }
-        vertices[k].color = glm::vec3(c[0], c[1], c[2]);
+        // vertices[k].color = glm::vec3(c[0], c[1], c[2]);
+        vertices[k].color = glm::vec3(1.f, 1.f, 1.f);
         vertices_all.push_back(vertices[k]);
       }
     }

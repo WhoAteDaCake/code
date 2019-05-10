@@ -69,6 +69,6 @@ void Scene::create_textures()
 
 void Scene::create_objects()
 {
-  std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room.obj"), this->texture_manager, this->material_manager);
+  std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room-high.obj"), this->texture_manager, this->material_manager);
   std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 }
