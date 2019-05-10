@@ -13,8 +13,8 @@ private:
   glm::vec3 diffuse;
   glm::vec3 specular;
   GLint diffuse_tex;
-  GLint specular_tex;
-  bool has_textures;
+  bool has_diffuse_tex;
+  bool has_specular_tex;
   bool show_color;
 
 public:
@@ -23,7 +23,8 @@ public:
            glm::vec3 specular) : ambient(ambient),
                                  diffuse(diffuse),
                                  specular(specular),
-                                 has_textures(false),
+                                 has_diffuse_tex(false),
+                                 has_specular_tex(false),
                                  show_color(true)
   {
   }
@@ -52,7 +53,8 @@ public:
   {
     this->diffuse_tex = diffuse_tex;
     this->specular_tex = specular_tex;
-    this->has_textures = true;
+    this->has_diffuse_tex = diffuse_tex != -1;
+    this->has_specular_tex = specular_tex != -1;
   }
 
   void send_to_shader(Shaders *program)
@@ -60,12 +62,17 @@ public:
     program->use3fv("material.ambient", this->ambient);
     program->use3fv("material.diffuse", this->diffuse);
     program->use3fv("material.specular", this->specular);
-    if (has_textures)
+    program->use1i("mat_has_diffuse", this->has_diffuse_tex ? 1 : 0);
+    program->use1i("mat_has_specular", this->has_specular_tex ? 1 : 0);
+
+    if (this->has_diffuse_tex)
     {
       program->use1i("mat_diffuse_tex", this->diffuse_tex);
+    }
+    if (this->has_specular_tex)
+    {
       program->use1i("mat_specular_tex", this->specular_tex);
     }
-    program->use1i("mat_has_tex", this->has_textures ? 1 : 0);
     program->use1i("show_color", this->show_color ? 1 : 0);
 #ifdef GRA_DEBUG
     Log::check_error("Sending to shader");

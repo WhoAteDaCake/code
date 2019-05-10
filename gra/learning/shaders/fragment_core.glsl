@@ -16,7 +16,10 @@ uniform Material material;
 // Because 130 doesn't support samplers inside structs
 uniform sampler2D mat_diffuse_tex;
 uniform sampler2D mat_specular_tex;
-uniform int mat_has_tex;
+// Sometimes we might not to supply both of these textures
+uniform int mat_has_diffuse;
+uniform int mas_has_specular;
+
 uniform int show_color;
 
 
@@ -42,7 +45,7 @@ vec4 get_specular(Material material, vec3 position, vec3 normal, vec3 light_pos,
 	// TODO use light color
 	// And check for optional specular textures
 	vec3 tex_color = vec3(1.f);
-	if (mat_has_tex == 1) {
+	if (mas_has_specular == 1) {
 		tex_color = texture(mat_specular_tex, vs_texcoord).rgb;
 	}
 
@@ -53,7 +56,7 @@ vec4 get_specular(Material material, vec3 position, vec3 normal, vec3 light_pos,
 void main()
 {
 	vec4 texture_color = vec4(1.f);
-	if (mat_has_tex == 1) {
+	if (mat_has_diffuse == 1) {
 		texture_color = texture(mat_diffuse_tex,vs_texcoord);
 	}
 	vec4 color = vec4(1.f);
