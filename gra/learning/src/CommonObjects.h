@@ -6,6 +6,7 @@
 #include "Object.h"
 
 std::unique_ptr<Object> make_cube(
+    std::string name,
     std::unique_ptr<MaterialManager> &mat_manager,
     glm::vec3 color,
     glm::vec3 position,
