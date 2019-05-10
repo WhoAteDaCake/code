@@ -15,14 +15,15 @@ Engine::Engine(
   glutInit(&argc, argv);
 
   this->camera = Camera();
-  this->camera.yaw = -88.8f;
-  this->camera.update_front();
-  this->camera.update_position(glm::vec3(-13.f, 27.f, -6.5f));
+  // this->camera.yaw = 178.f;
+  // this->camera.pitch = -79.6f;
+  // this->camera.update_front();
+  // this->camera.update_position(glm::vec3(-0.1f, 112.7f, -14.f));
 
   // Start of scene
-  // this->camera.yaw = -180.f;
-  // this->camera.update_front();
-  // this->camera.update_position(glm::vec3(26.f, 26.5f, -27.4f));
+  this->camera.yaw = -180.f;
+  this->camera.update_front();
+  this->camera.update_position(glm::vec3(26.f, 26.5f, -27.4f));
 
   this->w_width = width;
   this->w_height = height;
@@ -96,7 +97,7 @@ void Engine::draw_cb()
 
 void Engine::handle_key_cb(unsigned char key, int x, int y)
 {
-  float change = 0.09f * static_cast<float>(this->delta_time);
+  float change = 0.12f * static_cast<float>(this->delta_time);
   glm::vec3 current_position = this->camera.position;
   if (key == 'w')
   {

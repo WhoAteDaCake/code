@@ -19,6 +19,10 @@ public:
 
   void add(std::string name, GLenum type)
   {
+#ifdef GRA_DEBUG
+    Log::log(std::string("TextureManger:add:") + std::to_string(TextureManager::ID) + ":" + name);
+#endif // DEBUG
+
     std::shared_ptr<Texture> texture = std::make_shared<Texture>(type, TextureManager::ID, name);
     texture->load();
     this->textures.insert(std::pair<std::string, std::shared_ptr<Texture>>(name, std::move(texture)));

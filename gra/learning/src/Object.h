@@ -66,10 +66,19 @@ public:
 #endif // DEBUG
   }
 
-  bool has_textures();
+  bool has_diffuse();
+  bool has_specular();
   void draw(Shaders *program);
   void clear();
   void initialize();
+
+  inline void set_diffuse(SharedTexture diffuse_tex)
+  {
+    this->diffuse = diffuse_tex;
+    GLint spec_id = has_specular() ? this->specular->get_unit() : -1;
+    GLint diff_id = has_diffuse() ? this->diffuse->get_unit() : -1;
+    this->material->set_textures(diff_id, spec_id);
+  }
 
   inline void add_mesh(Mesh *mesh)
   {

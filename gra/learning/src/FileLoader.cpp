@@ -54,6 +54,7 @@ void register_materials(std::unique_ptr<TextureManager> &tex_manager, std::uniqu
     {
       tex_manager->add(material.diffuse_texname, GL_TEXTURE_2D);
       mat->set_textures(tex_manager->get(material.diffuse_texname)->get_unit(), -1);
+      mat->diffuse_tex_name = material.diffuse_texname;
     }
 
     mat_manager->add(material.name, mat);

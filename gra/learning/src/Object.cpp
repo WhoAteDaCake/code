@@ -14,12 +14,17 @@ std::vector<std::unique_ptr<Object>> Object::from_file(
   for (Mesh *mesh : meshes)
   {
     // TODO texture loading ?
-    // std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
     std::shared_ptr<Material> material = mat_manager->get(mesh->mat_name);
+    std::shared_ptr<Texture> diffuse_tex = nullptr;
+
+    if (material->diffuse_tex_name.size() != 0)
+    {
+      diffuse_tex = tex_manager->get(material->diffuse_tex_name);
+    }
 
     std::unique_ptr<Object> object(new Object(
         mesh->get_name() + "_" + mesh->mat_name + "_object",
-        nullptr,
+        diffuse_tex,
         nullptr,
         material, mesh));
 
@@ -28,9 +33,14 @@ std::vector<std::unique_ptr<Object>> Object::from_file(
   return output;
 }
 
-bool Object::has_textures()
+bool Object::has_specular()
 {
-  return this->diffuse != nullptr && this->specular != nullptr;
+  return this->specular != nullptr;
+}
+
+bool Object::has_diffuse()
+{
+  return this->diffuse != nullptr;
 }
 
 void Object::initialize()
@@ -40,11 +50,9 @@ void Object::initialize()
     Mesh *mesh = this->mesh[i];
     mesh->initialize();
   }
-  if (has_textures())
-  {
-    this->material->set_textures(this->diffuse->get_unit(), this->specular->get_unit());
-  }
-
+  GLint spec_id = has_specular() ? this->specular->get_unit() : -1;
+  GLint diff_id = has_diffuse() ? this->diffuse->get_unit() : -1;
+  this->material->set_textures(diff_id, spec_id);
 #ifdef GRA_DEBUG
   Log::check_error("Object:" + this->name + ":initialize");
 #endif
@@ -56,10 +64,13 @@ void Object::draw(Shaders *program)
   this->material->send_to_shader(program);
 
   program->use();
-  if (has_textures())
+  if (has_specular())
+  {
+    this->specular->bind();
+  }
+  if (has_diffuse())
   {
     this->diffuse->bind();
-    this->specular->bind();
   }
   for (int i = 0; i < this->mesh.size(); i += 1)
   {
@@ -70,9 +81,12 @@ void Object::draw(Shaders *program)
 
 void Object::clear()
 {
-  if (has_textures())
+  if (has_specular())
+  {
+    this->specular->unbind();
+  }
+  if (has_diffuse())
   {
     this->diffuse->unbind();
-    this->specular->unbind();
   }
 }

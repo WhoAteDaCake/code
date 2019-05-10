@@ -20,6 +20,7 @@ public:
   glm::vec3 ambient;
   glm::vec3 diffuse;
   glm::vec3 specular;
+  std::string diffuse_tex_name;
 
   Material(glm::vec3 ambient,
            glm::vec3 diffuse,
@@ -31,7 +32,8 @@ public:
                               has_specular_tex(false),
                               show_color(show_color),
                               diffuse_tex(-1),
-                              specular_tex(-1)
+                              specular_tex(-1),
+                              diffuse_tex_name("")
   {
   }
 

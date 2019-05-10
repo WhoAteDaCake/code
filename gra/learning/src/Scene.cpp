@@ -63,7 +63,7 @@ void Scene::clear()
 
 void Scene::create_textures()
 {
-  // this->texture_manager->add("pusheen.png", GL_TEXTURE_2D);
+  this->texture_manager->add("wall.png", GL_TEXTURE_2D);
   // this->texture_manager->add("pusheen_specular.png", GL_TEXTURE_2D);
 }
 
@@ -73,16 +73,41 @@ void Scene::create_objects()
   std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 
   float limit = 255.f;
-  auto blue = glm::vec3(20.f / limit, 47.f / limit, 90.f / limit);
-  auto cube = make_cube(
-      std::string("wall-right"),
+  auto blue = glm::vec3(17.f / limit, 41.f / limit, 77.f / limit);
+  auto right_wall = make_cube(
+      std::string("right-wall"),
       this->material_manager,
       blue,
       // Position
       glm::vec3(-10.f, 33.5f, -69.f),
       glm::vec3(0.f, 0.f, 0.f),
-      // glm::vec3(0.f, 90.f, 0),
       // Scale
       glm::vec3(51.f, 35.f, 2.f));
-  this->objects.push_back(std::move(cube));
+  auto back_wall = make_cube(
+      std::string("back-wall"),
+      this->material_manager,
+      blue,
+      // Position
+      glm::vec3(40.5f, 30.f, -15.f),
+      glm::vec3(0.f, 0.f, 0.f),
+      // Scale
+      glm::vec3(1.f, 35.f, 51.f));
+
+  auto roof = make_cube(
+      std::string("roof"),
+      this->material_manager,
+      blue,
+      // Position
+      glm::vec3(-10.5f, 65.5f, -16.f),
+      glm::vec3(0.f, 0.f, 0.f),
+      // Scale
+      glm::vec3(51.f, 2.f, 51.f));
+
+  auto wall_tex = this->texture_manager->get("wall.png");
+  right_wall->set_diffuse(wall_tex);
+  back_wall->set_diffuse(wall_tex);
+
+  this->objects.push_back(std::move(right_wall));
+  this->objects.push_back(std::move(roof));
+  this->objects.push_back(std::move(back_wall));
 }
