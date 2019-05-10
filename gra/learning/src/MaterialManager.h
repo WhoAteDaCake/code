@@ -17,12 +17,17 @@ public:
   MaterialManager(){};
   ~MaterialManager() {}
 
-  void add(std::string name, glm::vec3 ambient,
+  void add(std::string name,
+           glm::vec3 ambient,
            glm::vec3 diffuse,
-           glm::vec3 specular)
+           glm::vec3 specular,
+           bool show_color)
   {
-    std::shared_ptr<Material> texture = std::make_shared<Material>(ambient, diffuse, specular);
-    this->items.insert(std::pair<std::string, std::shared_ptr<Material>>(name, std::move(texture)));
+    std::shared_ptr<Material> item = std::make_shared<Material>(ambient, diffuse, specular, show_color);
+
+    this->items.insert(std::make_pair(
+        name,
+        std::move(item)));
     MaterialManager::ID += 1;
   }
 

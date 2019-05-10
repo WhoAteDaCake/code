@@ -5,11 +5,11 @@
 
 std::vector<std::unique_ptr<Object>> Object::from_file(
     std::string file_name,
-    std::unique_ptr<TextureManager> &manager,
+    std::unique_ptr<TextureManager> &tex_manager,
     std::unique_ptr<MaterialManager> &mat_manager)
 {
   std::vector<std::unique_ptr<Object>> output;
-  std::vector<Mesh *> meshes = FileLoader::load(file_name, manager, mat_manager);
+  std::vector<Mesh *> meshes = FileLoader::load(file_name, tex_manager, mat_manager);
 
   // for (Mesh *mesh : meshes)
   // {

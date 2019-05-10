@@ -17,7 +17,36 @@ bool hasSmoothingGroup(const tinyobj::shape_t &shape)
   return false;
 }
 
-std::vector<Mesh *> load(
+glm::vec3 to_vec(const tinyobj::real_t entry[3])
+{
+  return glm::vec3(entry[0], entry[1], entry[2]);
+}
+
+void register_materials(std::unique_ptr<MaterialManager> &mat_manager, std::vector<tinyobj::material_t> &materials)
+{
+#ifdef GRA_DEBUG
+  Log::log("MATERIALS:total:" + std::to_string(materials.size()));
+#endif // DEBUG
+  for (auto const &material : materials)
+  {
+    // TODO load textures in the future
+    if (material.diffuse_texname.size() != 0)
+    {
+      throw std::string("Didn't load existing texture");
+    }
+#ifdef GRA_DEBUG
+    Log::log("MATERIALS:adding:" + material.name);
+#endif // DEBUG
+    mat_manager->add(
+        material.name,
+        to_vec(material.ambient),
+        to_vec(material.diffuse),
+        to_vec(material.specular),
+        false);
+  }
+}
+
+std::vector<Mesh *> FileLoader::load(
     std::string file_name,
     std::unique_ptr<TextureManager> &tex_manager,
     std::unique_ptr<MaterialManager> &mat_manager)
@@ -41,20 +70,19 @@ std::vector<Mesh *> load(
     Log::error(err);
   }
 
-  // if (!ret)
-  // {
-  //   throw std::string("Could not read object file\n");
-  // }
+  if (!ret)
+  {
+    throw std::string("Could not read object file\n");
+  }
 
-  // // TMP
-  // printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
-  // printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
-  // printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
-  // printf("# of materials = %d\n", (int)materials.size());
-  // printf("# of shapes    = %d\n", (int)shapes.size());
+  // TMP
+  printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
+  printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
+  printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
+  printf("# of materials = %d\n", (int)materials.size());
+  printf("# of shapes    = %d\n", (int)shapes.size());
 
-  // Log::log("Materials: " + std::to_string(materials.size()));
-
+  register_materials(mat_manager, materials);
   // for (size_t m = 0; m < materials.size(); m++)
   // {
   //   tinyobj::material_t *mp = &materials[m];

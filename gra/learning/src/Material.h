@@ -23,14 +23,22 @@ private:
 public:
   Material(glm::vec3 ambient,
            glm::vec3 diffuse,
-           glm::vec3 specular) : ambient(ambient),
-                                 diffuse(diffuse),
-                                 specular(specular),
-                                 has_diffuse_tex(false),
-                                 has_specular_tex(false),
-                                 show_color(true)
+           glm::vec3 specular,
+           bool show_color) : ambient(ambient),
+                              diffuse(diffuse),
+                              specular(specular),
+                              has_diffuse_tex(false),
+                              has_specular_tex(false),
+                              show_color(show_color)
   {
   }
+
+  Material(glm::vec3 ambient,
+           glm::vec3 diffuse,
+           glm::vec3 specular) : Material(ambient, diffuse, specular, false)
+  {
+  }
+
   ~Material()
   {
 #ifdef GRA_DEBUG
