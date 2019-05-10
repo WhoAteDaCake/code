@@ -209,15 +209,12 @@ std::vector<Mesh *> FileLoader::load(
       }
       // Vertices
       float v[3][3];
-      loop3(k)
+      loop3(i)
       {
-        v[0][k] = attrib.vertices[3 * ids[0].vertex_index + k];
-        v[1][k] = attrib.vertices[3 * ids[1].vertex_index + k];
-        v[2][k] = attrib.vertices[3 * ids[2].vertex_index + k];
-        // loop3(k)
-        // {
-        //   v[k][i] = attrib.vertices[3 * ids[k].vertex_index + i];
-        // }
+        loop3(k)
+        {
+          v[k][i] = attrib.vertices[3 * ids[k].vertex_index + i];
+        }
       }
       loop3(i)
       {
