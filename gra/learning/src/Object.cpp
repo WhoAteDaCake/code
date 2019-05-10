@@ -3,21 +3,30 @@
 // #define TINYOBJLOADER_IMPLEMENTATION
 // #include "tiny_obj_loader.h"
 
-Object *Object::from_file(std::string file_name, std::unique_ptr<TextureManager> &manager)
+std::vector<std::unique_ptr<Object>> Object::from_file(std::string file_name, std::unique_ptr<TextureManager> &manager)
 {
+  std::vector<std::unique_ptr<Object>> output;
   std::vector<Mesh *> meshes = FileLoader::load(file_name, manager);
 
-  // Square *mySquare = new Square("test-square", 0.5f);
-  Material *material = new Material(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
+  for (Mesh *mesh : meshes)
+  {
+    Material *material = new Material(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
+    if (mesh->texture_name.size() != 0)
+    {
+      material->set_textures(manager->get(mesh->texture_name)->get_unit(), (GLint)-1);
+      material->toggle_color(false);
+    }
 
-  Object *object = new Object(
-      file_name + "_object",
-      nullptr,
-      nullptr,
-      material);
-  object->set_mesh(meshes);
+    std::unique_ptr<Object> object(new Object(
+        mesh->get_name() + "_object",
+        nullptr,
+        nullptr,
+        material, mesh));
 
-  return object;
+    output.push_back(std::move(object));
+  }
+  // // Square *mySquare = new Square("test-square", 0.5f);
+  return output;
 }
 
 bool Object::has_textures()

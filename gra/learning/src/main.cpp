@@ -41,7 +41,7 @@ void mouse_move(int x, int y)
 
 int main(int iArgc, char **cppArgv)
 {
-    active = std::unique_ptr<Engine>(new Engine(iArgc, cppArgv, "Test window", 400, 400));
+    active = std::unique_ptr<Engine>(new Engine(iArgc, cppArgv, "Test window", 600, 600));
 
     try
     {

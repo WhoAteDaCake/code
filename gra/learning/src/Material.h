@@ -12,7 +12,10 @@ private:
   glm::vec3 ambient;
   glm::vec3 diffuse;
   glm::vec3 specular;
+
   GLint diffuse_tex;
+  GLint specular_tex;
+
   bool has_diffuse_tex;
   bool has_specular_tex;
   bool show_color;

@@ -68,19 +68,6 @@ void Scene::create_textures()
 
 void Scene::create_objects()
 {
-  // Square *mySquare = new Square("test-square", 0.5f);
-  // Material *material = new Material(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f));
-  // material->toggle_color(false);
-
-  std::unique_ptr<Object> testObj(Object::from_file(std::string("room.obj"), this->texture_manager));
-  // std::unique_ptr<Object> testObj(new Object(
-  //     "test-obj",
-  //     // nullptr,
-  //     // nullptr,
-  //     this->texture_manager->get("pusheen.png"),
-  //     this->texture_manager->get("pusheen_specular.png"),
-  //     material,
-  //     mySquare));
-
-  this->objects.push_back(std::move(testObj));
+  std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room.obj"), this->texture_manager);
+  std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 }

@@ -77,6 +77,11 @@ public:
   void draw(Shaders *program);
   void update();
 
+  inline std::string get_name()
+  {
+    return this->name;
+  }
+
   inline bool has_indices()
   {
     return this->indices.size() != 0;

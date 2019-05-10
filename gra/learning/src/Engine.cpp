@@ -29,7 +29,7 @@ Engine::Engine(
 
   glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutInitWindowSize(this->w_width, this->w_height);
-  glutInitWindowPosition(200, 200);
+  glutInitWindowPosition(0, 0);
   glutCreateWindow(title);
 
   // GL options
@@ -87,7 +87,7 @@ void Engine::draw_cb()
 
 void Engine::handle_key_cb(unsigned char key, int x, int y)
 {
-  float change = 0.05f * static_cast<float>(this->delta_time);
+  float change = 0.1f * static_cast<float>(this->delta_time);
   glm::vec3 current_position = this->camera.position;
   if (key == 'w')
   {
