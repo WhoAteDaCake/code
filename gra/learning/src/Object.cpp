@@ -11,24 +11,25 @@ std::vector<std::unique_ptr<Object>> Object::from_file(
   std::vector<std::unique_ptr<Object>> output;
   std::vector<Mesh *> meshes = FileLoader::load(file_name, tex_manager, mat_manager);
 
-  // for (Mesh *mesh : meshes)
-  // {
-  //   Material *material = new Material(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
-  //   if (mesh->texture_name.size() != 0)
-  //   {
-  //     material->set_textures(manager->get(mesh->texture_name)->get_unit(), (GLint)-1);
-  //     material->toggle_color(false);
-  //   }
+  for (Mesh *mesh : meshes)
+  {
+    // TODO texture loading ?
+    std::shared_ptr<Material> material = mat_manager->get(mesh->mat_name);
+    // Material *material = new Material(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f));
+    // if (mesh->texture_name.size() != 0)
+    // {
+    //   material->set_textures(manager->get(mesh->texture_name)->get_unit(), (GLint)-1);
+    //   material->toggle_color(false);
+    // }
 
-  //   std::unique_ptr<Object> object(new Object(
-  //       mesh->get_name() + "_object",
-  //       nullptr,
-  //       nullptr,
-  //       material, mesh));
+    std::unique_ptr<Object> object(new Object(
+        mesh->get_name() + "_" + mesh->mat_name + "_object",
+        nullptr,
+        nullptr,
+        material, mesh));
 
-  //   output.push_back(std::move(object));
-  // }
-  // // Square *mySquare = new Square("test-square", 0.5f);
+    output.push_back(std::move(object));
+  }
   return output;
 }
 

@@ -21,7 +21,7 @@ private:
   std::string name;
   SharedTexture diffuse;
   SharedTexture specular;
-  Material *material;
+  std::shared_ptr<Material> material;
   std::vector<Mesh *> mesh;
 
 public:
@@ -34,7 +34,7 @@ public:
       std::string name,
       SharedTexture diffuse,
       SharedTexture specular,
-      Material *material,
+      std::shared_ptr<Material> material,
       Mesh *mesh) : name(name),
                     diffuse(diffuse),
                     specular(specular),
@@ -46,16 +46,15 @@ public:
       std::string name,
       SharedTexture diffuse,
       SharedTexture specular,
-      Material *material) : name(name),
-                            diffuse(diffuse),
-                            specular(specular),
-                            material(material)
+      std::shared_ptr<Material> material) : name(name),
+                                            diffuse(diffuse),
+                                            specular(specular),
+                                            material(material)
   {
   }
 
   ~Object()
   {
-    delete this->material;
 
     for (std::vector<Mesh *>::iterator it = this->mesh.begin(); it != this->mesh.end(); ++it)
     {

@@ -14,7 +14,9 @@ private:
 
 public:
   static unsigned int ID;
-  MaterialManager(){};
+  MaterialManager(){
+
+  };
   ~MaterialManager() {}
 
   void add(std::string name, Material *mat)
