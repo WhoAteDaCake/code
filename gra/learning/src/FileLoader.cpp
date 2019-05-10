@@ -37,12 +37,12 @@ void register_materials(std::unique_ptr<MaterialManager> &mat_manager, std::vect
 #ifdef GRA_DEBUG
     Log::log("MATERIALS:adding:" + material.name);
 #endif // DEBUG
-    mat_manager->add(
-        material.name,
+    Material *mat = new Material(
         to_vec(material.ambient),
         to_vec(material.diffuse),
         to_vec(material.specular),
         false);
+    mat_manager->add(material.name, mat);
   }
 }
 

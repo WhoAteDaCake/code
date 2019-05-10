@@ -17,14 +17,9 @@ public:
   MaterialManager(){};
   ~MaterialManager() {}
 
-  void add(std::string name,
-           glm::vec3 ambient,
-           glm::vec3 diffuse,
-           glm::vec3 specular,
-           bool show_color)
+  void add(std::string name, Material *mat)
   {
-    std::shared_ptr<Material> item = std::make_shared<Material>(ambient, diffuse, specular, show_color);
-
+    std::shared_ptr<Material> item(mat);
     this->items.insert(std::make_pair(
         name,
         std::move(item)));

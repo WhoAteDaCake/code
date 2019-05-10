@@ -4,6 +4,7 @@ Scene::Scene()
 {
   this->shader = Shaders();
   this->texture_manager = std::unique_ptr<TextureManager>(new TextureManager());
+  this->material_manager = std::unique_ptr<MaterialManager>(new MaterialManager());
 }
 
 Scene::~Scene() {}

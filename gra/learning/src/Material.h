@@ -9,10 +9,6 @@
 class Material
 {
 private:
-  glm::vec3 ambient;
-  glm::vec3 diffuse;
-  glm::vec3 specular;
-
   GLint diffuse_tex;
   GLint specular_tex;
 
@@ -21,6 +17,10 @@ private:
   bool show_color;
 
 public:
+  glm::vec3 ambient;
+  glm::vec3 diffuse;
+  glm::vec3 specular;
+
   Material(glm::vec3 ambient,
            glm::vec3 diffuse,
            glm::vec3 specular,
@@ -29,7 +29,9 @@ public:
                               specular(specular),
                               has_diffuse_tex(false),
                               has_specular_tex(false),
-                              show_color(show_color)
+                              show_color(show_color),
+                              diffuse_tex(-1),
+                              specular_tex(-1)
   {
   }
 
@@ -38,6 +40,8 @@ public:
            glm::vec3 specular) : Material(ambient, diffuse, specular, false)
   {
   }
+
+  Material(const Material &m2) : Material(m2.ambient, m2.diffuse, m2.specular) {}
 
   ~Material()
   {
