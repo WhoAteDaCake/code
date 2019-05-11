@@ -90,13 +90,14 @@ std::vector<Mesh *> FileLoader::load(
     throw std::string("Could not read object file\n");
   }
 
+#ifdef GRA_DEBUG
   // TMP
   printf("# of vertices  = %d\n", (int)(attrib.vertices.size()) / 3);
   printf("# of normals   = %d\n", (int)(attrib.normals.size()) / 3);
   printf("# of texcoords = %d\n", (int)(attrib.texcoords.size()) / 2);
   printf("# of materials = %d\n", (int)materials.size());
   printf("# of shapes    = %d\n", (int)shapes.size());
-
+#endif // DEBUG
   register_materials(tex_manager, mat_manager, materials);
   std::vector<Mesh *> meshes;
 
