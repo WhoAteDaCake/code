@@ -17,6 +17,9 @@ class Mesh
 protected:
   std::string name;
 
+  void set_pointers();
+  virtual void bind_buffers();
+
 private:
   GLuint VAO;
   GLuint VBO;
@@ -28,7 +31,6 @@ private:
   glm::mat4 model_matrix;
 
   // Setup
-  void bind_buffers();
   void calculate_matrix(glm::mat4 initial_matrix);
 
   std::string message(std::string message)
@@ -78,9 +80,8 @@ public:
 
   // Setup
   virtual void initialize(glm::mat4 initial_matrix);
-
   // Actions
-  void draw(Shaders *program);
+  virtual void draw(Shaders *program);
   void update(glm::mat4 initial_matrix);
 
   inline std::string get_name()

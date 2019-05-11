@@ -1,23 +1,7 @@
 #include "Mesh.h"
 
-void Mesh::bind_buffers()
+void Mesh::set_pointers()
 {
-  // GEN VAO AND BIND
-  glGenVertexArrays(1, &this->VAO);
-  glBindVertexArray(this->VAO);
-
-  // //GEN VBO AND BIND AND SEND DATA
-  glGenBuffers(1, &this->VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-  glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), vertices.data(), this->draw_type);
-
-  // //GEN EBO AND BIND AND SEND DATA
-  if (has_indices())
-  {
-    glGenBuffers(1, &this->EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), indices.data(), this->draw_type);
-  }
   // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
   // Position
   // Could use glGetAtrributeLocation
@@ -36,7 +20,27 @@ void Mesh::bind_buffers()
   glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                         (GLvoid *)offsetof(Vertex, normal));
   glEnableVertexAttribArray(3);
+}
 
+void Mesh::bind_buffers()
+{
+  // GEN VAO AND BIND
+  glGenVertexArrays(1, &this->VAO);
+  glBindVertexArray(this->VAO);
+
+  // //GEN VBO AND BIND AND SEND DATA
+  glGenBuffers(1, &this->VBO);
+  glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+  glBufferData(GL_ARRAY_BUFFER, this->vertices.size() * sizeof(Vertex), vertices.data(), this->draw_type);
+
+  // //GEN EBO AND BIND AND SEND DATA
+  if (has_indices())
+  {
+    glGenBuffers(1, &this->EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->indices.size() * sizeof(GLuint), indices.data(), this->draw_type);
+  }
+  set_pointers();
   // BIND VAO 0
   glBindVertexArray(0);
 }

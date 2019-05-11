@@ -15,6 +15,8 @@ class Scene
 private:
   Camera *camera;
   Shaders shader;
+  // Skybox
+
   std::vector<std::unique_ptr<Object>> objects;
   std::unique_ptr<TextureManager> texture_manager;
   std::unique_ptr<MaterialManager> material_manager;
