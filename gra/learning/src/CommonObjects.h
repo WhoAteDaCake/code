@@ -46,6 +46,8 @@ private:
     Position position;
     float jump;
     float walk;
+    float y_velocity;
+    float y_velocity_max;
     // Animation bounds
     float y_end;
     float z_end;
@@ -58,22 +60,16 @@ public:
         std::shared_ptr<Material> material) : Object(name, diffuse, specular, material),
                                               state(JUMP),
                                               position(START),
-                                              jump(10.f),
+                                              jump(15.f),
                                               walk(30.f),
                                               y_end(0.f),
-                                              z_end(0.f)
+                                              z_end(0.f),
+                                              y_velocity(0.f),
+                                              y_velocity_max(0.8f)
     {
     }
 
-    void initialize()
-    {
-        // Position of body is initial position
-        this->start_pos = this->mesh[0]->position;
-        this->z_end = this->start_pos.z - this->walk;
-        this->y_end = this->start_pos.y + this->jump;
-        Object::initialize();
-    }
-
+    void initialize();
     void update(int delta);
 };
 

@@ -197,11 +197,21 @@ std::unique_ptr<Object> make_pig(
   return std::unique_ptr<Object>(object);
 }
 
+void PigObject::initialize()
+{
+  // Position of body is initial position
+  this->start_pos = this->mesh[0]->position;
+  this->z_end = this->start_pos.z - this->walk;
+  this->y_end = this->start_pos.y + this->jump;
+  this->y_velocity = this->y_velocity_max;
+  Object::initialize();
+}
+
 void PigObject::update(int delta)
 {
-  float jump_modifier = 0.01f * static_cast<float>(delta);
-  float walk_modifier = 0.04f * static_cast<float>(delta);
-  float rotation_modifier = 0.08f * static_cast<float>(delta);
+  float jump_modifier = 0.02f * static_cast<float>(delta);
+  float walk_modifier = 0.02f * static_cast<float>(delta);
+  float rotation_modifier = 0.15f * static_cast<float>(delta);
   float change = this->position == START ? 1.f : -1.f;
 
   glm::vec3 pos = this->mesh[0]->position;
@@ -210,17 +220,31 @@ void PigObject::update(int delta)
   switch (this->state)
   {
   case JUMP:
-    pos += glm::vec3(0.f, jump_modifier, 0.f);
+  {
+    pos += glm::vec3(0.f, jump_modifier + y_velocity, 0.f);
+    this->y_velocity = this->y_velocity * 0.9 - jump_modifier / 2;
+    if (this->y_velocity <= 0)
+    {
+      this->y_velocity = 0;
+    }
     if (pos.y >= this->y_end)
     {
       this->state = DOWN;
+      this->y_velocity = 0.f;
     }
     break;
+  }
   case DOWN:
-    pos += glm::vec3(0.f, -jump_modifier, 0.f);
+    pos += glm::vec3(0.f, -jump_modifier - y_velocity, 0.f);
+    this->y_velocity = this->y_velocity * 0.9 + jump_modifier / 4;
+    if (this->y_velocity > this->y_velocity_max)
+    {
+      this->y_velocity = this->y_velocity_max;
+    }
     if (pos.y <= this->start_pos.y)
     {
       this->state = ROTATE;
+      this->y_velocity = this->y_velocity_max;
     }
     break;
   case ROTATE:
@@ -246,59 +270,6 @@ void PigObject::update(int delta)
     break;
   }
   }
-
-  // if (this->state == JUMP_START)
-  // {
-  //   pos += glm::vec3(0.f, jump_modifier, 0.f);
-  //   if (pos.y >= this->y_end)
-  //   {
-  //     this->state = DOWN_START;
-  //   }
-  // }
-  // else if (this->state == DOWN_START)
-  // {
-
-  // }
-  // else if (this->state == MOVE_END)
-  // {
-  //   pos -= glm::vec3(0.f, 0.f, walk_modifier);
-  //   if (pos.z <= this->z_end)
-  //   {
-  //     this->state = JUMP_END;
-  //   }
-  // }
-  // else if (this->state == JUMP_END)
-  // {
-  //   pos += glm::vec3(0.f, jump_modifier, 0.f);
-  //   if (pos.y >= this->y_end)
-  //   {
-  //     this->state = DOWN_END;
-  //   }
-  // }
-  // else if (this->state == DOWN_END)
-  // {
-  //   pos -= glm::vec3(0.f, jump_modifier, 0.f);
-  //   if (pos.y <= this->start_pos.y)
-  //   {
-  //     this->state = ROTATE_END;
-  //   }
-  // }
-  // else if (this->state == ROTATE_END)
-  // {
-  //   rot += glm::vec3(0.f, rotation_modifier, 0.f);
-  //   if (rot.y >= 270.f)
-  //   {
-  //     this->state = MOVE_START;
-  //   }
-  // }
-  // else if (this->state == MOVE_START)
-  // {
-  //   rot += glm::vec3(0.f, rotation_modifier, 0.f);
-  //   if (rot.y >= 270.f)
-  //   {
-  //     this->state = MOVE_START;
-  //   }
-  // }
 
   this->mesh[0]->position = pos;
   this->mesh[0]->rotation = rot;
