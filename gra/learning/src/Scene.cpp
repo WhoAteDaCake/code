@@ -103,9 +103,9 @@ void Scene::create_objects()
       // Scale
       glm::vec3(51.f, 2.f, 51.f));
 
-  auto wall_tex = this->texture_manager->get("wall.png");
-  right_wall->set_diffuse(wall_tex);
-  back_wall->set_diffuse(wall_tex);
+  // auto wall_tex = this->texture_manager->get("wall.png");
+  // right_wall->set_diffuse(wall_tex);
+  // back_wall->set_diffuse(wall_tex);
 
   this->objects.push_back(std::move(right_wall));
   this->objects.push_back(std::move(roof));

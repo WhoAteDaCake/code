@@ -81,6 +81,6 @@ std::unique_ptr<Object> make_cube(
   mesh->scale = scale;
   mesh->rotation = rotation;
 
-  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.5f), glm::vec3(1.f), glm::vec3(1.f), true);
+  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f), true);
   return std::unique_ptr<Object>(new Object(name, nullptr, nullptr, material, mesh));
 }
