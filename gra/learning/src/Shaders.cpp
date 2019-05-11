@@ -44,6 +44,7 @@ GLuint Shaders::load_shader(std::string name, GLenum type)
     std::string log_str(logs);
     Log::error("Could not compile vertex shader: " + name + "\n");
     Log::error("Logs: " + log_str + "\n");
+    throw std::string("Failed to compile");
   }
   return shader;
 }

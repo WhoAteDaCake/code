@@ -9,7 +9,9 @@ GLuint SkyboxTexture::load_cubemap(const char *files[6])
   int width, height, nrChannels;
   for (int i = 0; i < 6; i += 1)
   {
-    unsigned char *data = SOIL_load_image(files[i], &width, &height, NULL, SOIL_LOAD_RGB);
+    std::string name = "./exports/";
+    name += files[i];
+    unsigned char *data = SOIL_load_image(name.c_str(), &width, &height, NULL, SOIL_LOAD_RGB);
     if (data)
     {
       glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,

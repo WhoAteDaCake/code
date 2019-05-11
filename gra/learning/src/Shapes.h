@@ -130,7 +130,7 @@ protected:
   }
 
 public:
-  Square(std::string name) : Mesh(name)
+  SkyboxMesh(std::string name) : Mesh(name)
   {
   }
 
@@ -138,10 +138,7 @@ public:
   {
     glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
     program->use();
-    // view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
-    // skyboxShader.setMat4("view", view);
-    // skyboxShader.setMat4("projection", projection);
-    // skybox cube
+
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glDepthFunc(GL_LESS);

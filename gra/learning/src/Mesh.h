@@ -20,7 +20,6 @@ protected:
   void set_pointers();
   virtual void bind_buffers();
 
-private:
   GLuint VAO;
   GLuint VBO;
   GLuint EBO;

@@ -9,6 +9,8 @@
 #include "TextureManager.h"
 #include "MaterialManager.h"
 #include "CommonObjects.h"
+#include "SkyboxShaders.h"
+#include "SkyboxTexture.h"
 
 class Scene
 {
@@ -16,6 +18,9 @@ private:
   Camera *camera;
   Shaders shader;
   // Skybox
+  std::unique_ptr<SkyboxTexture> sky_tex;
+  std::unique_ptr<SkyboxMesh> sky_mesh;
+  SkyboxShaders sky_shader;
 
   std::vector<std::unique_ptr<Object>> objects;
   std::unique_ptr<TextureManager> texture_manager;
