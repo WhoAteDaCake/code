@@ -59,6 +59,14 @@ public:
     stop_use();
   }
 
+  void use1f(const GLchar *name, float i)
+  {
+    use();
+    glUniform1f(glGetUniformLocation(this->id, name), i);
+    Log::check_error(name);
+    stop_use();
+  }
+
   void useM4fv(const GLchar *name, glm::mat4 mat)
   {
     use();

@@ -14,9 +14,14 @@ struct Material {
 
 struct Light {
     vec3 position;
+
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+		float constant;
+    float linear;
+    float quadratic;
 };
 
 uniform Light light; 
@@ -32,6 +37,12 @@ uniform int mas_has_specular;
 uniform int show_color;
 
 uniform vec3 camera_pos;
+
+float get_attenuation(Light light) {
+	float dist = length(light.position - vs_position);
+	float attenuation = 1.0 / (light.constant + light.linear * dist + light.quadratic * (dist * dist));   
+	return attenuation; 
+}
 
 vec4 get_ambient(Material material, Light light) {
 	return vec4(material.ambient * light.ambient, 1.f);
@@ -71,14 +82,16 @@ void main()
 		color = vec4(vs_color,1.f);
 	}
 
-	// fs_color = vec4(vec3(1.f, 0.f, 0.f), 1.f);
 	// Output
-	vec4 light_final=
-		get_ambient(material, light)+
-		get_diffuse(material, light, vs_position, vs_normal)+
-		get_specular(material, light,vs_position, vs_normal, camera_pos);
-	fs_color=
-		texture_color *
-		color*
-		light_final;
+	float att = get_attenuation(light);
+	// vec4 light_final=
+	vec4 ambient = get_ambient(material, light);
+	vec4 diffuse = get_diffuse(material, light, vs_position, vs_normal);
+	vec4 specular = get_specular(material, light,vs_position, vs_normal, camera_pos);
+	// ambient *= att;
+	// diffuse *= att;
+	// specular *= att;
+
+	vec4 light_final = ambient + diffuse + specular;
+	fs_color= texture_color * color* light_final;
 }
