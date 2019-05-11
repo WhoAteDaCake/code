@@ -15,7 +15,7 @@
 
 class Object
 {
-private:
+protected:
   typedef std::shared_ptr<Texture> SharedTexture;
 
   std::string name;
@@ -70,7 +70,9 @@ public:
   bool has_specular();
   void draw(Shaders *program);
   void clear();
-  void initialize();
+  void update_matrices(bool initial);
+
+  virtual void initialize();
   virtual void update(int delta);
 
   inline void set_diffuse(SharedTexture diffuse_tex)

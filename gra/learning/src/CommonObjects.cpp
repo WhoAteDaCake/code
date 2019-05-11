@@ -97,7 +97,7 @@ std::unique_ptr<Object> make_pig(
 {
   float size = 1.f;
   std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(1.f), glm::vec3(1.f), glm::vec3(1.f), true);
-  Object *object = new Object(name, nullptr, nullptr, material);
+  PigObject *object = new PigObject(name, nullptr, nullptr, material);
   // Body
   float body_scale = 2.f;
   Mesh *body = make_cube_mesh(name + "_body", color, size);

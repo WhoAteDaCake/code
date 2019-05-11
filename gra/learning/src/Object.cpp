@@ -43,7 +43,7 @@ bool Object::has_diffuse()
   return this->diffuse != nullptr;
 }
 
-void Object::initialize()
+void Object::update_matrices(bool initial)
 {
   std::vector<glm::mat4> matrices;
   glm::mat4 matrix;
@@ -58,9 +58,22 @@ void Object::initialize()
     {
       matrix = matrices[mesh->dependency_index];
     }
-    mesh->initialize(matrix);
+    if (initial)
+    {
+
+      mesh->initialize(matrix);
+    }
+    else
+    {
+      mesh->update(matrix);
+    }
     matrices.push_back(mesh->get_model_matrix());
   }
+}
+
+void Object::initialize()
+{
+  update_matrices(true);
   GLint spec_id = has_specular() ? this->specular->get_unit() : -1;
   GLint diff_id = has_diffuse() ? this->diffuse->get_unit() : -1;
   this->material->set_textures(diff_id, spec_id);
