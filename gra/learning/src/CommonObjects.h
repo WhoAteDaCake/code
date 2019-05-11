@@ -32,17 +32,23 @@ private:
 
     enum State
     {
-        JUMP_START,
-        DOWN_START,
-        MOVE_END,
-        JUMP_END,
-        DOWN_END,
-        ROTATE_END,
-        MOVE_START,
-        R_START
+        JUMP,
+        DOWN,
+        MOVE,
+        ROTATE,
+    };
+    enum Position
+    {
+        START,
+        END
     };
     State state;
+    Position position;
     float jump;
+    float walk;
+    // Animation bounds
+    float y_end;
+    float z_end;
 
 public:
     PigObject(
@@ -50,8 +56,12 @@ public:
         SharedTexture diffuse,
         SharedTexture specular,
         std::shared_ptr<Material> material) : Object(name, diffuse, specular, material),
-                                              state(JUMP_START),
-                                              jump(10.f)
+                                              state(JUMP),
+                                              position(START),
+                                              jump(10.f),
+                                              walk(30.f),
+                                              y_end(0.f),
+                                              z_end(0.f)
     {
     }
 
@@ -59,19 +69,12 @@ public:
     {
         // Position of body is initial position
         this->start_pos = this->mesh[0]->position;
-        this->end_pos = this->start_pos + glm::vec3(0.f, 0.f, -50.f);
+        this->z_end = this->start_pos.z - this->walk;
+        this->y_end = this->start_pos.y + this->jump;
         Object::initialize();
     }
 
-    void update(int delta)
-    {
-        int jump_modifier = 0.8f;
-        if (this->state == JUMP_START)
-        {
-            this->mesh[0]->position += glm::vec3(0.f, jump_modifier, 0.f);
-        }
-        update_matrices(false);
-    }
+    void update(int delta);
 };
 
 #endif // !1 COMOON_OBJECTS_H

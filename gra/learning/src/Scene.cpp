@@ -82,7 +82,7 @@ void Scene::create_objects()
       // Postion
       glm::vec3(-30.f, 9.f, -27.4f),
       // Rotation
-      glm::vec3(0.f, 90.f, 0.f),
+      glm::vec3(0.f, -90.f, 0.f),
       // Scale
       glm::vec3(3.f));
 
