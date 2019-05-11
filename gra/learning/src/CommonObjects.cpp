@@ -222,7 +222,7 @@ void PigObject::update(int delta)
   case JUMP:
   {
     pos += glm::vec3(0.f, jump_modifier + y_velocity, 0.f);
-    this->y_velocity = this->y_velocity * 0.9 - jump_modifier / 2;
+    this->y_velocity = this->y_velocity * 1.18 - jump_modifier / 2;
     if (this->y_velocity <= 0)
     {
       this->y_velocity = 0;
@@ -236,7 +236,7 @@ void PigObject::update(int delta)
   }
   case DOWN:
     pos += glm::vec3(0.f, -jump_modifier - y_velocity, 0.f);
-    this->y_velocity = this->y_velocity * 0.9 + jump_modifier / 4;
+    this->y_velocity = this->y_velocity * 0.82 + jump_modifier / 2;
     if (this->y_velocity > this->y_velocity_max)
     {
       this->y_velocity = this->y_velocity_max;
