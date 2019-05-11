@@ -71,6 +71,7 @@ public:
   void draw(Shaders *program);
   void clear();
   void initialize();
+  virtual void update(int delta);
 
   inline void set_diffuse(SharedTexture diffuse_tex)
   {

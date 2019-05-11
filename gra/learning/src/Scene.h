@@ -38,6 +38,7 @@ public:
   void draw();
   void initialize();
   void clear();
+  void update(int delta);
 };
 
 #endif

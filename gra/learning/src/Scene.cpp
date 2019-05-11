@@ -79,9 +79,12 @@ void Scene::create_objects()
       "pig",
       this->material_manager,
       pink,
-      glm::vec3(0.f, 0.f, 0.f),
+      // Postion
+      glm::vec3(-30.f, 9.f, -27.4f),
+      // Rotation
       glm::vec3(0.f, 90.f, 0.f),
-      glm::vec3(1.f));
+      // Scale
+      glm::vec3(3.f));
 
   auto blue = glm::vec3(17.f / limit, 41.f / limit, 77.f / limit);
   auto right_wall = make_cube(
@@ -121,4 +124,13 @@ void Scene::create_objects()
   this->objects.push_back(std::move(right_wall));
   this->objects.push_back(std::move(roof));
   this->objects.push_back(std::move(back_wall));
+}
+
+void Scene::update(int delta)
+{
+  // Update
+  for (std::unique_ptr<Object> &item : this->objects)
+  {
+    item->update(delta);
+  }
 }

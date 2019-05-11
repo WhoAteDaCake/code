@@ -101,3 +101,7 @@ void Object::clear()
     this->diffuse->unbind();
   }
 }
+
+void Object::update(int delta)
+{
+}
