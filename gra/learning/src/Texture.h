@@ -41,7 +41,7 @@ public:
 #endif // DEBUG
   }
 
-  void load()
+  virtual void load()
   {
     this->id = load_texture(this->file_name, this->type);
   }

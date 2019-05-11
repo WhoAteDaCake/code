@@ -14,6 +14,8 @@ private:
 
 public:
   static unsigned int ID;
+  static unsigned int get_id();
+
   TextureManager(){};
   ~TextureManager() {}
 
