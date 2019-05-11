@@ -71,60 +71,59 @@ public:
 class SkyboxMesh : public Mesh
 {
 protected:
-  void set_pointers()
+  void bind_buffers()
   {
     float skyboxVertices[] = {
-        // positions
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
+        -10.0f, 10.0f, -10.0f,
+        -10.0f, -10.0f, -10.0f,
+        10.0f, -10.0f, -10.0f,
+        10.0f, -10.0f, -10.0f,
+        10.0f, 10.0f, -10.0f,
+        -10.0f, 10.0f, -10.0f,
 
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, 1.0f,
+        -10.0f, -10.0f, 10.0f,
+        -10.0f, -10.0f, -10.0f,
+        -10.0f, 10.0f, -10.0f,
+        -10.0f, 10.0f, -10.0f,
+        -10.0f, 10.0f, 10.0f,
+        -10.0f, -10.0f, 10.0f,
 
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
+        10.0f, -10.0f, -10.0f,
+        10.0f, -10.0f, 10.0f,
+        10.0f, 10.0f, 10.0f,
+        10.0f, 10.0f, 10.0f,
+        10.0f, 10.0f, -10.0f,
+        10.0f, -10.0f, -10.0f,
 
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, 1.0f,
+        -10.0f, -10.0f, 10.0f,
+        -10.0f, 10.0f, 10.0f,
+        10.0f, 10.0f, 10.0f,
+        10.0f, 10.0f, 10.0f,
+        10.0f, -10.0f, 10.0f,
+        -10.0f, -10.0f, 10.0f,
 
-        -1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, -1.0f,
+        -10.0f, 10.0f, -10.0f,
+        10.0f, 10.0f, -10.0f,
+        10.0f, 10.0f, 10.0f,
+        10.0f, 10.0f, 10.0f,
+        -10.0f, 10.0f, 10.0f,
+        -10.0f, 10.0f, -10.0f,
 
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f};
-    glGenVertexArrays(1, &this->VAO);
-    glBindVertexArray(this->VAO);
+        -10.0f, -10.0f, -10.0f,
+        -10.0f, -10.0f, 10.0f,
+        10.0f, -10.0f, -10.0f,
+        10.0f, -10.0f, -10.0f,
+        -10.0f, -10.0f, 10.0f,
+        10.0f, -10.0f, 10.0f};
 
     glGenBuffers(1, &this->VBO);
     glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 3 * 36 * sizeof(float), &skyboxVertices, GL_STATIC_DRAW);
 
+    glGenVertexArrays(1, &this->VAO);
+    glBindVertexArray(this->VAO);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (GLvoid *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (GLvoid *)0);
     glBindVertexArray(0);
   }
 
@@ -136,9 +135,7 @@ public:
   void draw(Shaders *program)
   {
     glDisable(GL_DEPTH_TEST);
-    glDepthMask(GL_FALSE);
 
-    glCullFace(GL_FRONT);
     glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
     program->use();
 
@@ -146,9 +143,7 @@ public:
     glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);
-    glCullFace(GL_BACK);
   }
 
   void initialize(glm::mat4 inital_matrix)
