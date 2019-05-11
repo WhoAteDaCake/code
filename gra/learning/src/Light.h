@@ -5,13 +5,22 @@
 
 #include "Shaders.h"
 
+// https://learnopengl.com/Lighting/Light-casters
 class Light
 {
 public:
+  /**
+   * 0 - Directional NOT_DONE
+   * 1 - Point light NOT_DONE
+   * 2 - Spotlight NOT_DONE
+   */
+  int type;
+
   glm::vec3 position;
   glm::vec3 ambient;
   glm::vec3 diffuse;
   glm::vec3 specular;
+  glm::vec3 direction;
   float constant;
   float linear;
   float quadratic;
@@ -20,9 +29,11 @@ public:
                               ambient(glm::vec3(0.1)),
                               diffuse(glm::vec3(1.f)),
                               specular(glm::vec3(1.f)),
+                              direction(glm::vec3(0.f)),
                               constant(1.f),
-                              linear(0.09),
-                              quadratic(0.032f)
+                              linear(0.09f),
+                              quadratic(0.032f),
+                              type(1)
   {
   }
 

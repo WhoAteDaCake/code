@@ -5,6 +5,12 @@ Scene::Scene() : light(Light(glm::vec3(0.f, 0.f, 1.f)))
 {
   // TMP
   this->light.diffuse = glm::vec3(1.f, 0.f, 0.f);
+  this->light.position = glm::vec3(26.f, 26.5f, -27.4f);
+  this->light.linear = 0.007f;
+  this->light.constant = 0.0002f;
+  this->light.ambient = glm::vec3(1.f);
+  this->light.type = 0;
+
   this->shader = Shaders();
   this->sky_shader = SkyboxShaders();
   this->texture_manager = std::unique_ptr<TextureManager>(new TextureManager());
