@@ -18,7 +18,7 @@ public:
     this->size = size;
   }
 
-  virtual void initialize()
+  virtual void initialize(glm::mat4 inital_matrix)
   {
     float size = this->size;
     Vertex v_arr[] = {
@@ -64,7 +64,7 @@ public:
     }
     this->vertices = v;
     this->indices = ind;
-    Mesh::initialize();
+    Mesh::initialize(inital_matrix);
   }
 };
 

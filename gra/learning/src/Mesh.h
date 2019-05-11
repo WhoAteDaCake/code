@@ -29,7 +29,7 @@ private:
 
   // Setup
   void bind_buffers();
-  void calculate_matrix();
+  void calculate_matrix(glm::mat4 initial_matrix);
 
   std::string message(std::string message)
   {
@@ -45,17 +45,23 @@ public:
   glm::vec3 position;
   glm::vec3 rotation;
   glm::vec3 scale;
+  // For when we require to use transforms of a previous mesh
+  // In the object
+  bool sequential;
 
-  Mesh(std::string name) : vertices(std::vector<Vertex>()),
-                           indices(std::vector<GLuint>()),
-                           draw_type(GL_STATIC_DRAW),
-                           position(glm::vec3(0.f)),
-                           rotation(glm::vec3(0.f)),
-                           scale(glm::vec3(1.f)),
-                           name(name),
-                           mat_name(""){
+  Mesh(std::string name, bool sequential) : vertices(std::vector<Vertex>()),
+                                            indices(std::vector<GLuint>()),
+                                            draw_type(GL_STATIC_DRAW),
+                                            position(glm::vec3(0.f)),
+                                            rotation(glm::vec3(0.f)),
+                                            scale(glm::vec3(1.f)),
+                                            name(name),
+                                            mat_name(""),
+                                            sequential(sequential){
 
-                           };
+                                            };
+  Mesh(std::string name) : Mesh(name, false){};
+
   ~Mesh()
   {
     glDeleteVertexArrays(1, &this->VAO);
@@ -71,11 +77,11 @@ public:
   }
 
   // Setup
-  virtual void initialize();
+  virtual void initialize(glm::mat4 initial_matrix);
 
   // Actions
   void draw(Shaders *program);
-  void update();
+  void update(glm::mat4 initial_matrix);
 
   inline std::string get_name()
   {
@@ -94,6 +100,11 @@ public:
       throw message("Incorrect draw type received");
     }
     this->draw_type = draw_type;
+  }
+
+  inline const glm::mat4 get_model_matrix()
+  {
+    return this->model_matrix;
   }
 };
 

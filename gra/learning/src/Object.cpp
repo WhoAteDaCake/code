@@ -45,10 +45,16 @@ bool Object::has_diffuse()
 
 void Object::initialize()
 {
+  glm::mat4 matrix(1.f);
   for (int i = 0; i < this->mesh.size(); i += 1)
   {
     Mesh *mesh = this->mesh[i];
-    mesh->initialize();
+    if (!mesh->sequential)
+    {
+      matrix = glm::mat4(1.f);
+    }
+    mesh->initialize(matrix);
+    matrix = mesh->get_model_matrix();
   }
   GLint spec_id = has_specular() ? this->specular->get_unit() : -1;
   GLint diff_id = has_diffuse() ? this->diffuse->get_unit() : -1;

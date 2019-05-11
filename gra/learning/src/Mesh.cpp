@@ -41,9 +41,9 @@ void Mesh::bind_buffers()
   glBindVertexArray(0);
 }
 
-void Mesh::calculate_matrix()
+void Mesh::calculate_matrix(glm::mat4 initial_matrix)
 {
-  this->model_matrix = glm::mat4(1.f);
+  this->model_matrix = initial_matrix;
   this->model_matrix = glm::translate(this->model_matrix, this->position);
   this->model_matrix = glm::rotate(this->model_matrix, glm::radians(this->rotation.x), glm::vec3(1.0f, 0.f, 0.f));
   this->model_matrix = glm::rotate(this->model_matrix, glm::radians(this->rotation.y), glm::vec3(0.0f, 1.f, 0.f));
@@ -51,14 +51,14 @@ void Mesh::calculate_matrix()
   this->model_matrix = glm::scale(this->model_matrix, this->scale);
 }
 
-void Mesh::initialize()
+void Mesh::initialize(glm::mat4 initial_matrix)
 {
   if (this->vertices.empty())
   {
     throw message("Has not initialized vertices");
   }
   bind_buffers();
-  calculate_matrix();
+  calculate_matrix(initial_matrix);
 #ifdef GRA_DEBUG
   Log::log(message("initialize"));
 #endif // DEBUG
@@ -84,7 +84,7 @@ void Mesh::draw(Shaders *program)
   }
 }
 
-void Mesh::update()
+void Mesh::update(glm::mat4 initial_matrix)
 {
-  calculate_matrix();
+  calculate_matrix(initial_matrix);
 }
