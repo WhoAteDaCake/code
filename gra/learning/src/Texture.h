@@ -11,7 +11,7 @@
 
 class Texture
 {
-private:
+protected:
   int width;
   int height;
   GLuint id;

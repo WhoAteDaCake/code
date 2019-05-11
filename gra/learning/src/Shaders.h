@@ -9,11 +9,12 @@
 
 class Shaders
 {
-private:
+protected:
   GLuint id;
 
   std::string shader_src(std::string name);
   GLuint load_shader(std::string name, GLenum type);
+  virtual void bind_attrib(GLuint program);
   GLuint link_shaders(std::string vertex, std::string fragment, std::string geometry);
 
 public:

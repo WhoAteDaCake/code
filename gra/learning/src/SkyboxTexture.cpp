@@ -9,18 +9,17 @@ GLuint SkyboxTexture::load_cubemap(const char *files[6])
   int width, height, nrChannels;
   for (int i = 0; i < 6; i += 1)
   {
-    unsigned char *data = SOIL_load_image(files[i], &this->width, &this->height, NULL, SOIL_LOAD_RGBA);
+    unsigned char *data = SOIL_load_image(files[i], &width, &height, NULL, SOIL_LOAD_RGB);
     if (data)
     {
       glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                    0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-      stbi_image_free(data);
     }
     else
     {
-      std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
-      stbi_image_free(data);
+      std::cout << "Cubemap texture failed to load at path: " << files[i] << std::endl;
     }
+    SOIL_free_image_data(data);
   }
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -41,5 +40,5 @@ void SkyboxTexture::load()
       "alpha-island_ft.tga",
       "alpha-island_bk.tga",
   };
-  load_cubemap(files);
+  this->id = load_cubemap(files);
 }

@@ -48,6 +48,16 @@ GLuint Shaders::load_shader(std::string name, GLenum type)
   return shader;
 }
 
+void Shaders::bind_attrib(GLuint program)
+{
+  // Because of 1.30 glsl, we need to specify the order of attributes manually
+  // https://stackoverflow.com/questions/21354301/glsl-syntax-problems-unexpected-new-identifier
+  glBindAttribLocation(program, 0, "vertex_position");
+  glBindAttribLocation(program, 1, "vertex_color");
+  glBindAttribLocation(program, 2, "vertex_texcoord");
+  glBindAttribLocation(program, 3, "vertex_normal");
+}
+
 GLuint Shaders::link_shaders(std::string vertex, std::string fragment, std::string geometry)
 {
   GLuint vertex_shader = load_shader(vertex, GL_VERTEX_SHADER);
@@ -70,12 +80,7 @@ GLuint Shaders::link_shaders(std::string vertex, std::string fragment, std::stri
     glAttachShader(program, geometry_shader);
   }
 
-  // Because of 1.30 glsl, we need to specify the order of attributes manually
-  // https://stackoverflow.com/questions/21354301/glsl-syntax-problems-unexpected-new-identifier
-  glBindAttribLocation(program, 0, "vertex_position");
-  glBindAttribLocation(program, 1, "vertex_color");
-  glBindAttribLocation(program, 2, "vertex_texcoord");
-  glBindAttribLocation(program, 3, "vertex_normal");
+  bind_attrib(program);
 
   glLinkProgram(program);
   Log::check_error("Shader link");
