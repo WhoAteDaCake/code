@@ -45,16 +45,21 @@ bool Object::has_diffuse()
 
 void Object::initialize()
 {
-  glm::mat4 matrix(1.f);
+  std::vector<glm::mat4> matrices;
+  matrices.push_back(glm::mat4(1.f));
   for (int i = 0; i < this->mesh.size(); i += 1)
   {
     Mesh *mesh = this->mesh[i];
-    if (!mesh->sequential)
+    if (mesh->dependency_index == -1)
     {
-      matrix = glm::mat4(1.f);
+      matrix = matrices[0];
+    }
+    else
+    {
+      matrix = matrices[mesh->dependency_index];
     }
     mesh->initialize(matrix);
-    matrix = mesh->get_model_matrix();
+    matrices.push_back(mesh->get_model_matrix());
   }
   GLint spec_id = has_specular() ? this->specular->get_unit() : -1;
   GLint diff_id = has_diffuse() ? this->diffuse->get_unit() : -1;

@@ -97,7 +97,7 @@ void Engine::draw_cb()
 
 void Engine::handle_key_cb(unsigned char key, int x, int y)
 {
-  float change = 0.12f * static_cast<float>(this->delta_time);
+  float change = 0.05f * static_cast<float>(this->delta_time);
   glm::vec3 current_position = this->camera.position;
   if (key == 'w')
   {

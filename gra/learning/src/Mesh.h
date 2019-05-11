@@ -47,20 +47,20 @@ public:
   glm::vec3 scale;
   // For when we require to use transforms of a previous mesh
   // In the object
-  bool sequential;
+  int dependency_index;
 
-  Mesh(std::string name, bool sequential) : vertices(std::vector<Vertex>()),
-                                            indices(std::vector<GLuint>()),
-                                            draw_type(GL_STATIC_DRAW),
-                                            position(glm::vec3(0.f)),
-                                            rotation(glm::vec3(0.f)),
-                                            scale(glm::vec3(1.f)),
-                                            name(name),
-                                            mat_name(""),
-                                            sequential(sequential){
+  Mesh(std::string name, int dependency_index) : vertices(std::vector<Vertex>()),
+                                                 indices(std::vector<GLuint>()),
+                                                 draw_type(GL_STATIC_DRAW),
+                                                 position(glm::vec3(0.f)),
+                                                 rotation(glm::vec3(0.f)),
+                                                 scale(glm::vec3(1.f)),
+                                                 name(name),
+                                                 mat_name(""),
+                                                 dependency_index(dependency_index){
 
-                                            };
-  Mesh(std::string name) : Mesh(name, false){};
+                                                 };
+  Mesh(std::string name) : Mesh(name, -1){};
 
   ~Mesh()
   {
