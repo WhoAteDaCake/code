@@ -44,23 +44,6 @@ void Scene::initialize()
 
 void Scene::draw()
 {
-  // Camera
-  // shader.useM4fv("view_matrix", this->camera->get_view_matrix());
-  // shader.useM4fv("projection_matrix", this->camera->get_projection_matrix());
-  // shader.use3fv("camera_pos", this->camera->position);
-
-  // // Lights
-  // shader.use3fv("light_pos0", this->light_pos);
-
-  // // Render items
-  // for (std::unique_ptr<Object> &item : this->objects)
-  // {
-  //   item->draw(&this->shader);
-  // }
-
-#ifdef GRA_DEBUG
-  Log::check_error("Scene:draw");
-#endif // DEBUG
 
   this->sky_shader.use();
   this->sky_tex->bind();
@@ -71,8 +54,8 @@ void Scene::draw()
 #endif // DEBUG
 
   // remove translation from the view matrix
-  glm::mat4 view = glm::mat4(glm::mat3(this->camera->get_view_matrix()));
-  this->sky_shader.useM4fv("view", view);
+  // glm::mat4 view = glm::mat4(glm::mat3(this->camera->get_view_matrix()));
+  this->sky_shader.useM4fv("view", this->camera->get_view_matrix());
   this->sky_shader.useM4fv("projection", this->camera->get_projection_matrix());
 #ifdef GRA_DEBUG
   Log::check_error("Scene:skybox:projection");
@@ -81,6 +64,24 @@ void Scene::draw()
   this->sky_mesh->draw(&this->sky_shader);
 #ifdef GRA_DEBUG
   Log::check_error("Scene:skybox:draw");
+#endif // DEBUG
+
+  // Camera
+  shader.useM4fv("view_matrix", this->camera->get_view_matrix());
+  shader.useM4fv("projection_matrix", this->camera->get_projection_matrix());
+  shader.use3fv("camera_pos", this->camera->position);
+
+  // Lights
+  shader.use3fv("light_pos0", this->light_pos);
+
+  // Render items
+  for (std::unique_ptr<Object> &item : this->objects)
+  {
+    item->draw(&this->shader);
+  }
+
+#ifdef GRA_DEBUG
+  Log::check_error("Scene:draw");
 #endif // DEBUG
 }
 

@@ -96,6 +96,7 @@ GLuint Shaders::link_shaders(std::string vertex, std::string fragment, std::stri
     std::string log_str(logs);
     Log::error("Could not link shaders program\n");
     Log::error("LOGS: " + log_str + "\n");
+    throw std::string("Failed");
   }
 
   glUseProgram(0);

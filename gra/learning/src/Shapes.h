@@ -117,17 +117,16 @@ protected:
         -1.0f, -1.0f, 1.0f,
         1.0f, -1.0f, 1.0f};
     glGenVertexArrays(1, &this->VAO);
-    glGenBuffers(1, &this->VBO);
     glBindVertexArray(this->VAO);
+
+    glGenBuffers(1, &this->VBO);
     glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
-    }
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (GLvoid *)0);
+    glBindVertexArray(0);
+  }
 
 public:
   SkyboxMesh(std::string name) : Mesh(name)
@@ -136,12 +135,20 @@ public:
 
   void draw(Shaders *program)
   {
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+
+    glCullFace(GL_FRONT);
     glDepthFunc(GL_LEQUAL); // change depth function so depth test passes when values are equal to depth buffer's content
     program->use();
 
     glBindVertexArray(this->VAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(GL_TRUE);
     glDepthFunc(GL_LESS);
+    glCullFace(GL_BACK);
   }
 
   void initialize(glm::mat4 inital_matrix)
