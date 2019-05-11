@@ -99,25 +99,57 @@ std::unique_ptr<Object> make_pig(
   std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(1.f), glm::vec3(1.f), glm::vec3(1.f), true);
   Object *object = new Object(name, nullptr, nullptr, material);
   // Body
+  float body_scale = 2.f;
   Mesh *body = make_cube_mesh(name + "_body", color, size);
   body->position = position;
-  body->scale = scale * glm::vec3(2.f, 1.f, 1.f);
+  body->scale = scale * glm::vec3(body_scale, 1.f, 1.f);
   body->rotation = rotation;
   // Head
+  float head_scale = 0.8f;
   Mesh *head = make_cube_mesh(name + "_head", color, size);
-  head->position = body->position + glm::vec3(body->scale.x, size * 0.5, 0.f);
-  head->scale = scale * glm::vec3(0.8f);
-  head->rotation = rotation;
+  head->dependency_index = 0;
+  head->position = glm::vec3(size * head_scale, size * 0.5, 0.f);
+  head->scale = glm::vec3(1 / body_scale, head_scale, head_scale);
   // Leg 1
+  float leg_scale = 0.4;
   Mesh *leg1 = make_cube_mesh(name + "_leg1", color, size);
-  leg1->position = position + glm::vec3(0.f, -size * 2, 0.f);
-  leg1->scale = scale * glm::vec3(0.3f, 0.8f, 0.3f);
-  leg1->rotation = rotation;
+  leg1->dependency_index = 0;
+  leg1->position = glm::vec3(
+      // Move back so it's aligned with the end of body
+      -leg_scale * 2,
+      // Move down to align with the bottom
+      // *4 because we move down twice:
+      // First to half inside the body
+      // And then fully outside
+      -leg_scale * 4,
+      // Move to the right of the body
+      -leg_scale * 2 + (leg_scale / 2));
+  leg1->scale = glm::vec3(
+      // Reset body scale(x) and apply own scale
+      (1 / body_scale) * leg_scale,
+      // Leg height is twice the width
+      leg_scale * 2,
+      // Square legs so z is the same
+      leg_scale);
   // Leg 2
+  Mesh *leg2 = make_cube_mesh(name + "_leg2", color, size);
+  // Depends on previous leg
+  leg2->dependency_index = 2;
+  leg2->position = glm::vec3(0.f, 0.f, 8 * leg_scale - (leg_scale / 2));
   // Leg 3
-  // Leg 5
+  Mesh *leg3 = make_cube_mesh(name + "_leg3", color, size);
+  leg3->dependency_index = 3;
+  leg3->position = glm::vec3(body_scale * 4, 0.f, 0.f);
+  // Leg 4
+  Mesh *leg4 = make_cube_mesh(name + "_leg4", color, size);
+  leg4->dependency_index = 2;
+  leg4->position = glm::vec3(body_scale * 4, 0.f, 0.f);
+
   object->add_mesh(body);
   object->add_mesh(head);
   object->add_mesh(leg1);
+  object->add_mesh(leg2);
+  object->add_mesh(leg3);
+  object->add_mesh(leg4);
   return std::unique_ptr<Object>(object);
 }

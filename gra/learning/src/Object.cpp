@@ -46,13 +46,13 @@ bool Object::has_diffuse()
 void Object::initialize()
 {
   std::vector<glm::mat4> matrices;
-  matrices.push_back(glm::mat4(1.f));
+  glm::mat4 matrix;
   for (int i = 0; i < this->mesh.size(); i += 1)
   {
     Mesh *mesh = this->mesh[i];
     if (mesh->dependency_index == -1)
     {
-      matrix = matrices[0];
+      matrix = glm::mat4(1.f);
     }
     else
     {
