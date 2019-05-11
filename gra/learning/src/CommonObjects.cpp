@@ -145,11 +145,54 @@ std::unique_ptr<Object> make_pig(
   leg4->dependency_index = 2;
   leg4->position = glm::vec3(body_scale * 4, 0.f, 0.f);
 
+  // Eyes
+  // Left black
+  float eye_scale = head_scale / 8.f;
+  Mesh *eye_lb = make_cube_mesh(name + "_eye_lb", glm::vec3(0.f, 0.f, 0.f), size);
+  // Head dependency
+  eye_lb->dependency_index = 1;
+  eye_lb->scale = glm::vec3(eye_scale);
+  eye_lb->position = glm::vec3(
+      head_scale + (eye_scale * 2),
+      0.f,
+      head_scale);
+
+  Mesh *eye_lw = make_cube_mesh(name + "_eye_lw", glm::vec3(1.f, 1.f, 1.f), size);
+  // eye_lb depenency
+  eye_lw->dependency_index = 6;
+  eye_lw->position = glm::vec3(
+      0.f,
+      0.f,
+      -head_scale * 2.5);
+
+  // Eyes
+  // Right black
+  Mesh *eye_rb = make_cube_mesh(name + "_eye_rb", glm::vec3(0.f, 0.f, 0.f), size);
+  // Head dependency
+  eye_rb->dependency_index = 1;
+  eye_rb->scale = glm::vec3(eye_scale);
+  eye_rb->position = glm::vec3(
+      head_scale + (eye_scale * 2),
+      0.f,
+      -head_scale);
+
+  Mesh *eye_rw = make_cube_mesh(name + "_eye_rw", glm::vec3(1.f, 1.f, 1.f), size);
+  // eye_lb depenency
+  eye_rw->dependency_index = 8;
+  eye_rw->position = glm::vec3(
+      0.f,
+      0.f,
+      +head_scale * 2.5);
+
   object->add_mesh(body);
   object->add_mesh(head);
   object->add_mesh(leg1);
   object->add_mesh(leg2);
   object->add_mesh(leg3);
   object->add_mesh(leg4);
+  object->add_mesh(eye_lb);
+  object->add_mesh(eye_lw);
+  object->add_mesh(eye_rb);
+  object->add_mesh(eye_rw);
   return std::unique_ptr<Object>(object);
 }
