@@ -45,27 +45,6 @@ void Scene::initialize()
 void Scene::draw()
 {
 
-  this->sky_shader.use();
-  this->sky_tex->bind();
-  this->sky_shader.use1i("skybox", this->sky_tex->get_unit());
-
-#ifdef GRA_DEBUG
-  Log::check_error("Scene:skybox:texture");
-#endif // DEBUG
-
-  // remove translation from the view matrix
-  // glm::mat4 view = glm::mat4(glm::mat3(this->camera->get_view_matrix()));
-  this->sky_shader.useM4fv("view", this->camera->get_view_matrix());
-  this->sky_shader.useM4fv("projection", this->camera->get_projection_matrix());
-#ifdef GRA_DEBUG
-  Log::check_error("Scene:skybox:projection");
-#endif // DEBUG
-
-  this->sky_mesh->draw(&this->sky_shader);
-#ifdef GRA_DEBUG
-  Log::check_error("Scene:skybox:draw");
-#endif // DEBUG
-
   // Camera
   shader.useM4fv("view_matrix", this->camera->get_view_matrix());
   shader.useM4fv("projection_matrix", this->camera->get_projection_matrix());
@@ -79,9 +58,32 @@ void Scene::draw()
   {
     item->draw(&this->shader);
   }
+  shader.stop_use();
 
 #ifdef GRA_DEBUG
   Log::check_error("Scene:draw");
+#endif // DEBUG
+  this->sky_shader.use();
+  this->sky_tex->bind();
+  this->sky_shader.use1i("skybox", this->sky_tex->get_unit());
+
+#ifdef GRA_DEBUG
+  Log::check_error("Scene:skybox:texture");
+#endif // DEBUG
+
+  // remove translation from the view matrix
+  glm::mat4 view = glm::mat4(glm::mat3(this->camera->get_view_matrix()));
+  this->sky_shader.useM4fv("view", view);
+  // this->sky_shader.useM4fv("view", this->camera->get_view_matrix());
+  this->sky_shader.useM4fv("projection", this->camera->get_projection_matrix());
+#ifdef GRA_DEBUG
+  Log::check_error("Scene:skybox:projection");
+#endif // DEBUG
+
+  this->sky_mesh->draw(&this->sky_shader);
+  this->sky_shader.stop_use();
+#ifdef GRA_DEBUG
+  Log::check_error("Scene:skybox:draw");
 #endif // DEBUG
 }
 

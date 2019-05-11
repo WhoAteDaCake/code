@@ -45,7 +45,7 @@ public:
   void stop_use()
   {
     glUseProgram(0);
-#ifdef DEBUG
+#ifdef GRA_DEBUG
 
     Log::check_error("Stopping shader use");
 #endif // DEBUG

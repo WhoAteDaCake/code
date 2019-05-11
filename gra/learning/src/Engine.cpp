@@ -60,6 +60,7 @@ Engine::Engine(
   glFrontFace(GL_CCW);
   // Set to fill the whole shape
   glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 #ifdef GRA_DEBUG
   Log::check_error("Engine:creation");
