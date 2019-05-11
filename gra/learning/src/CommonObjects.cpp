@@ -213,9 +213,12 @@ void PigObject::update(int delta)
   float walk_modifier = 0.02f * static_cast<float>(delta);
   float rotation_modifier = 0.15f * static_cast<float>(delta);
   float change = this->position == START ? 1.f : -1.f;
+  float leg_rot_max = 12.f;
 
   glm::vec3 pos = this->mesh[0]->position;
   glm::vec3 rot = this->mesh[0]->rotation;
+  // Just need to modify 1 leg, as all of the others depend on it
+  glm::vec3 leg_rot = this->mesh[2]->rotation;
 
   switch (this->state)
   {
@@ -259,9 +262,21 @@ void PigObject::update(int delta)
   }
   case MOVE:
   {
+    // TODO feet rotation
     pos += glm::vec3(0.f, 0.f, walk_modifier * change * -1.f);
     bool reach_end = change == 1.f && pos.z <= this->z_end;
     bool reach_start = change == -1.f && pos.z >= this->start_pos.z;
+    // Leg rotation
+    float leg_change = this->leg_position == START ? 1.f : -1.f;
+    float change = leg_change * abs(this->walk) / (leg_rot_max * 3.f);
+    leg_rot += glm::vec3(0.f, 0.f, change);
+    bool leg_end = leg_change == 1.f && leg_rot.z >= leg_rot_max;
+    bool leg_start = leg_change == -1.f && leg_rot.z <= -leg_rot_max;
+    if (leg_end || leg_start)
+    {
+      this->leg_position = leg_end ? END : START;
+    }
+
     if (reach_end || reach_start)
     {
       this->position = reach_end ? END : START;
@@ -273,5 +288,6 @@ void PigObject::update(int delta)
 
   this->mesh[0]->position = pos;
   this->mesh[0]->rotation = rot;
+  this->mesh[2]->rotation = leg_rot;
   update_matrices(false);
 }

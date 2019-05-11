@@ -44,6 +44,7 @@ private:
     };
     State state;
     Position position;
+    Position leg_position;
     float jump;
     float walk;
     float y_velocity;
@@ -65,7 +66,8 @@ public:
                                               y_end(0.f),
                                               z_end(0.f),
                                               y_velocity(0.f),
-                                              y_velocity_max(0.8f)
+                                              y_velocity_max(0.8f),
+                                              leg_position(START)
     {
     }
 
