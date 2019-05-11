@@ -9,7 +9,7 @@ GLuint SkyboxTexture::load_cubemap(const char *files[6])
   int width, height, nrChannels;
   for (int i = 0; i < 6; i += 1)
   {
-    std::string name = "./exports/";
+    std::string name = "./images/";
     name += files[i];
     unsigned char *data = SOIL_load_image(name.c_str(), &width, &height, NULL, SOIL_LOAD_RGB);
     if (data)
@@ -19,7 +19,8 @@ GLuint SkyboxTexture::load_cubemap(const char *files[6])
     }
     else
     {
-      std::cout << "Cubemap texture failed to load at path: " << files[i] << std::endl;
+      std::cout << "Cubemap texture failed to load at path: " << name << std::endl;
+      throw std::string("Cubemap failed");
     }
     SOIL_free_image_data(data);
   }
@@ -35,12 +36,12 @@ GLuint SkyboxTexture::load_cubemap(const char *files[6])
 void SkyboxTexture::load()
 {
   const char *files[6] = {
-      "alpha-island_rt.tga",
-      "alpha-island_lf.tga",
-      "alpha-island_up.tga",
-      "alpha-island_dn.tga",
-      "alpha-island_ft.tga",
-      "alpha-island_bk.tga",
+      "right.png",
+      "left.png",
+      "top.png",
+      "bottom.png",
+      "front.png",
+      "back.png",
   };
   this->id = load_cubemap(files);
 }

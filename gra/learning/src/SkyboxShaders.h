@@ -10,6 +10,7 @@ class SkyboxShaders : public Shaders
 protected:
   void bind_attrib(GLuint program)
   {
+
     glBindAttribLocation(program, 0, "aPos");
   }
 

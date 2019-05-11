@@ -62,9 +62,9 @@ void Scene::draw()
   Log::check_error("Scene:draw");
 #endif // DEBUG
 
+  this->sky_shader.use();
   this->sky_tex->bind();
   this->sky_shader.use1i("skybox", this->sky_tex->get_unit());
-  this->sky_shader.use();
 
 #ifdef GRA_DEBUG
   Log::check_error("Scene:skybox:texture");

@@ -42,6 +42,8 @@ Engine::Engine(
   glutInitWindowPosition(0, 0);
   glutCreateWindow(title);
 
+  // Allow cube maps
+  glEnable(GL_TEXTURE_CUBE_MAP);
   // GL options
   glEnable(GL_DEPTH_TEST);
   // Not drawn if not seen
