@@ -1,7 +1,7 @@
 #include "Scene.h"
 #include <memory>
 
-Scene::Scene()
+Scene::Scene() : light(Light(glm::vec3(0.f, 0.f, 1.f)))
 {
   this->shader = Shaders();
   this->sky_shader = SkyboxShaders();
@@ -19,7 +19,6 @@ void Scene::set_camera(Camera *camera)
 void Scene::initialize()
 {
 
-  this->light_pos = glm::vec3(0.f, 0.f, 1.f);
   this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 
   // Skybox
@@ -44,7 +43,7 @@ void Scene::initialize()
 
 void Scene::draw()
 {
-
+  // START_OF_SKYBOX
   this->sky_shader.use();
   this->sky_tex->bind();
   this->sky_shader.use1i("skybox", this->sky_tex->get_unit());
@@ -67,14 +66,16 @@ void Scene::draw()
 #ifdef GRA_DEBUG
   Log::check_error("Scene:skybox:draw");
 #endif // DEBUG
+  // END_OF_SKYBOX
 
   // Camera
+
   shader.useM4fv("view_matrix", this->camera->get_view_matrix());
   shader.useM4fv("projection_matrix", this->camera->get_projection_matrix());
   shader.use3fv("camera_pos", this->camera->position);
 
   // Lights
-  shader.use3fv("light_pos0", this->light_pos);
+  light.send_to_shader(&this->shader);
 
   // Render items
   for (std::unique_ptr<Object> &item : this->objects)

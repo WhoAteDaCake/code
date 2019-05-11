@@ -12,6 +12,15 @@ struct Material {
 	vec3 specular;
 };
 
+struct Light {
+    vec3 position;
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
+uniform Light light; 
+
 uniform Material material;
 // Because 130 doesn't support samplers inside structs
 uniform sampler2D mat_diffuse_tex;
@@ -22,23 +31,21 @@ uniform int mas_has_specular;
 
 uniform int show_color;
 
-
-uniform vec3 light_pos0;
 uniform vec3 camera_pos;
 
-vec4 get_ambient(Material material) {
-	return vec4(material.ambient, 1.f);
+vec4 get_ambient(Material material, Light light) {
+	return vec4(material.ambient * light.ambient, 1.f);
 }
 
-vec4 get_diffuse(Material material, vec3 position, vec3 normal, vec3 light_pos) {
-	vec3 pos_to_light=normalize(light_pos - position);
+vec4 get_diffuse(Material material, Light light, vec3 position, vec3 normal) {
+	vec3 pos_to_light=normalize(light.position - position);
 	float dmod=clamp(dot(pos_to_light,normal),0.f,1.f);
-	vec3 diffuse=material.diffuse*dmod;
+	vec3 diffuse=material.diffuse* light.diffuse * dmod;
 	return vec4(diffuse, 1.f);
 }
 
-vec4 get_specular(Material material, vec3 position, vec3 normal, vec3 light_pos, vec3 camera_pos) {
-	vec3 light_to_pos=normalize(position - light_pos);
+vec4 get_specular(Material material, Light light,vec3 position, vec3 normal, vec3 camera_pos) {
+	vec3 light_to_pos=normalize(position - light.position);
 	vec3 reflect_dir=normalize(reflect(light_to_pos,normalize(normal)));
 	vec3 pos_to_view=normalize(camera_pos - position);
 	float specular_const=pow(max(dot(pos_to_view,reflect_dir),0),30);
@@ -49,7 +56,7 @@ vec4 get_specular(Material material, vec3 position, vec3 normal, vec3 light_pos,
 		tex_color = texture(mat_specular_tex, vs_texcoord).rgb;
 	}
 
-	vec3 specular=material.specular*specular_const * tex_color;
+	vec3 specular=material.specular*specular_const * tex_color * light.specular;
 	return vec4(specular, 1.f);
 }
 
@@ -67,9 +74,9 @@ void main()
 	// fs_color = vec4(vec3(1.f, 0.f, 0.f), 1.f);
 	// Output
 	vec4 light_final=
-		get_ambient(material)+
-		get_diffuse(material, vs_position, vs_normal, light_pos0)+
-		get_specular(material, vs_position, vs_normal, light_pos0, camera_pos);
+		get_ambient(material, light)+
+		get_diffuse(material, light, vs_position, vs_normal)+
+		get_specular(material, light,vs_position, vs_normal, camera_pos);
 	fs_color=
 		texture_color *
 		color*

@@ -11,11 +11,13 @@
 #include "CommonObjects.h"
 #include "SkyboxShaders.h"
 #include "SkyboxTexture.h"
+#include "Light.h"
 
 class Scene
 {
 private:
   Camera *camera;
+  Light light;
   Shaders shader;
   // Skybox
   std::unique_ptr<SkyboxTexture> sky_tex;
