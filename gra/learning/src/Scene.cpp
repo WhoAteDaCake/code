@@ -20,7 +20,7 @@ void Scene::initialize()
 {
 
   this->light_pos = glm::vec3(0.f, 0.f, 1.f);
-  this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
+  // this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
 
   // Skybox
   this->sky_mesh = std::unique_ptr<SkyboxMesh>(new SkyboxMesh("skybox_mesh"));
@@ -29,13 +29,13 @@ void Scene::initialize()
   this->sky_tex->load();
   this->sky_shader.set_shaders("vertex_sky.glsl", "fragment_sky.glsl", "");
 
-  create_textures();
-  create_objects();
+  // create_textures();
+  // create_objects();
 
-  for (std::unique_ptr<Object> &item : this->objects)
-  {
-    item->initialize();
-  }
+  // for (std::unique_ptr<Object> &item : this->objects)
+  // {
+  //   item->initialize();
+  // }
 
 #ifdef GRA_DEBUG
   Log::log("Scene:initialize:end");
@@ -46,19 +46,19 @@ void Scene::draw()
 {
 
   // Camera
-  shader.useM4fv("view_matrix", this->camera->get_view_matrix());
-  shader.useM4fv("projection_matrix", this->camera->get_projection_matrix());
-  shader.use3fv("camera_pos", this->camera->position);
+  // shader.useM4fv("view_matrix", this->camera->get_view_matrix());
+  // shader.useM4fv("projection_matrix", this->camera->get_projection_matrix());
+  // shader.use3fv("camera_pos", this->camera->position);
 
-  // Lights
-  shader.use3fv("light_pos0", this->light_pos);
+  // // Lights
+  // shader.use3fv("light_pos0", this->light_pos);
 
-  // Render items
-  for (std::unique_ptr<Object> &item : this->objects)
-  {
-    item->draw(&this->shader);
-  }
-  shader.stop_use();
+  // // Render items
+  // for (std::unique_ptr<Object> &item : this->objects)
+  // {
+  //   item->draw(&this->shader);
+  // }
+  // shader.stop_use();
 
 #ifdef GRA_DEBUG
   Log::check_error("Scene:draw");
@@ -80,6 +80,7 @@ void Scene::draw()
   Log::check_error("Scene:skybox:projection");
 #endif // DEBUG
 
+  this->sky_shader.use();
   this->sky_mesh->draw(&this->sky_shader);
   this->sky_shader.stop_use();
 #ifdef GRA_DEBUG
