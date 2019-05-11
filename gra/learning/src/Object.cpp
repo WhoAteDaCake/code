@@ -87,7 +87,6 @@ void Object::draw(Shaders *program)
 
   this->material->send_to_shader(program);
 
-  program->use();
   if (has_specular())
   {
     this->specular->bind();
@@ -98,6 +97,7 @@ void Object::draw(Shaders *program)
   }
   for (int i = 0; i < this->mesh.size(); i += 1)
   {
+    program->use();
     Mesh *mesh = this->mesh[i];
     mesh->draw(program);
   }
