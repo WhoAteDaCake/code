@@ -35,7 +35,7 @@ public:
                               diffuse_tex(-1),
                               specular_tex(-1),
                               diffuse_tex_name(""),
-                              shiness(32)
+                              shiness(36.f)
   {
   }
 
