@@ -141,65 +141,79 @@ void Scene::create_lights()
   cube->light->specular = glm::vec3(0.7f);
 
   this->lights.push_back(std::move(cube));
+
+  auto fan = make_fan_lamp(
+      "outside",
+      this->material_manager,
+      glm::vec3(1.f),
+      glm::vec3(0.f, 0.f, 0.f),
+      glm::vec3(0.f),
+      glm::vec3(1.f));
+
+  fan->light->type = 1;
+  fan->light->direction = glm::vec3(0.f, -1.f, 0.f);
+  fan->light->specular = glm::vec3(0.7f);
+
+  this->lights.push_back(std::move(fan));
 }
 
 void Scene::create_objects()
 {
-  std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room-high.obj"), this->texture_manager, this->material_manager);
-  std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
+  // std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room-high.obj"), this->texture_manager, this->material_manager);
+  // std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 
-  float limit = 255.f;
-  auto pink = glm::vec3(229.f / limit, 137.f / limit, 135.f / limit);
+  // float limit = 255.f;
+  // auto pink = glm::vec3(229.f / limit, 137.f / limit, 135.f / limit);
 
-  auto pig = make_pig(
-      "pig",
-      this->material_manager,
-      pink,
-      // Postion
-      glm::vec3(-30.f, 9.f, -27.4f),
-      // Rotation
-      glm::vec3(0.f, -90.f, 0.f),
-      // Scale
-      glm::vec3(3.f));
+  // auto pig = make_pig(
+  //     "pig",
+  //     this->material_manager,
+  //     pink,
+  //     // Postion
+  //     glm::vec3(-30.f, 9.f, -27.4f),
+  //     // Rotation
+  //     glm::vec3(0.f, -90.f, 0.f),
+  //     // Scale
+  //     glm::vec3(3.f));
 
-  auto blue = glm::vec3(17.f / limit, 41.f / limit, 77.f / limit);
-  auto right_wall = make_cube(
-      std::string("right-wall"),
-      this->material_manager,
-      blue,
-      // Position
-      glm::vec3(-10.f, 33.5f, -69.f),
-      glm::vec3(0.f, 0.f, 0.f),
-      // Scale
-      glm::vec3(51.f, 35.f, 2.f));
-  auto back_wall = make_cube(
-      std::string("back-wall"),
-      this->material_manager,
-      blue,
-      // Position
-      glm::vec3(40.5f, 30.f, -15.f),
-      glm::vec3(0.f, 0.f, 0.f),
-      // Scale
-      glm::vec3(1.f, 35.f, 51.f));
+  // auto blue = glm::vec3(17.f / limit, 41.f / limit, 77.f / limit);
+  // auto right_wall = make_cube(
+  //     std::string("right-wall"),
+  //     this->material_manager,
+  //     blue,
+  //     // Position
+  //     glm::vec3(-10.f, 33.5f, -69.f),
+  //     glm::vec3(0.f, 0.f, 0.f),
+  //     // Scale
+  //     glm::vec3(51.f, 35.f, 2.f));
+  // auto back_wall = make_cube(
+  //     std::string("back-wall"),
+  //     this->material_manager,
+  //     blue,
+  //     // Position
+  //     glm::vec3(40.5f, 30.f, -15.f),
+  //     glm::vec3(0.f, 0.f, 0.f),
+  //     // Scale
+  //     glm::vec3(1.f, 35.f, 51.f));
 
-  auto roof = make_cube(
-      std::string("roof"),
-      this->material_manager,
-      blue,
-      // Position
-      glm::vec3(-10.5f, 65.5f, -16.f),
-      glm::vec3(0.f, 0.f, 0.f),
-      // Scale
-      glm::vec3(51.f, 2.f, 51.f));
+  // auto roof = make_cube(
+  //     std::string("roof"),
+  //     this->material_manager,
+  //     blue,
+  //     // Position
+  //     glm::vec3(-10.5f, 65.5f, -16.f),
+  //     glm::vec3(0.f, 0.f, 0.f),
+  //     // Scale
+  //     glm::vec3(51.f, 2.f, 51.f));
 
-  // auto wall_tex = this->texture_manager->get("wall.png");
-  // right_wall->set_diffuse(wall_tex);
-  // back_wall->set_diffuse(wall_tex);
+  // // auto wall_tex = this->texture_manager->get("wall.png");
+  // // right_wall->set_diffuse(wall_tex);
+  // // back_wall->set_diffuse(wall_tex);
 
-  this->objects.push_back(std::move(pig));
-  this->objects.push_back(std::move(right_wall));
-  this->objects.push_back(std::move(roof));
-  this->objects.push_back(std::move(back_wall));
+  // this->objects.push_back(std::move(pig));
+  // this->objects.push_back(std::move(right_wall));
+  // this->objects.push_back(std::move(roof));
+  // this->objects.push_back(std::move(back_wall));
 }
 
 void Scene::update(int delta)

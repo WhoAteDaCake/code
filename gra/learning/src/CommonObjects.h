@@ -4,6 +4,7 @@
 #define COMOON_OBJECTS_H
 
 #include "ObjectLight.h"
+#include "Shapes.h"
 #include <math.h>
 
 Mesh *make_cube_mesh(std::string name, glm::vec3 color, float size);
@@ -25,6 +26,14 @@ std::unique_ptr<Object> make_pig(
     glm::vec3 scale);
 
 std::unique_ptr<ObjectLight> make_light_cube(
+    std::string name,
+    std::unique_ptr<MaterialManager> &mat_manager,
+    glm::vec3 color,
+    glm::vec3 position,
+    glm::vec3 rotation,
+    glm::vec3 scale);
+
+std::unique_ptr<ObjectLight> make_fan_lamp(
     std::string name,
     std::unique_ptr<MaterialManager> &mat_manager,
     glm::vec3 color,

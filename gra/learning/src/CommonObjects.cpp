@@ -221,6 +221,30 @@ std::unique_ptr<ObjectLight> make_light_cube(
   return std::unique_ptr<ObjectLight>(object_light);
 }
 
+std::unique_ptr<ObjectLight> make_fan_lamp(
+    std::string name,
+    std::unique_ptr<MaterialManager> &mat_manager,
+    glm::vec3 color,
+    glm::vec3 position,
+    glm::vec3 rotation,
+    glm::vec3 scale)
+{
+  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(1.f), glm::vec3(1.f), glm::vec3(1.f), true);
+  material->toggle_ignore_light(true);
+
+  HalfSphere *sphere = new HalfSphere(name + "_sphere", 20, color, 5);
+  sphere->position = position;
+  sphere->rotation = rotation;
+  sphere->scale = scale;
+  Object *object = new Object(name, nullptr, nullptr, material, sphere);
+
+  Light *light = new Light(position);
+  ObjectLight *object_light = new ObjectLight(
+      std::unique_ptr<Object>(object),
+      std::unique_ptr<Light>(light));
+  return std::unique_ptr<ObjectLight>(object_light);
+}
+
 void PigObject::initialize()
 {
   // Position of body is initial position

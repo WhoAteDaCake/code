@@ -19,5 +19,6 @@
 #include <glm/gtx/normal.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/color_space.hpp>
+#include <glm/gtx/component_wise.hpp>
 
 #endif

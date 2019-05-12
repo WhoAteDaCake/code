@@ -153,4 +153,99 @@ public:
   }
 };
 
+class HalfSphere : public Mesh
+{
+private:
+  float size;
+  glm::vec3 color;
+  int curve;
+
+  void add_vertex(glm::vec3 position)
+  {
+    this->vertices.push_back(Vertex(position, this->color, glm::vec2(0.f), glm::vec3(0.f)));
+  }
+
+  glm::vec3 curved_middle_point(glm::vec3 p1, glm::vec3 p2)
+  {
+    glm::vec3 mp = (p1 + p2) / 2.f;
+    // Distance to center point (0, 0, 0)
+    float dtc = sqrt(glm::compAdd(mp * mp));
+    // The ratio of sphere radius divided by distance to the center
+    // Helps us to calculate how much shift is needed for the coordinate to be
+    // part of the sphere surface
+    float md = (this->size / 2.f) / dtc;
+    mp *= md;
+    return mp;
+  }
+
+  void subdivide(int level, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
+  {
+    if (level == 0)
+    {
+      add_vertex(p1);
+      add_vertex(p2);
+      add_vertex(p3);
+      return;
+    }
+    glm::vec3 lp = curved_middle_point(p1, p2);
+    glm::vec3 bp = curved_middle_point(p2, p3);
+    glm::vec3 rp = curved_middle_point(p1, p3);
+
+    int new_level = level - 1;
+    // Left
+    subdivide(new_level, lp, p2, bp);
+    // Middle
+    subdivide(new_level, lp, bp, rp);
+    // Right
+    subdivide(new_level, rp, bp, p3);
+    // Top
+    subdivide(new_level, p1, lp, rp);
+  }
+
+public:
+  HalfSphere(
+      std::string name,
+      float size,
+      glm::vec3 color,
+      int curve) : Mesh(name),
+                   size(size),
+                   color(color),
+                   curve(curve){};
+
+  void initialize(glm::mat4 initial_matrix)
+  {
+    float radius = size / 2.f;
+    float level = curve;
+    glm::vec3 p1;
+    glm::vec3 p2;
+    glm::vec3 p3;
+
+    // Front down Face
+    p1 = glm::vec3(0.f, 0.f, radius);
+    p2 = glm::vec3(0.f, -radius, 0.f);
+    p3 = glm::vec3(radius, 0.f, 0.f);
+    subdivide(level, p1, p2, p3);
+
+    // Left down
+    p1 = glm::vec3(0.f, 0.f, radius);
+    p2 = glm::vec3(-radius, 0.f, 0.f);
+    p3 = glm::vec3(0.f, -radius, 0.f);
+    subdivide(level, p1, p2, p3);
+
+    // Right down
+    p1 = glm::vec3(radius, 0.f, 0.f);
+    p3 = glm::vec3(0.f, 0.f, -radius);
+    p2 = glm::vec3(0.f, -radius, 0.f);
+    subdivide(level, p1, p2, p3);
+
+    // Back down
+    p1 = glm::vec3(0.f, 0.f, -radius);
+    p3 = glm::vec3(-radius, 0.f, 0.f);
+    p2 = glm::vec3(0.f, -radius, 0.f);
+    subdivide(level, p1, p2, p3);
+
+    Mesh::initialize(initial_matrix);
+  }
+};
+
 #endif
