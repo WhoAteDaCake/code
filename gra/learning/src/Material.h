@@ -20,6 +20,7 @@ public:
   glm::vec3 ambient;
   glm::vec3 diffuse;
   glm::vec3 specular;
+  float shiness;
   std::string diffuse_tex_name;
 
   Material(glm::vec3 ambient,
@@ -33,7 +34,8 @@ public:
                               show_color(show_color),
                               diffuse_tex(-1),
                               specular_tex(-1),
-                              diffuse_tex_name("")
+                              diffuse_tex_name(""),
+                              shininess(32)
   {
   }
 
@@ -79,6 +81,7 @@ public:
     program->use3fv("material.ambient", this->ambient);
     program->use3fv("material.diffuse", this->diffuse);
     program->use3fv("material.specular", this->specular);
+    program->use1f("material.shiness", this->shiness);
     program->use1i("mat_has_diffuse", this->has_diffuse_tex ? 1 : 0);
     program->use1i("mat_has_specular", this->has_specular_tex ? 1 : 0);
 
