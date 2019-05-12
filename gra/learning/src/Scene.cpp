@@ -1,19 +1,19 @@
 #include "Scene.h"
 #include <memory>
 
-Scene::Scene() : light(Light(glm::vec3(0.f, 0.f, 1.f)))
+Scene::Scene()
 {
   // TMP
-  this->light.diffuse = glm::vec3(1.f, 1.f, 1.f);
-  this->light.position = glm::vec3(-10.f, 30.f, -15.4f);
-  this->light.direction = glm::vec3(0.f, -1.f, 0.f);
-  this->light.linear = 0.007f;
-  this->light.constant = 0.0002f;
-  this->light.specular = glm::vec3(1.f, 1.f, 1.f);
-  this->light.ambient = glm::vec3(0.8f);
-  this->light.cut_off = 30.f;
-  this->light.outer_cut_off = 90.f;
-  this->light.type = 2;
+  // this->light.diffuse = glm::vec3(1.f, 1.f, 1.f);
+  // this->light.position = glm::vec3(-10.f, 30.f, -15.4f);
+  // this->light.direction = glm::vec3(0.f, -1.f, 0.f);
+  // this->light.linear = 0.007f;
+  // this->light.constant = 0.0002f;
+  // this->light.specular = glm::vec3(1.f, 1.f, 1.f);
+  // this->light.ambient = glm::vec3(0.8f);
+  // this->light.cut_off = 30.f;
+  // this->light.outer_cut_off = 90.f;
+  // this->light.type = 2;
 
   this->shader = Shaders();
   this->sky_shader = SkyboxShaders();
@@ -30,7 +30,6 @@ void Scene::set_camera(Camera *camera)
 
 void Scene::initialize()
 {
-
   this->shader.set_shaders("core.vs.glsl", "core.fs.glsl", "");
 
   // Skybox
@@ -41,11 +40,18 @@ void Scene::initialize()
   this->sky_shader.set_shaders("sky.vs.glsl", "sky.fs.glsl", "");
 
   create_textures();
+  create_lights();
   create_objects();
 
   for (std::unique_ptr<Object> &item : this->objects)
   {
     item->initialize();
+  }
+
+  // Lights
+  for (auto &light : this->lights)
+  {
+    light->initialize();
   }
 
 #ifdef GRA_DEBUG
@@ -87,7 +93,11 @@ void Scene::draw()
   shader.use3fv("camera_pos", this->camera->position);
 
   // Lights
-  light.send_to_shader(&this->shader);
+  for (auto &light : this->lights)
+  {
+    light->draw(&this->shader);
+  }
+  // light.send_to_shader(&this->shader);
 
   // Render items
   for (std::unique_ptr<Object> &item : this->objects)
@@ -113,6 +123,24 @@ void Scene::create_textures()
 {
   this->texture_manager->add("wall.png", GL_TEXTURE_2D);
   // this->texture_manager->add("pusheen_specular.png", GL_TEXTURE_2D);
+}
+
+void Scene::create_lights()
+{
+  // Lights
+  auto cube = make_light_cube(
+      "outside",
+      this->material_manager,
+      glm::vec3(1.f),
+      glm::vec3(-10.f, 30.f, -15.4f),
+      glm::vec3(0.f),
+      glm::vec3(1.f));
+
+  cube->light->type = 1;
+  cube->light->direction = glm::vec3(0.f, -1.f, 0.f);
+  cube->light->specular = glm::vec3(0.7f);
+
+  this->lights.push_back(std::move(cube));
 }
 
 void Scene::create_objects()

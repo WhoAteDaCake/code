@@ -1,5 +1,14 @@
 #include "Light.h"
 
+unsigned int Light::ID = 0;
+
+unsigned int Light::get_id()
+{
+  auto id = Light::ID;
+  Light::ID += 1;
+  return id;
+}
+
 void Light::send_to_shader(Shaders *program)
 {
   program->use3fv("light.position", this->position);

@@ -17,7 +17,8 @@ class Scene
 {
 private:
   Camera *camera;
-  Light light;
+  std::vector<std::unique_ptr<ObjectLight>> lights;
+
   Shaders shader;
   // Skybox
   std::unique_ptr<SkyboxTexture> sky_tex;
@@ -28,10 +29,10 @@ private:
   std::unique_ptr<TextureManager> texture_manager;
   std::unique_ptr<MaterialManager> material_manager;
 
-  // TEMPORARY
-  glm::vec3 light_pos;
-  // Shape square;
-  // Texture texture;
+  // Initiations
+  void create_objects();
+  void create_textures();
+  void create_lights();
 
 public:
   Scene();
@@ -41,8 +42,6 @@ public:
   Scene &operator=(const Scene &) = delete; // non copyable
   Scene(const Scene &) = delete;            // non construction-copyable
 
-  void create_objects();
-  void create_textures();
   void set_camera(Camera *camera);
   void draw();
   void initialize();

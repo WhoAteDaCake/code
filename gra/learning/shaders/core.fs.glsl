@@ -11,14 +11,21 @@ struct Material {
 	vec3 ambient;
 	vec3 diffuse;
 	vec3 specular;
+
+  // Sometimes we might not to supply both of these textures
+  bool has_diffuse;
+  bool has_specular;
+  bool show_color;
+  bool ignore_light;
 	float shininess;
+
 };
 
 struct Light {
 	  /**
-   * 0 - Directional NOT_DONE
-   * 1 - Point light NOT_DONE
-   * 2 - Spotlight NOT_DONE
+   * 0 - Directional
+   * 1 - Point light
+   * 2 - Spotlight
    */
 	int type;
 
@@ -44,11 +51,6 @@ uniform Material material;
 // Because 130 doesn't support samplers inside structs
 uniform sampler2D mat_diffuse_tex;
 uniform sampler2D mat_specular_tex;
-// Sometimes we might not to supply both of these textures
-uniform int mat_has_diffuse;
-uniform int mat_has_specular;
-
-uniform int show_color;
 
 uniform vec3 camera_pos;
 
@@ -62,16 +64,21 @@ void main() {
 	vec3 normal = normalize(vs_normal);
 	vec3 view_dir = normalize(camera_pos - vs_position);
 	vec3 result;
-	if (light.type == 0) {
-		result = calc_dir_light(light, normal, view_dir);
-	} else if (light.type == 1) {
-		result = calc_point_light(light, normal, view_dir);
-	} else if (light.type == 2) {
-		result = calc_spot_light(light, normal, view_dir);
-	}
+  if (!material.ignore_light) {
+    if (light.type == 0) {
+    	result = calc_dir_light(light, normal, view_dir);
+    } else if (light.type == 1) {
+    	result = calc_point_light(light, normal, view_dir);
+    } else if (light.type == 2) {
+    	result = calc_spot_light(light, normal, view_dir);
+    }
+  } else {
+    result = vec3(1.f);
+  }
+	
 
   vec3 color = vec3(1.f);
-  if (show_color == 1) {
+  if (material.show_color) {
     color = vs_color;
   }
 
@@ -79,7 +86,7 @@ void main() {
 }
 
 vec3 get_diffuse_tex() {
-	if (mat_has_diffuse == 1) {
+	if (material.has_diffuse) {
 		return texture(mat_diffuse_tex, vs_texcoord).rgb;
 	} else {
 		return vec3(1.f, 1.f, 1.f);
@@ -87,7 +94,7 @@ vec3 get_diffuse_tex() {
 }
 
 vec3 get_specular_tex() {
-	if (mat_has_specular == 1) {
+	if (material.has_specular) {
 		return texture(mat_specular_tex, vs_texcoord).rgb;
 	} else {
 		return vec3(1.f, 1.f, 1.f);
@@ -106,6 +113,7 @@ vec3 calc_dir_light(Light light, vec3 normal, vec3 view_dir) {
   vec3 diffuse = material.diffuse * light.diffuse * diff * get_diffuse_tex();
   vec3 specular = material.specular * light.specular * spec * get_specular_tex();
   return ambient + diffuse + specular;
+  // return vec3(1.f, 1.f, 1.f);
 }
 
 vec3 calc_point_light(Light light, vec3 normal, vec3 view_dir) {
