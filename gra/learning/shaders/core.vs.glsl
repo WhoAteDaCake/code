@@ -15,14 +15,14 @@ uniform mat4 model_matrix;
 uniform mat4 view_matrix;
 uniform mat4 projection_matrix;
 
-mat4 m_inverse(mat4 matrix) {
-	mat4 result;
-	mat3 m = transpose(mat3(matrix));
-	vec3 v = vec3(matrix[3]);
-	result = mat4(m);
-	result[3] = vec4(-m * v, 1.f);
-	return result;
-}
+// mat4 m_inverse(mat4 matrix) {
+// 	mat4 result;
+// 	mat3 m = transpose(mat3(matrix));
+// 	vec3 v = vec3(matrix[3]);
+// 	result = mat4(m);
+// 	result[3] = vec4(-m * v, 1.f);
+// 	return result;
+// }
 
 void main()
 {
@@ -35,8 +35,6 @@ void main()
 	vs_texcoord=vec2(vertex_texcoord.x,vertex_texcoord.y*-1.f);
 	
 	vs_normal=mat3(model_matrix)*vertex_normal;
-	// vs_normal= mat3(transpose(m_inverse(model_matrix))) * vertex_normal;
 	
 	gl_Position=projection_matrix*view_matrix*model_matrix*vec4(vertex_position,1.f);
-	// gl_Position=projection_matrix*view_matrix*model_matrix*vec4(vertex_position,1.f);
 }
