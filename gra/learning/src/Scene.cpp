@@ -29,14 +29,14 @@ void Scene::set_camera(Camera *camera)
 void Scene::initialize()
 {
 
-  this->shader.set_shaders("vertex_core.glsl", "fragment_core.glsl", "");
+  this->shader.set_shaders("core.vs.glsl", "core.fs.glsl", "");
 
   // Skybox
   this->sky_mesh = std::unique_ptr<SkyboxMesh>(new SkyboxMesh("skybox_mesh"));
   this->sky_tex = std::unique_ptr<SkyboxTexture>(new SkyboxTexture("skybox_texture"));
   this->sky_mesh->initialize(glm::mat4(1.f));
   this->sky_tex->load();
-  this->sky_shader.set_shaders("vertex_sky.glsl", "fragment_sky.glsl", "");
+  this->sky_shader.set_shaders("sky.vs.glsl", "sky.fs.glsl", "");
 
   create_textures();
   create_objects();
