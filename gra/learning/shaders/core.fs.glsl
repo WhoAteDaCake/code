@@ -91,15 +91,15 @@ vec3 get_specular_tex() {
 vec3 calc_dir_light(Light light, vec3 normal, vec3 view_dir) {
 	vec3 light_dir = normalize(-light.direction);
   // diffuse shading
-  float diff = max(dot(normal, light_dir), 0.0);
+  float diff = clamp(dot(normal, light_dir), 0.0, 1.f);
   // specular shading
-  vec3 reflect_dir = reflect(-light_dir, normal);
+  vec3 reflect_dir = normalize(reflect(-light_dir, normal));
   float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
   // combine results
-  vec3 ambient = light.ambient * get_diffuse_tex();
+  vec3 ambient = light.ambient;
   vec3 diffuse = light.diffuse * diff * get_diffuse_tex();
   vec3 specular = light.specular * spec * get_specular_tex();
-  return (ambient + diffuse + specular);
+  return ambient + diffuse + specular;
 }
 
 vec3 calc_point_light(Light light, vec3 normal, vec3 view_dir) {

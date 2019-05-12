@@ -32,7 +32,7 @@ public:
   Light(glm::vec3 position) : position(position),
                               ambient(glm::vec3(0.1)),
                               diffuse(glm::vec3(1.f)),
-                              specular(glm::vec3(1.f)),
+                              specular(glm::vec3(0.f)),
                               direction(glm::vec3(0.f)),
                               constant(1.f),
                               linear(0.09f),

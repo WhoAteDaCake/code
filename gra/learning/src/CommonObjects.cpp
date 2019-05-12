@@ -96,7 +96,7 @@ std::unique_ptr<Object> make_pig(
     glm::vec3 scale)
 {
   float size = 1.f;
-  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.3f), glm::vec3(1.f), glm::vec3(1.f), true);
+  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f), true);
   PigObject *object = new PigObject(name, nullptr, nullptr, material);
   // Body
   float body_scale = 2.f;
