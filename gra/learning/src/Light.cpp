@@ -10,5 +10,8 @@ void Light::send_to_shader(Shaders *program)
   program->use1f("light.constant", this->constant);
   program->use1f("light.linear", this->linear);
   program->use1f("light.quadratic", this->quadratic);
+  program->use1f("light.cut_off", glm::cos(glm::radians(this->cut_off)));
+  program->use1f("light.outer_cut_off", glm::cos(glm::radians(this->outer_cut_off)));
+
   program->use1i("light.type", this->type);
 }
