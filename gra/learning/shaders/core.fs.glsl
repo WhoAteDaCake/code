@@ -69,7 +69,13 @@ void main() {
 	} else if (light.type == 2) {
 		result = calc_spot_light(light, normal, view_dir);
 	}
-	fs_color = vec4(result, 1.f);
+
+  vec3 color = vec3(1.f);
+  if (show_color == 1) {
+    color = vs_color;
+  }
+
+	fs_color = vec4(result * vs_color, 1.f);
 }
 
 vec3 get_diffuse_tex() {
@@ -96,9 +102,9 @@ vec3 calc_dir_light(Light light, vec3 normal, vec3 view_dir) {
   vec3 reflect_dir = normalize(reflect(-light_dir, normal));
   float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
   // combine results
-  vec3 ambient = light.ambient;
-  vec3 diffuse = light.diffuse * diff * get_diffuse_tex();
-  vec3 specular = light.specular * spec * get_specular_tex();
+  vec3 ambient = material.ambient * light.ambient * get_diffuse_tex();
+  vec3 diffuse = material.diffuse * light.diffuse * diff * get_diffuse_tex();
+  vec3 specular = material.specular * light.specular * spec * get_specular_tex();
   return ambient + diffuse + specular;
 }
 
@@ -113,9 +119,9 @@ vec3 calc_point_light(Light light, vec3 normal, vec3 view_dir) {
   float distance = length(light.position - vs_position);
   float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
   // combine results
-  vec3 ambient = light.ambient * get_diffuse_tex();
-  vec3 diffuse = light.diffuse * diff * get_diffuse_tex();
-  vec3 specular = light.specular * spec * get_specular_tex();
+  vec3 ambient = material.ambient * light.ambient * get_diffuse_tex();
+  vec3 diffuse = material.diffuse * light.diffuse * diff * get_diffuse_tex();
+  vec3 specular = material.specular * light.specular * spec * get_specular_tex();
   ambient *= attenuation;
   diffuse *= attenuation;
   specular *= attenuation;
@@ -138,9 +144,9 @@ vec3 calc_spot_light(Light light, vec3 normal, vec3 view_dir) {
   float epsilon = light.cut_off - light.outer_cut_off;
   float intensity = clamp((theta - light.outer_cut_off) / epsilon, 0.0, 1.0);
   // combine results
-  vec3 ambient = light.ambient * get_diffuse_tex();
-  vec3 diffuse = light.diffuse * diff * get_diffuse_tex();
-  vec3 specular = light.specular * spec * get_specular_tex();
+  vec3 ambient = material.ambient * light.ambient * get_diffuse_tex();
+  vec3 diffuse = material.diffuse * light.diffuse * diff * get_diffuse_tex();
+  vec3 specular = material.specular * light.specular * spec * get_specular_tex();
   ambient *= attenuation * intensity;
   diffuse *= attenuation * intensity;
   specular *= attenuation * intensity;
