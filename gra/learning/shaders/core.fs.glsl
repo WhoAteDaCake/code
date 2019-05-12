@@ -109,12 +109,13 @@ vec3 calc_dir_light(Light light, vec3 normal, vec3 view_dir) {
 }
 
 vec3 calc_point_light(Light light, vec3 normal, vec3 view_dir) {
-	vec3 light_dir = normalize(light.position - vs_position);
+  vec3 light_dir = normalize(light.position - vs_position);
   // diffuse shading
   float diff = max(dot(normal, light_dir), 0.0);
   // specular shading
   vec3 reflect_dir = reflect(-light_dir, normal);
-  float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
+  // Change dot(normal) to view_dir if you want to follow the camera;
+  float spec = pow(max(dot(normal, reflect_dir), 0.0), material.shininess);
   // attenuation
   float distance = length(light.position - vs_position);
   float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    

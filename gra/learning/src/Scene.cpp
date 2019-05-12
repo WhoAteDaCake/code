@@ -5,12 +5,13 @@ Scene::Scene() : light(Light(glm::vec3(0.f, 0.f, 1.f)))
 {
   // TMP
   this->light.diffuse = glm::vec3(1.f, 1.f, 1.f);
-  this->light.position = glm::vec3(26.f, 26.5f, -27.4f);
+  this->light.position = glm::vec3(-10.f, 10.f, -27.4f);
   this->light.direction = glm::vec3(0.f, -1.f, 0.f);
-  // this->light.cut_off = 30.f;
-  // this->light.linear = 0.007f;
-  // this->light.constant = 0.0002f;
-  this->light.ambient = glm::vec3(0.1f);
+  this->light.linear = 0.007f;
+  this->light.constant = 0.0002f;
+  this->light.specular = glm::vec3(1.f, 1.f, 1.f);
+  this->light.ambient = glm::vec3(0.2f);
+  this->light.cut_off = 30.f;
   this->light.type = 1;
 
   this->shader = Shaders();
