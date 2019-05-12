@@ -122,9 +122,11 @@ vec3 calc_point_light(Light light, vec3 normal, vec3 view_dir) {
   vec3 ambient = material.ambient * light.ambient * get_diffuse_tex();
   vec3 diffuse = material.diffuse * light.diffuse * diff * get_diffuse_tex();
   vec3 specular = material.specular * light.specular * spec * get_specular_tex();
-  ambient *= attenuation;
+  // TODO re-enable when we have multiple lights
+  // ambient *= attenuation;
   diffuse *= attenuation;
   specular *= attenuation;
+  // return vec3(1.f, 0.f, 0.f);
   return (ambient + diffuse + specular);
 }
 
