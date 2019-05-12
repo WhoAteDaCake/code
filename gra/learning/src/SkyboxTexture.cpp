@@ -36,20 +36,13 @@ GLuint SkyboxTexture::load_cubemap(const char *files[6])
 void SkyboxTexture::load()
 {
   const char *files[6] = {
-      "arrakisday_rt.png",
+      "arrakisday_bk.png",
       "arrakisday_lf.png",
       "arrakisday_up.png",
       "arrakisday_dn.png",
       "arrakisday_ft.png",
-      "arrakisday_bk.png",
+      "arrakisday_rt.png",
   };
-  // const char *files[6] = {
-  //     "right.png",
-  //     "left.png",
-  //     "top.png",
-  //     "bottom.png",
-  //     "front.png",
-  //     "back.png",
-  // };
+
   this->id = load_cubemap(files);
 }
