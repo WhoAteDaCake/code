@@ -248,4 +248,61 @@ public:
   }
 };
 
+class Cylinder : public Mesh
+{
+private:
+  glm::vec3 color;
+
+public:
+  Cylinder(std::string name, glm::vec3 color) : Mesh(name), color(color) {}
+
+  void add_vertex(float x, float y, float z)
+  {
+    this->vertices.push_back(Vertex(glm::vec3(x, y, z), this->color, glm::vec2(0.f), glm::vec3(0.f)));
+  }
+
+  void initialize(glm::mat4 initial_matrix)
+  {
+    float radius = 1.f;
+    float height = 1.f;
+    float slices = 360.f;
+    float DEG2RAD = M_PI / 180;
+
+    float prev = 0.f;
+    for (int i = 1.f; i <= slices; i++)
+    {
+      float deg_prev = prev * DEG2RAD;
+      float deg_now = i * DEG2RAD;
+
+      float px = cos(deg_prev) * radius;
+      float pz = sin(deg_prev) * radius;
+
+      float nx = cos(deg_now) * radius;
+      float nz = sin(deg_now) * radius;
+
+      // Bottom cicle
+      add_vertex(0.f, 0.f, 0.f);
+      add_vertex(px, 0.f, pz);
+      add_vertex(nx, 0.f, nz);
+
+      // Top circle
+      add_vertex(0.f, height, 0.f);
+      add_vertex(nx, height, nz);
+      add_vertex(px, height, pz);
+
+      // Wall 1
+      add_vertex(px, 0.f, pz);
+      add_vertex(px, height, pz);
+      add_vertex(nx, height, nz);
+      // Wall 2
+      add_vertex(px, 0.f, pz);
+      add_vertex(nx, height, nz);
+      add_vertex(nx, 0.f, nz);
+
+      prev = i;
+    }
+    Mesh::initialize(initial_matrix);
+  }
+};
+
 #endif
