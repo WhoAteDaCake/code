@@ -29,6 +29,7 @@ void Light::send_to_shader(Shaders *program)
   program->use1f(field("outer_cut_off"), glm::cos(glm::radians(this->outer_cut_off)));
 
   program->use1i(field("type"), this->type);
+  program->use1i(field("blinn"), this->blinn ? 1 : 0);
 }
 
 void Light::copy_properties(Light *light, bool copy_position)
@@ -51,4 +52,5 @@ void Light::copy_properties(Light *light, bool copy_position)
   this->outer_cut_off = light->outer_cut_off;
   // Type
   this->type = light->type;
+  this->blinn = light->blinn;
 }

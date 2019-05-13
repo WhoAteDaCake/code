@@ -30,6 +30,8 @@ public:
       std::unique_ptr<TextureManager> &tex_manager,
       std::unique_ptr<MaterialManager> &mat_manager);
 
+  std::shared_ptr<Material> secondary_mat;
+
   Object(
       std::string name,
       SharedTexture diffuse,
@@ -75,6 +77,11 @@ public:
 
   virtual void initialize();
   virtual void update(int delta);
+
+  inline glm::vec3 get_position()
+  {
+    return this->mesh[0]->position;
+  }
 
   inline void set_diffuse(SharedTexture diffuse_tex)
   {

@@ -28,6 +28,7 @@ struct Light {
    * 2 - Spotlight
    */
 	int type;
+  bool blinn;
 
   vec3 position;
 	vec3 direction;
@@ -78,7 +79,7 @@ void main() {
       }
     }
   } else {
-    result = vec3(1.f);
+    result = material.ambient + material.diffuse + material.specular;
   }
 	
 
@@ -106,13 +107,24 @@ vec3 get_specular_tex() {
 	}
 }
 
+float calc_spec(vec3 light_dir, vec3 normal, bool blinn) {
+  float spec = 0.f;
+  if (blinn) {
+     vec3 reflect_dir = normalize(light_dir + normal);
+    spec = pow(max(dot(normal, reflect_dir), 0.0), material.shininess);   
+  } else {
+    vec3 reflect_dir = normalize(reflect(-light_dir, normal));
+    spec = pow(max(dot(normal, reflect_dir), 0.0), material.shininess);
+  }
+  return spec;
+}
+
 vec3 calc_dir_light(Light light, vec3 normal, vec3 view_dir) {
 	vec3 light_dir = normalize(-light.direction);
   // diffuse shading
   float diff = clamp(dot(normal, light_dir), 0.0, 1.f);
   // specular shading
-  vec3 reflect_dir = normalize(reflect(-light_dir, normal));
-  float spec = pow(max(dot(normal, reflect_dir), 0.0), material.shininess);
+  float spec = calc_spec(light_dir, normal, light.blinn);
   // combine results
   vec3 ambient = material.ambient * light.ambient * get_diffuse_tex();
   vec3 diffuse = material.diffuse * light.diffuse * diff * get_diffuse_tex();
@@ -128,7 +140,7 @@ vec3 calc_point_light(Light light, vec3 normal, vec3 view_dir) {
   // specular shading
   vec3 reflect_dir = reflect(-light_dir, normal);
   // Change dot(normal) to view_dir if you want to follow the camera;
-  float spec = pow(max(dot(normal, reflect_dir), 0.0), material.shininess);
+  float spec = calc_spec(light_dir, normal, light.blinn);
   // attenuation
   float distance = length(light.position - vs_position);
   float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
@@ -148,7 +160,7 @@ vec3 calc_point_light(Light light, vec3 normal, vec3 view_dir) {
 vec3 calc_spot_light(Light light, vec3 normal, vec3 view_dir) {
 	vec3 light_dir = normalize(light.position - vs_position);
   // diffuse shading
-  float diff = max(dot(normal, light_dir), 0.0);
+  float diff = max(dot(light_dir, normal), 0.0);
   // specular shading
   vec3 reflect_dir = reflect(-light_dir, normal);
   // Change to view dir to follow camera

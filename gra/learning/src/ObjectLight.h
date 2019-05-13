@@ -36,7 +36,7 @@ public:
 
   inline glm::vec3 get_position()
   {
-    return this->light->position;
+    return this->object->get_position();
   }
 };
 

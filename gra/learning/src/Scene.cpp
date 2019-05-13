@@ -146,8 +146,9 @@ void Scene::create_lights()
   cube1->light->direction = glm::vec3(0.f, -1.f, 0.f);
   cube1->light->specular = glm::vec3(0.1f);
   cube1->light->diffuse = glm::vec3(1.f);
-  cube1->light->linear = 0.0014;
-  cube1->light->constant = 0.00007;
+  cube1->light->blinn = true;
+  // cube1->light->linear = 0.0014;
+  // cube1->light->constant = 0.00007;
   cube1->light->specular = glm::vec3(0.2f);
 
   auto cube2 = make_light_cube(
@@ -157,6 +158,7 @@ void Scene::create_lights()
       glm::vec3(-43.9f, 47.f, -49.f),
       glm::vec3(0.f),
       glm::vec3(3.f));
+
   cube2->light->copy_properties(cube1->light.get(), false);
 
   auto cube3 = make_light_cube(
@@ -190,6 +192,7 @@ void Scene::create_lights()
   fan->light->copy_properties(cube1->light.get(), false);
   fan->light->type = 2;
   fan->light->ambient = glm::vec3(4.f);
+  fan->light->blinn = true;
 
   this->lights.push_back(std::move(fan));
   this->lights.push_back(std::move(cube1));

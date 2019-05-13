@@ -19,6 +19,8 @@ public:
    */
   int type;
   unsigned int id;
+  bool blinn;
+
   std::string full;
   std::string prefix;
 
@@ -51,7 +53,8 @@ public:
                               outer_cut_off(50.f),
                               type(1),
                               id(Light::get_id()),
-                              prefix(""), full("")
+                              prefix(""), full(""),
+                              blinn(true)
   {
     this->prefix = std::string("lights[") + std::to_string(this->id) + std::string("].");
   }

@@ -63,7 +63,7 @@ Mesh *make_cube_mesh(std::string name, glm::vec3 color, float size)
     // glm::vec3 normal = glm::triangleNormal(faces[0].position, faces[1].position, faces[2].position);
     loop3(k)
     {
-      faces[k].normal = normals[normal_i];
+      // faces[k].normal = normals[normal_i];
       mesh->vertices.push_back(faces[k]);
     }
   }
@@ -97,7 +97,10 @@ std::unique_ptr<Object> make_pig(
     glm::vec3 scale)
 {
   float size = 1.f;
-  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.1f), glm::vec3(1.f), glm::vec3(1.f), true);
+  std::shared_ptr<Material> material = std::make_shared<Material>(
+      glm::vec3(0.2f),
+      glm::vec3(0.4f),
+      glm::vec3(0.2f), true);
   PigObject *object = new PigObject(name, nullptr, nullptr, material);
   // Body
   float body_scale = 2.f;
@@ -206,7 +209,7 @@ std::unique_ptr<ObjectLight> make_light_cube(
     glm::vec3 rotation,
     glm::vec3 scale)
 {
-  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(1.f), glm::vec3(1.f), glm::vec3(1.f), true);
+  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.3f), glm::vec3(0.3f), glm::vec3(0.3f), true);
   material->toggle_ignore_light(true);
 
   Mesh *cube = make_cube_mesh(name + "_light_cube", color, 1.f);
@@ -237,7 +240,7 @@ std::unique_ptr<ObjectLight> make_fan_lamp(
     glm::vec3 rotation,
     glm::vec3 scale)
 {
-  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(1.f), glm::vec3(1.f), glm::vec3(1.f), true);
+  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.f), glm::vec3(0.2f), glm::vec3(0.2f), true);
   // material->toggle_ignore_light(true);
 
   float ch_ratio = 0.4f;
@@ -289,7 +292,7 @@ std::unique_ptr<ObjectLight> make_fan_lamp(
   object->add_mesh(blade2);
 
   // Want to make sure the light is at spheres location
-  Light *light = new Light(position + glm::vec3(0.f, -1.f, 0.f));
+  Light *light = new Light(position);
   ObjectLight *object_light = new ObjectLight(
       std::unique_ptr<Object>(object),
       std::unique_ptr<Light>(light));
