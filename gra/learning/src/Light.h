@@ -19,6 +19,8 @@ public:
    */
   int type;
   unsigned int id;
+  std::string full;
+  std::string prefix;
 
   glm::vec3 position;
   glm::vec3 ambient;
@@ -38,8 +40,8 @@ public:
   Light(const Light &) = delete;            // non construction-copyable
 
   Light(glm::vec3 position) : position(position),
-                              ambient(glm::vec3(0.1)),
-                              diffuse(glm::vec3(0.f)),
+                              ambient(glm::vec3(0.4f)),
+                              diffuse(glm::vec3(1.f)),
                               specular(glm::vec3(0.5f)),
                               direction(glm::vec3(0.f)),
                               constant(1.f),
@@ -48,11 +50,14 @@ public:
                               cut_off(30.f),
                               outer_cut_off(50.f),
                               type(1),
-                              id(Light::get_id())
+                              id(Light::get_id()),
+                              prefix(""), full("")
   {
+    this->prefix = std::string("lights[") + std::to_string(this->id) + std::string("].");
   }
 
   void send_to_shader(Shaders *program);
+  const char *field(std::string name);
 };
 
 #endif // !1 LIGHT_H

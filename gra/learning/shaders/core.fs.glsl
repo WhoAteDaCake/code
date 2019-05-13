@@ -45,7 +45,9 @@ struct Light {
 	float outer_cut_off;
 };
 
-uniform Light light; 
+#define LIGHT_COUNT 2
+
+uniform Light lights[LIGHT_COUNT];
 
 uniform Material material;
 // Because 130 doesn't support samplers inside structs
@@ -63,14 +65,17 @@ vec3 calc_spot_light(Light light, vec3 normal, vec3 view_dir);
 void main() {
 	vec3 normal = normalize(vs_normal);
 	vec3 view_dir = normalize(camera_pos - vs_position);
-	vec3 result;
+	vec3 result = vec3(0.f, 0.f, 0.f);
   if (!material.ignore_light) {
-    if (light.type == 0) {
-    	result = calc_dir_light(light, normal, view_dir);
-    } else if (light.type == 1) {
-    	result = calc_point_light(light, normal, view_dir);
-    } else if (light.type == 2) {
-    	result = calc_spot_light(light, normal, view_dir);
+    for (int i = 0; i < LIGHT_COUNT; i += 1) {
+      Light light = lights[i];
+      if (light.type == 0) {
+      	result += calc_dir_light(light, normal, view_dir);
+      } else if (light.type == 1) {
+      	result += calc_point_light(light, normal, view_dir);
+      } else if (light.type == 2) {
+      	result += calc_spot_light(light, normal, view_dir);
+      }
     }
   } else {
     result = vec3(1.f);

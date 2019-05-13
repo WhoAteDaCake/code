@@ -18,12 +18,12 @@ Engine::Engine(
   // this->camera.yaw = 91.f;
   // // this->camera.pitch = -79.6f;
   // this->camera.update_front();
-  this->camera.update_position(glm::vec3(0.f, 0.f, 2.f));
+  // this->camera.update_position(glm::vec3(0.f, 0.f, 2.f));
 
-  // Start of scene
-  // this->camera.yaw = -180.f;
-  // this->camera.update_front();
-  // this->camera.update_position(glm::vec3(26.f, 26.5f, -27.4f));
+  // Start of room
+  this->camera.yaw = -180.f;
+  this->camera.update_front();
+  this->camera.update_position(glm::vec3(26.f, 26.5f, -27.4f));
 
   this->w_width = width;
   this->w_height = height;

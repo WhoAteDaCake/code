@@ -15,7 +15,8 @@
 
 class Scene
 {
-private:
+  // TODO:CHANGE TO private
+public:
   Camera *camera;
   std::vector<std::unique_ptr<ObjectLight>> lights;
 
