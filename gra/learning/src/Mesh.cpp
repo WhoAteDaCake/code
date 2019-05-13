@@ -55,12 +55,33 @@ void Mesh::calculate_matrix(glm::mat4 initial_matrix)
   this->model_matrix = glm::scale(this->model_matrix, this->scale);
 }
 
+void Mesh::calculate_normals()
+{
+  // At the moment only do normals for vertex only mesh
+  if (this->indices.size() != 0)
+  {
+    return;
+  }
+  for (int i = 0; i < this->vertices.size(); i += 3)
+  {
+    glm::vec3 normal = glm::triangleNormal(
+        this->vertices[i + 0].position,
+        this->vertices[i + 1].position,
+        this->vertices[i + 2].position);
+    for (int k = 0; k < 3; k += 1)
+    {
+      this->vertices[i + k].normal = normal;
+    }
+  }
+}
+
 void Mesh::initialize(glm::mat4 initial_matrix)
 {
   if (this->vertices.empty())
   {
     throw message("Has not initialized vertices");
   }
+  calculate_normals();
   bind_buffers();
   calculate_matrix(initial_matrix);
 #ifdef GRA_DEBUG

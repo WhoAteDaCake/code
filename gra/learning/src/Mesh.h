@@ -46,6 +46,7 @@ public:
   glm::vec3 position;
   glm::vec3 rotation;
   glm::vec3 scale;
+  bool auto_normals;
   // For when we require to use transforms of a previous mesh
   // In the object
   int dependency_index;
@@ -58,7 +59,8 @@ public:
                                                  scale(glm::vec3(1.f)),
                                                  name(name),
                                                  mat_name(""),
-                                                 dependency_index(dependency_index){
+                                                 dependency_index(dependency_index),
+                                                 auto_normals(false){
 
                                                  };
   Mesh(std::string name) : Mesh(name, -1){};
@@ -79,6 +81,7 @@ public:
 
   // Setup
   virtual void initialize(glm::mat4 initial_matrix);
+  void calculate_normals();
   // Actions
   virtual void draw(Shaders *program);
   void update(glm::mat4 initial_matrix);
