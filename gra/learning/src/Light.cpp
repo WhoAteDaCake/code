@@ -30,3 +30,25 @@ void Light::send_to_shader(Shaders *program)
 
   program->use1i(field("type"), this->type);
 }
+
+void Light::copy_properties(Light *light, bool copy_position)
+{
+  // General
+  if (copy_position)
+  {
+    this->position = light->position;
+  }
+  this->ambient = light->ambient;
+  this->diffuse = light->diffuse;
+  this->specular = light->specular;
+  this->direction = light->direction;
+  // Strength
+  this->constant = light->constant;
+  this->linear = light->linear;
+  this->quadratic = light->quadratic;
+  // Degrees
+  this->cut_off = light->cut_off;
+  this->outer_cut_off = light->outer_cut_off;
+  // Type
+  this->type = light->type;
+}

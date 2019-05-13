@@ -57,6 +57,7 @@ public:
   }
 
   void send_to_shader(Shaders *program);
+  void copy_properties(Light *light, bool copy_position);
   const char *field(std::string name);
 };
 

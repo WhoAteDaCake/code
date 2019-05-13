@@ -213,7 +213,14 @@ std::unique_ptr<ObjectLight> make_light_cube(
   cube->position = position;
   cube->rotation = rotation;
   cube->scale = scale;
+
+  Cylinder *handle = new Cylinder(name + "_handle", glm::vec3(0.f));
+  handle->dependency_index = 0;
+  handle->scale = glm::vec3(0.5f, 6.f, 0.5f);
+  handle->position = glm::vec3(0.f, 1.f, 0.f);
+
   Object *object = new Object(name, nullptr, nullptr, material, cube);
+  object->add_mesh(handle);
 
   Light *light = new Light(position);
   ObjectLight *object_light = new ObjectLight(
@@ -231,7 +238,7 @@ std::unique_ptr<ObjectLight> make_fan_lamp(
     glm::vec3 scale)
 {
   std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(1.f), glm::vec3(1.f), glm::vec3(1.f), true);
-  material->toggle_ignore_light(true);
+  // material->toggle_ignore_light(true);
 
   float ch_ratio = 0.4f;
   // Cylinders

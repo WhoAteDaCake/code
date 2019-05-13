@@ -45,7 +45,7 @@ struct Light {
 	float outer_cut_off;
 };
 
-#define LIGHT_COUNT 3
+#define LIGHT_COUNT 5
 
 uniform Light lights[LIGHT_COUNT];
 
