@@ -33,6 +33,7 @@ GLuint Texture::load_texture(std::string file, GLenum type)
   else
   {
     Log::error("Could not load texure: " + file + "\n");
+    throw std::string("Failed to load the image");
     return 0;
   }
 
