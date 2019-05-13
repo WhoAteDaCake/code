@@ -92,4 +92,21 @@ public:
     void update(int delta);
 };
 
+class FanObject : public Object
+{
+private:
+    float angle;
+
+public:
+    FanObject(
+        std::string name,
+        SharedTexture diffuse,
+        SharedTexture specular,
+        std::shared_ptr<Material> material) : Object(name, diffuse, specular, material), angle(0.f)
+    {
+    }
+
+    void update(int delta);
+};
+
 #endif // !1 COMOON_OBJECTS_H

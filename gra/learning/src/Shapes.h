@@ -173,7 +173,7 @@ private:
     // The ratio of sphere radius divided by distance to the center
     // Helps us to calculate how much shift is needed for the coordinate to be
     // part of the sphere surface
-    float md = (this->size / 2.f) / dtc;
+    float md = this->size / dtc;
     mp *= md;
     return mp;
   }
@@ -205,16 +205,15 @@ private:
 public:
   HalfSphere(
       std::string name,
-      float size,
       glm::vec3 color,
       int curve) : Mesh(name),
-                   size(size),
                    color(color),
-                   curve(curve){};
+                   curve(curve),
+                   size(0.5f){};
 
   void initialize(glm::mat4 initial_matrix)
   {
-    float radius = size / 2.f;
+    float radius = this->size;
     float level = curve;
     glm::vec3 p1;
     glm::vec3 p2;
@@ -263,7 +262,8 @@ public:
 
   void initialize(glm::mat4 initial_matrix)
   {
-    float radius = 1.f;
+    // Size will be 2x radius
+    float radius = 0.5f;
     float height = 1.f;
     float slices = 360.f;
     float DEG2RAD = M_PI / 180;

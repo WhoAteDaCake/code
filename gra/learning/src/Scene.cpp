@@ -112,10 +112,16 @@ void Scene::draw()
 
 void Scene::clear()
 {
-  for (std::unique_ptr<Object> &item : this->objects)
+  for (auto &item : this->objects)
   {
     item->clear();
   }
+
+  for (auto &item : this->lights)
+  {
+    item->clear();
+  }
+
   this->sky_tex->unbind();
 }
 
@@ -148,6 +154,7 @@ void Scene::create_lights()
       glm::vec3(1.f),
       glm::vec3(0.f, 0.f, 0.f),
       glm::vec3(0.f),
+      // Scale
       glm::vec3(1.f));
 
   fan->light->type = 1;
@@ -220,6 +227,10 @@ void Scene::update(int delta)
 {
   // Update
   for (std::unique_ptr<Object> &item : this->objects)
+  {
+    item->update(delta);
+  }
+  for (auto &item : this->lights)
   {
     item->update(delta);
   }

@@ -25,6 +25,8 @@ public:
 
   void initialize();
   void draw(Shaders *program);
+  void update(int delta);
+  void clear();
 };
 
 #endif // !OJBECT_LIGHT_H

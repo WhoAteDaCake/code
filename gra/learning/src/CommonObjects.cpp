@@ -50,6 +50,7 @@ Mesh *make_cube_mesh(std::string name, glm::vec3 color, float size)
 
   // We dont use idices here because it's easier to calculate normals this way
   Mesh *mesh = new Mesh(name);
+  mesh->auto_normals = true;
   for (int i = 0; i < sizeof(indices) / sizeof(GLuint); i += 3)
   {
     int normal_i = floor((i / 3) / 2);
@@ -232,13 +233,56 @@ std::unique_ptr<ObjectLight> make_fan_lamp(
   std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(1.f), glm::vec3(1.f), glm::vec3(1.f), true);
   material->toggle_ignore_light(true);
 
-  HalfSphere *sphere = new HalfSphere(name + "_sphere", 20, color, 5);
-  sphere->position = position;
-  sphere->rotation = rotation;
-  sphere->scale = scale;
-  Object *object = new Object(name, nullptr, nullptr, material, sphere);
+  float ch_ratio = 0.4f;
+  // Cylinders
+  Cylinder *middle_c = new Cylinder(name + "_middle_c", glm::vec3(0.f));
+  middle_c->auto_normals = true;
+  middle_c->position = position;
+  middle_c->rotation = rotation;
+  middle_c->scale = scale * glm::vec3(1.f, ch_ratio, 1.f);
 
-  Light *light = new Light(position);
+  Cylinder *down_c = new Cylinder(name + "_down_c", glm::vec3(0.75f));
+  down_c->auto_normals = true;
+  down_c->dependency_index = 0;
+  down_c->auto_normals = true;
+  down_c->position = glm::vec3(0.f, -1.f, 0.f);
+
+  Cylinder *up_c = new Cylinder(name + "_up_c", glm::vec3(0.75f));
+  up_c->auto_normals = true;
+  up_c->dependency_index = 0;
+  up_c->auto_normals = true;
+  up_c->position = glm::vec3(0.f, 1.f, 0.f);
+
+  // Bottom lamp
+  HalfSphere *sphere = new HalfSphere(name + "_middle_c", color, 5);
+  sphere->auto_normals = true;
+  sphere->dependency_index = 1;
+  sphere->scale = glm::vec3(1.f, 1.f / ch_ratio, 1.f) * glm::vec3(0.8f);
+  // Fan blades
+  float fan_ratio = ch_ratio / 4.f;
+  Mesh *blade1 = make_cube_mesh(name + "_blade_1", glm::vec3(0.5f, 0.27f, 0.07f), 1.f);
+  blade1->auto_normals = true;
+  blade1->dependency_index = 0;
+  blade1->scale = glm::vec3(ch_ratio, fan_ratio, 1.5f);
+  blade1->position = glm::vec3(0.f, ch_ratio, -ch_ratio * 3.6f);
+  blade1->rotation = glm::vec3(0.f, 0.f, 30.f);
+
+  Mesh *blade2 = make_cube_mesh(name + "_blade_2", glm::vec3(0.5f, 0.27f, 0.07f), 1.f);
+  blade2->auto_normals = true;
+  blade2->dependency_index = 4;
+  blade2->position = glm::vec3(0.f, 0.f, blade1->position.z * -1.4f);
+  blade2->rotation = glm::vec3(0.f, 0.f, 180.f);
+
+  FanObject *object = new FanObject(name, nullptr, nullptr, material);
+  object->add_mesh(middle_c);
+  object->add_mesh(down_c);
+  object->add_mesh(up_c);
+  object->add_mesh(sphere);
+  object->add_mesh(blade1);
+  object->add_mesh(blade2);
+
+  // Want to make sure the light is at spheres location
+  Light *light = new Light(position + glm::vec3(0.f, -1.f, 0.f));
   ObjectLight *object_light = new ObjectLight(
       std::unique_ptr<Object>(object),
       std::unique_ptr<Light>(light));
@@ -337,5 +381,21 @@ void PigObject::update(int delta)
   this->mesh[0]->position = pos;
   this->mesh[0]->rotation = rot;
   this->mesh[2]->rotation = leg_rot;
+  update_matrices(false);
+}
+
+void FanObject::update(int delta)
+{
+  float rotation_modifier = 0.5f * static_cast<float>(delta);
+  float new_angle = angle + rotation_modifier;
+
+  if (new_angle > 360.f)
+  {
+    new_angle -= 360.f;
+  }
+
+  this->mesh[0]->rotation.y = new_angle;
+
+  this->angle = new_angle;
   update_matrices(false);
 }
