@@ -13,6 +13,7 @@ std::vector<std::unique_ptr<Object>> Object::from_file(
 
   for (Mesh *mesh : meshes)
   {
+    mesh->auto_normals = true;
     // TODO texture loading ?
     std::shared_ptr<Material> material = mat_manager->get(mesh->mat_name);
     std::shared_ptr<Texture> diffuse_tex = nullptr;

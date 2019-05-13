@@ -131,7 +131,7 @@ void Engine::handle_key_cb(unsigned char key, int x, int y)
   this->camera.update_position(current_position);
 
   float c = 0.5f;
-  auto &item = this->scene->lights[3];
+  auto &item = this->scene->lights[2];
   glm::vec3 pos = item->get_position();
   // FOR development
   if (key == '8')

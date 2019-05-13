@@ -158,51 +158,51 @@ std::vector<Mesh *> FileLoader::load(
         vertices[i].position = glm::vec3(v[i][0], v[i][1], v[i][2]);
       }
 
-      float n[3][3];
-      if (
-          attrib.normals.size() > 0 &&
-          ids[0].normal_index >= 0 &&
-          ids[1].normal_index >= 0 &&
-          ids[2].normal_index >= 0)
-      {
-        // Normals
-        loop3(k)
-        {
-          loop3(i)
-          {
-            n[i][k] = attrib.normals[3 * ids[i].normal_index + k];
-          }
-        }
-        loop3(k)
-        {
-          vertices[k].normal = glm::vec3(n[k][0], n[k][1], n[k][2]);
-        }
-      }
-      else
-      {
-#ifdef GRA_DEBUG
-        Log::warn("No normals for " + shapes[s].name);
-#endif
-      }
+//       float n[3][3];
+//       if (
+//           attrib.normals.size() > 0 &&
+//           ids[0].normal_index >= 0 &&
+//           ids[1].normal_index >= 0 &&
+//           ids[2].normal_index >= 0)
+//       {
+//         // Normals
+//         loop3(k)
+//         {
+//           loop3(i)
+//           {
+//             n[i][k] = attrib.normals[3 * ids[i].normal_index + k];
+//           }
+//         }
+//         loop3(k)
+//         {
+//           vertices[k].normal = glm::vec3(n[k][0], n[k][1], n[k][2]);
+//         }
+//       }
+//       else
+//       {
+// #ifdef GRA_DEBUG
+//         Log::warn("No normals for " + shapes[s].name);
+// #endif
+//       }
 
       float normal_factor = 0.2;
       float diffuse_factor = 1 - normal_factor;
       loop3(k)
       {
-        float c[3];
-        loop3(i)
-        {
-          c[i] = n[k][i] * normal_factor + diffuse[i] * diffuse_factor;
-        }
-        float len2 = c[0] * c[0] + c[1] * c[1] + c[2] * c[2];
-        if (len2 > 0.0f)
-        {
-          float len = sqrtf(len2);
+        // float c[3];
+        // loop3(i)
+        // {
+        //   // c[i] = n[k][i] * normal_factor + diffuse[i] * diffuse_factor;
+        // }
+        // float len2 = c[0] * c[0] + c[1] * c[1] + c[2] * c[2];
+        // if (len2 > 0.0f)
+        // {
+        //   float len = sqrtf(len2);
 
-          c[0] /= len;
-          c[1] /= len;
-          c[2] /= len;
-        }
+        //   c[0] /= len;
+        //   c[1] /= len;
+        //   c[2] /= len;
+        // }
         // vertices[k].color = glm::vec3(c[0], c[1], c[2]);
         vertices[k].color = glm::vec3(1.f, 1.f, 1.f);
         vertices_all.push_back(vertices[k]);
