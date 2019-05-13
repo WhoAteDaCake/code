@@ -240,7 +240,10 @@ std::unique_ptr<ObjectLight> make_fan_lamp(
     glm::vec3 rotation,
     glm::vec3 scale)
 {
-  std::shared_ptr<Material> material = std::make_shared<Material>(glm::vec3(0.f), glm::vec3(0.2f), glm::vec3(0.2f), true);
+  std::shared_ptr<Material> material = std::make_shared<Material>(
+      glm::vec3(0.8f),
+      glm::vec3(1.f),
+      glm::vec3(0.4f), true);
   // material->toggle_ignore_light(true);
 
   float ch_ratio = 0.4f;
