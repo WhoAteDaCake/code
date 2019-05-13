@@ -134,36 +134,57 @@ void Scene::create_textures()
 void Scene::create_lights()
 {
   // Lights
-  auto cube = make_light_cube(
+  auto cube1 = make_light_cube(
       "outside",
       this->material_manager,
       glm::vec3(1.f),
-      glm::vec3(-10.f, 30.f, -15.4f),
+      glm::vec3(-45.f, 47.f, 15.f),
       glm::vec3(0.f),
-      glm::vec3(1.f));
+      glm::vec3(3.f));
 
-  cube->light->type = 0;
-  cube->light->direction = glm::vec3(0.f, -1.f, 0.f);
-  cube->light->specular = glm::vec3(0.7f);
+  cube1->light->type = 1;
+  cube1->light->direction = glm::vec3(0.f, -1.f, 0.f);
+  cube1->light->specular = glm::vec3(0.1f);
+  cube1->light->diffuse = glm::vec3(1.f);
+  cube1->light->linear = 0.0014;
+  cube1->light->constant = 0.00007;
+
+  auto cube2 = make_light_cube(
+      "outside",
+      this->material_manager,
+      glm::vec3(1.f),
+      glm::vec3(-43.9f, 47.f, -49.f),
+      glm::vec3(0.f),
+      glm::vec3(3.f));
+
+  cube2->light->type = 1;
+  cube2->light->direction = glm::vec3(0.f, -1.f, 0.f);
+  cube2->light->specular = glm::vec3(0.1f);
+  cube2->light->diffuse = glm::vec3(1.f);
+  cube2->light->linear = 0.0014;
+  cube2->light->constant = 0.00007;
 
   auto fan = make_fan_lamp(
       "outside",
       this->material_manager,
       glm::vec3(1.f),
       // Position
-      glm::vec3(-20.f, 60.f, -30.f),
+      glm::vec3(-20.f, 60.f, -20.f),
       glm::vec3(0.f),
       // Scale
-      glm::vec3(3.f));
+      glm::vec3(6.f));
 
   fan->light->type = 2;
   fan->light->linear = 0.0014;
   fan->light->constant = 0.00007;
+  fan->light->diffuse = glm::vec3(1.f);
   fan->light->direction = glm::vec3(0.f, -1.f, 0.f);
-  fan->light->specular = glm::vec3(1.f);
+  fan->light->specular = glm::vec3(0.2f);
+  fan->light->ambient = glm::vec3(0.8f);
 
-  this->lights.push_back(std::move(cube));
   this->lights.push_back(std::move(fan));
+  this->lights.push_back(std::move(cube1));
+  this->lights.push_back(std::move(cube2));
 }
 
 void Scene::create_objects()

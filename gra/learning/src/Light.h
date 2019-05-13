@@ -40,9 +40,9 @@ public:
   Light(const Light &) = delete;            // non construction-copyable
 
   Light(glm::vec3 position) : position(position),
-                              ambient(glm::vec3(0.4f)),
-                              diffuse(glm::vec3(1.f)),
-                              specular(glm::vec3(0.5f)),
+                              ambient(glm::vec3(0.1f)),
+                              diffuse(glm::vec3(0.f)),
+                              specular(glm::vec3(0.4f)),
                               direction(glm::vec3(0.f)),
                               constant(1.f),
                               linear(0.022f),

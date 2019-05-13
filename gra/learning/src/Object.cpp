@@ -43,6 +43,19 @@ bool Object::has_diffuse()
   return this->diffuse != nullptr;
 }
 
+void Object::update_position(glm::vec3 position)
+{
+  for (int i = 0; i < this->mesh.size(); i += 1)
+  {
+    Mesh *mesh = this->mesh[i];
+    if (mesh->dependency_index == -1)
+    {
+      mesh->position = position;
+    }
+  }
+  update_matrices(false);
+}
+
 void Object::update_matrices(bool initial)
 {
   std::vector<glm::mat4> matrices;

@@ -45,7 +45,7 @@ struct Light {
 	float outer_cut_off;
 };
 
-#define LIGHT_COUNT 2
+#define LIGHT_COUNT 3
 
 uniform Light lights[LIGHT_COUNT];
 
@@ -112,7 +112,7 @@ vec3 calc_dir_light(Light light, vec3 normal, vec3 view_dir) {
   float diff = clamp(dot(normal, light_dir), 0.0, 1.f);
   // specular shading
   vec3 reflect_dir = normalize(reflect(-light_dir, normal));
-  float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
+  float spec = pow(max(dot(normal, reflect_dir), 0.0), material.shininess);
   // combine results
   vec3 ambient = material.ambient * light.ambient * get_diffuse_tex();
   vec3 diffuse = material.diffuse * light.diffuse * diff * get_diffuse_tex();
@@ -137,7 +137,7 @@ vec3 calc_point_light(Light light, vec3 normal, vec3 view_dir) {
   vec3 diffuse = material.diffuse * light.diffuse * diff * get_diffuse_tex();
   vec3 specular = material.specular * light.specular * spec * get_specular_tex();
   // TODO re-enable when we have multiple lights
-  // ambient *= attenuation;
+  ambient *= attenuation;
   diffuse *= attenuation;
   specular *= attenuation;
   // return vec3(1.f, 0.f, 0.f);
@@ -151,7 +151,8 @@ vec3 calc_spot_light(Light light, vec3 normal, vec3 view_dir) {
   float diff = max(dot(normal, light_dir), 0.0);
   // specular shading
   vec3 reflect_dir = reflect(-light_dir, normal);
-  float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
+  // Change to view dir to follow camera
+  float spec = pow(max(dot(normal, reflect_dir), 0.0), material.shininess);
   // attenuation
   float distance = length(light.position - vs_position);
   float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    

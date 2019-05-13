@@ -71,6 +71,7 @@ public:
   void draw(Shaders *program);
   void clear();
   void update_matrices(bool initial);
+  void update_position(glm::vec3 position);
 
   virtual void initialize();
   virtual void update(int delta);

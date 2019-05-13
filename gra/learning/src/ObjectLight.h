@@ -27,6 +27,17 @@ public:
   void draw(Shaders *program);
   void update(int delta);
   void clear();
+
+  void set_position(glm::vec3 pos)
+  {
+    this->light->position = pos;
+    this->object->update_position(pos);
+  }
+
+  inline glm::vec3 get_position()
+  {
+    return this->light->position;
+  }
 };
 
 #endif // !OJBECT_LIGHT_H

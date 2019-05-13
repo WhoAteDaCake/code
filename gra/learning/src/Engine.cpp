@@ -129,6 +129,40 @@ void Engine::handle_key_cb(unsigned char key, int x, int y)
   }
 
   this->camera.update_position(current_position);
+
+  float c = 0.5f;
+  auto &item = this->scene->lights[1];
+  glm::vec3 pos = item->get_position();
+  // FOR development
+  if (key == '8')
+  {
+    pos.z -= change;
+  }
+  else if (key == '2')
+  {
+    pos.z += change;
+  }
+  else if (key == '4')
+  {
+    pos.x -= change;
+  }
+  else if (key == '6')
+  {
+    pos.x += change;
+  }
+  else if (key == '1')
+  {
+    pos.y += change;
+  }
+  else if (key == '3')
+  {
+    pos.y -= change;
+  }
+  else if (key == '#')
+  {
+    std::cout << "NEW_POS: " << glm::to_string(pos) << std::endl;
+  }
+  item->set_position(pos);
 }
 
 void Engine::reshape_cb(int width, int height)
