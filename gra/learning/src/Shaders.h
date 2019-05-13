@@ -78,7 +78,6 @@ public:
   void use3fv(const GLchar *name, glm::vec3 vect)
   {
     use();
-    printf("%s\n", name);
     glUniform3fv(glGetUniformLocation(this->id, name), 1, glm::value_ptr(vect));
     Log::check_error(name);
     stop_use();
