@@ -46,7 +46,7 @@ public:
                               direction(glm::vec3(0.f)),
                               constant(1.f),
                               linear(0.022f),
-                              quadratic(0.0019),
+                              quadratic(0.0019f),
                               cut_off(30.f),
                               outer_cut_off(50.f),
                               type(1),
