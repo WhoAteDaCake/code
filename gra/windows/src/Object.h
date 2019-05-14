@@ -74,9 +74,15 @@ public:
   void clear();
   void update_matrices(bool initial);
   void update_position(glm::vec3 position);
+  void update_scale(glm::vec3 scale);
 
   virtual void initialize();
   virtual void update(int delta);
+
+  inline std::shared_ptr<Material> get_material()
+  {
+    return this->material;
+  }
 
   inline glm::vec3 get_position()
   {

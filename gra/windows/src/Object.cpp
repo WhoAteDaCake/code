@@ -57,6 +57,19 @@ void Object::update_position(glm::vec3 position)
   update_matrices(false);
 }
 
+void Object::update_scale(glm::vec3 scale)
+{
+  for (int i = 0; i < this->mesh.size(); i += 1)
+  {
+    Mesh *mesh = this->mesh[i];
+    if (mesh->dependency_index == -1)
+    {
+      mesh->scale = scale;
+    }
+  }
+  update_matrices(false);
+}
+
 void Object::update_matrices(bool initial)
 {
   std::vector<glm::mat4> matrices;

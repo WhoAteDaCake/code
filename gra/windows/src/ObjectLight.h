@@ -34,6 +34,11 @@ public:
     this->object->update_position(pos);
   }
 
+  void set_scale(glm::vec3 scale)
+  {
+    this->object->update_scale(scale);
+  }
+
   inline glm::vec3 get_position()
   {
     return this->object->get_position();
