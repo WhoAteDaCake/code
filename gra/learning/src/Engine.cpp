@@ -17,9 +17,7 @@ Engine::Engine(
   this->camera = Camera();
 
   // Start of room
-  this->camera.yaw = -183.f;
-  this->camera.update_front();
-  this->camera.update_position(glm::vec3(76.5f, 60.f, -30.6f));
+  change_camera_pos('1');
 
   this->w_width = width;
   this->w_height = height;
@@ -91,6 +89,37 @@ void Engine::draw_cb()
 #endif // DEBUG
 }
 
+void Engine::change_camera_pos(unsigned char key)
+{
+  glm::vec3 pos;
+  float yaw;
+  switch (key)
+  {
+  case '1' /* constant-expression */:
+    yaw = -183.f;
+    pos = glm::vec3(76.5f, 60.f, -30.6f);
+    break;
+  case '2':
+    yaw = 0.6f;
+    pos = glm::vec3(61.6f, 60.4f, -8.4f);
+    break;
+  case '3':
+    yaw = -326.f;
+    pos = glm::vec3(11.5f, 80.6f, -66.5f);
+    break;
+  case '4':
+    yaw = -41.f;
+    pos = glm::vec3(4.3f, 60.6f, -10.5f);
+    break;
+  default:
+    return;
+  }
+
+  this->camera.yaw = yaw;
+  this->camera.update_front();
+  this->camera.update_position(pos);
+}
+
 void Engine::handle_key_cb(unsigned char key, int x, int y)
 {
   float change = 0.05f * static_cast<float>(this->delta_time);
@@ -125,40 +154,7 @@ void Engine::handle_key_cb(unsigned char key, int x, int y)
   }
 
   this->camera.update_position(current_position);
-
-  float c = 0.5f;
-  auto &item = this->scene->lights[4];
-  glm::vec3 pos = item->get_position();
-  // FOR development
-  if (key == '8')
-  {
-    pos.z -= change;
-  }
-  else if (key == '2')
-  {
-    pos.z += change;
-  }
-  else if (key == '4')
-  {
-    pos.x -= change;
-  }
-  else if (key == '6')
-  {
-    pos.x += change;
-  }
-  else if (key == '1')
-  {
-    pos.y += change;
-  }
-  else if (key == '3')
-  {
-    pos.y -= change;
-  }
-  else if (key == '#')
-  {
-    std::cout << "NEW_POS: " << glm::to_string(pos) << std::endl;
-  }
-  item->set_position(pos);
+  change_camera_pos(key);
 }
 
 void Engine::reshape_cb(int width, int height)

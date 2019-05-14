@@ -47,6 +47,7 @@ public:
   void message_cb(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
   void mouse_button_cb(int button, int state, int x, int y);
   void mouse_move_cb(int x, int y);
+  void change_camera_pos(unsigned char key);
 };
 
 #endif
