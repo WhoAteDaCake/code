@@ -9,8 +9,9 @@
 // #define GRA_DEBUG
 
 #include <GL/freeglut.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <GL/freeglut_ext.h>
+// #include <GL/gl.h>
+// #include <GL/glu.h>
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>

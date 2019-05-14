@@ -212,6 +212,14 @@ void Engine::mouse_button_cb(int button, int state, int x, int y)
   bool is_down = state == GLUT_DOWN;
   bool is_left_down = is_down && button == GLUT_LEFT_BUTTON;
 
+  // Wheel scroll
+  if (button == 3 || button == 4)
+  {
+    float offset = 4.f;
+    float multiplier = button == 3 ? -1.f : 1.f;
+    this->camera.add_to_fov(offset * multiplier, this->w_width, this->w_height);
+  }
+
   this->is_first_drag_move = is_left_down;
   this->is_button_down[button] = is_down;
   glutPostRedisplay();

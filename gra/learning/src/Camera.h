@@ -38,6 +38,17 @@ public:
   void update_position(glm::vec3 position);
   std::string to_string();
 
+  void add_to_fov(float offset, int width, int height)
+  {
+    if (fov >= 1.0f && fov <= 90.0f)
+      fov += offset;
+    if (fov <= 1.0f)
+      fov = 1.0f;
+    if (fov >= 90.f)
+      fov = 90.f;
+    update_projection(width, height);
+  }
+
   inline void add_to_yaw(float value)
   {
     this->yaw += value;
