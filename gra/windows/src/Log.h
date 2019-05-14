@@ -25,15 +25,15 @@ public:
 
   static void log(std::string message)
   {
-    send(message, "LOG", LOG);
+    send(message, "LOG", Log::LOG);
   }
   static void warn(std::string message)
   {
-    send(message, "WARNL", WARN);
+    send(message, "WARNL", Log::WARN);
   }
   static void error(std::string message)
   {
-    send(message, "ERROR_MSG", ERROR);
+    send(message, "ERROR_MSG", Log::ERROR_MSG);
   }
 
   static void check_error(const char *name)

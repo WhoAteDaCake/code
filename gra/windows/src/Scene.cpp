@@ -1,9 +1,8 @@
 #include "Scene.h"
 #include <memory>
 
-Scene::Scene():
-	shader(Shaders()),
-	sky_shader(SkyboxShaders())
+Scene::Scene() : shader(Shaders()),
+                 sky_shader(SkyboxShaders())
 {
   this->texture_manager = std::unique_ptr<TextureManager>(new TextureManager());
   this->material_manager = std::unique_ptr<MaterialManager>(new MaterialManager());
@@ -204,6 +203,9 @@ void Scene::create_lights()
 void Scene::create_objects()
 {
   std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room-sized.obj"), this->texture_manager, this->material_manager);
+  std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
+
+  items = Object::from_file(std::string("mars.obj"), this->texture_manager, this->material_manager);
   std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 
   float limit = 255.f;

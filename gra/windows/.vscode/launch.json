@@ -6,7 +6,7 @@
 		"request": "launch",
 		"preLaunchTask": "build",
 		"cwd": "${workspaceRoot}",
-		"program": "${workspaceRoot}/bin/program.exe",
+		"program": "${workspaceRoot}/Debug/program.exe",
 		"stopAtEntry": false,
 		"launchCompleteCommand": "exec-run",
 		"linux": {
