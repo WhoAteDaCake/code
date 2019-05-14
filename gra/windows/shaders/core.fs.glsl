@@ -79,7 +79,10 @@ void main() {
       }
     }
   } else {
-    result = material.ambient + material.diffuse + material.specular;
+    result =
+      material.ambient +
+      material.diffuse * get_diffuse_tex() +
+      material.specular * get_specular_tex();
   }
 	
 
