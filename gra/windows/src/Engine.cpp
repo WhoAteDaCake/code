@@ -37,9 +37,10 @@ Engine::Engine(
   glutCreateWindow(title);
 
 #ifndef __linux__
-  if (!gladLoadGL()) {
-	  printf("Something went wrong!\n");
-	  exit(-1);
+  if (!gladLoadGL())
+  {
+    printf("Something went wrong!\n");
+    exit(-1);
   }
 #endif
 
@@ -127,8 +128,10 @@ void Engine::change_camera_pos(unsigned char key)
   this->camera.update_position(pos);
 }
 
-void Engine::handle_key_cb(unsigned char key, int x, int y)
+void Engine::handle_key_cb(unsigned char actual_key, int x, int y)
 {
+  // Make sure CAPS lock doesn't break the program
+  unsigned char key = tolower(actual_key);
   float change = 0.05f * static_cast<float>(this->delta_time);
   glm::vec3 current_position = this->camera.position;
   if (key == 'w')
