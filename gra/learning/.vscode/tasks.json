@@ -16,7 +16,7 @@
                 "panel": "shared"
             },
             "args": [
-                "QUIET=0"
+                "-j", "2"
             ],
             "problemMatcher": {
                 "owner": "cpp",

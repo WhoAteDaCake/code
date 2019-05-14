@@ -1,278 +1,68 @@
-#include "libs.h"
 
-GLuint program;
-GLuint VAO;
-GLuint VBO;
-GLuint EBO;
-GLuint texture0;
+#include "Engine.h"
 
-/* report GL errors, if any, to stderr */
-void checkError(const char *functionName)
+std::unique_ptr<Engine> active;
+
+void idle()
 {
-    GLenum error;
-    while ((error = glGetError()) != GL_NO_ERROR)
-    {
-        fprintf(stderr, "GL error 0x%X detected in %s\n", error, functionName);
-    }
-}
-float size = 0.5f;
-
-Vertex vertices[] = {glm::vec3(-size, size, 0.f), glm::vec3(1.f, 0.f, 0.f), glm::vec2(0.f, 1.f),  //
-                     glm::vec3(-size, -size, 0.f), glm::vec3(0.f, 1.f, 0.f), glm::vec2(0.f, 0.f), //
-                     glm::vec3(size, -size, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 0.f),  //
-                     glm::vec3(size, size, 0.f), glm::vec3(0.f, 0.f, 1.f), glm::vec2(1.f, 1.f)};
-
-unsigned nrOfVertices = sizeof(vertices) / sizeof(Vertex);
-
-GLuint indices[] = {0, 1, 2, // Triangle 1
-                    0, 2, 3};
-unsigned nrOfIndices = sizeof(indices) / sizeof(GLuint);
-
-std::string shader(std::string file) { return "./shaders/" + file; }
-
-void Draw()
-{
-    glClearColor(0.f, 0.f, 0.f, 1.f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
-    glUseProgram(program);
-
-    // Update uniforms (if you need more than 1 texture)
-    // glUniform1i(glGetUniformLocation(program, "texture0"), 0);
-
-    // glActiveTexture(GL_TEXTURE0);
-    // glBindTexture(GL_TEXTURE_2D, texture0);
-
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, nrOfIndices, GL_UNSIGNED_INT, 0);
-
-    glutSwapBuffers();
-    glFlush();
-    checkError("display");
-    // Reset
-    glBindVertexArray(0);
-    glUseProgram(0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, GL_TEXTURE0);
-    checkError("reset");
+    active->idle_cb();
 }
 
-void Initialize()
+void reshape(int width, int height)
 {
-    glClearColor(0.f, 0.f, 0.f, 0.0);
-    // glMatrixMode(GL_PROJECTION);
-    // glLoadIdentity();
-    // glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
-    // MODEL
-
-    /*
-     VAO,
-     VBO - Vertex buffer object (send positions of vertices)
-     EBO - Element buffer object (send indices of vertices)
-    */
-
-    // GEN VAO AND BIND
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    // //GEN VBO AND BIND AND SEND DATA
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    // GL_STATIC_DRAW because we won't modify the values
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    // //GEN EBO AND BIND AND SEND DATA
-    glGenBuffers(1, &EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-                 GL_STATIC_DRAW);
-
-    // SET VERTEXATTRIBPOINTERS AND ENABLE (INPUT ASSEMBLY)
-    // Position
-    // Could use glGetAtrributeLocation
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, position));
-    glEnableVertexAttribArray(0);
-    // Color
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, color));
-    glEnableVertexAttribArray(1);
-    // Texture coord
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
-                          (GLvoid *)offsetof(Vertex, texcoord));
-    glEnableVertexAttribArray(2);
-
-    // BIND VAO 0
-    glBindVertexArray(0);
-
-    checkError("Initialize");
-
-    // Textures
-    int image_w = 0;
-    int image_h = 0;
-    unsigned char *image = SOIL_load_image("./images/robot.png", &image_w, &image_h, NULL, SOIL_LOAD_RGBA);
-
-    // Make sure previous texture is saved
-    GLuint boundTexture = 0;
-    glGetIntegerv(GL_TEXTURE_BINDING_2D, (GLint *)&boundTexture);
-
-    glGenTextures(1, &texture0);
-    glBindTexture(GL_TEXTURE_2D, texture0);
-    checkError("Texture:bind");
-
-    // Set options
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    checkError("Texture:params");
-
-    if (image)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image_w, image_h, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
-        // For automatic adjustment of size
-        glGenerateMipmap(GL_TEXTURE_2D);
-        checkError("Texture:image");
-    }
-    else
-    {
-        std::cout << "ERROR: failed to load texture\n";
-        return;
-    }
-
-    SOIL_free_image_data(image);
-    // Make sure no textures are bound
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, boundTexture);
-    checkError("Texture:reset");
-}
-
-std::string load_file(std::string name)
-{
-    std::string temp = "";
-    std::string src = "";
-
-    std::ifstream in_file;
-
-    in_file.open(name);
-
-    if (in_file.is_open())
-    {
-        std::cout << "INFO: Loading file: " << name << "\n";
-        while (std::getline(in_file, temp))
-        {
-            src += temp + "\n";
-        }
-    }
-    else
-    {
-        std::cout << "ERROR:Could not load " << name << "\n";
-    }
-    in_file.close();
-    return src;
-}
-
-GLuint load_shaders(std::string name, GLenum type)
-{
-    char logs[512];
-    GLint success;
-    std::string src = load_file(shader(name));
-    GLuint shader = glCreateShader(type);
-    const GLchar *s_src = src.c_str();
-    glShaderSource(shader, 1, &s_src, NULL);
-    glCompileShader(shader);
-
-    // Check whether it was successful
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(shader, 512, NULL, logs);
-        std::cout << "ERROR: could not compile vertex shader :" << name
-                  << std::endl;
-        std::cout << logs << std::endl;
-    }
-    return shader;
-}
-
-bool load_shaders(GLuint &program)
-{
-    GLuint vertex_shader = load_shaders("vertex_core.glsl", GL_VERTEX_SHADER);
-    GLuint fragment_shader =
-        load_shaders("fragment_core.glsl", GL_FRAGMENT_SHADER);
-
-    // Allocate space
-    program = glCreateProgram();
-    glAttachShader(program, vertex_shader);
-    glAttachShader(program, fragment_shader);
-
-    // Because of 1.30 glsl, we need to specify the order of attributes manually
-    // https://stackoverflow.com/questions/21354301/glsl-syntax-problems-unexpected-new-identifier
-    glBindAttribLocation(program, 0, "vertex_position");
-    glBindAttribLocation(program, 1, "vertex_color");
-    glBindAttribLocation(program, 2, "vertex_texcoord");
-
-    glLinkProgram(program);
-
-    // Check for errors
-    char logs[512];
-    GLint success;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(program, 512, NULL, logs);
-        std::cout << "ERROR: could not link program \n";
-        std::cout << logs << std::endl;
-    }
-
-    glUseProgram(0);
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
-    return true;
+    active->reshape_cb(width, height);
 }
 
 void handle_key(unsigned char key, int x, int y)
 {
-    // Escape key
-    if (key == 27)
-    {
-        glutLeaveMainLoop();
-    }
+    active->handle_key_cb(key, x, y);
+}
+
+void draw()
+{
+    active->draw_cb();
+}
+
+void message(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
+{
+    active->message_cb(source, type, id, severity, length, message, userParam);
+}
+
+// Called when a mouse button event occurs
+void mouse_button(int button, int state, int x, int y)
+{
+    active->mouse_button_cb(button, state, x, y);
+}
+
+void mouse_move(int x, int y)
+{
+    active->mouse_move_cb(x, y);
 }
 
 int main(int iArgc, char **cppArgv)
 {
-    int windowSize = 400;
-    glutInit(&iArgc, cppArgv);
+    active = std::unique_ptr<Engine>(new Engine(iArgc, cppArgv, "Wonderland", 1000, 1000));
 
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-    glutInitWindowSize(windowSize, windowSize);
-    glutInitWindowPosition(200, 200);
-    glutCreateWindow("My window");
+    try
+    {
+        glutDisplayFunc(draw);
+        glutKeyboardFunc(handle_key);
+        glutReshapeFunc(reshape);
+        glutIdleFunc(idle);
+        glutMouseFunc(mouse_button);
+        glutMotionFunc(mouse_move);
 
-    load_shaders(program);
+#ifdef GRA_DEBUG
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(message, 0);
+#endif // DEBUG
 
-    // GL options
-    glEnable(GL_DEPTH_TEST);
-    // Not drawn if not seen
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_COLOR_MATERIAL);
-
-    glEnable(GL_BLEND);
-    // Blend colors of polygons
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    // Back will not be shown
-    glCullFace(GL_BACK);
-    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-    // Set front face as shown one
-    glFrontFace(GL_CCW);
-    // Set to fill the whole shape
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    Initialize();
-    glutDisplayFunc(Draw);
-    glutKeyboardFunc(handle_key);
-
-    glutMainLoop();
-    glDeleteProgram(program);
+        active->initialize();
+    }
+    catch (std::string message)
+    {
+        std::cout << message << "\n";
+    }
 
     return 0;
 }
