@@ -1,0 +1,119 @@
+﻿  Camera.cpp
+  CommonObjects.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\shapes.h(58): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(62): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(218): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(227): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(233): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(239): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(245): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(270): warning C4305: 'initializing': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\shapes.h(273): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(303): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\commonobjects.cpp(56): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\commonobjects.cpp(118): warning C4305: 'initializing': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\commonobjects.cpp(333): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\commonobjects.cpp(347): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Engine.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\shapes.h(58): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(62): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(218): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(227): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(233): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(239): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(245): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(270): warning C4305: 'initializing': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\shapes.h(273): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(303): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  FileLoader.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\fileloader.cpp(121): warning C4018: '>': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\fileloader.cpp(188): warning C4305: 'initializing': truncation from 'double' to 'float'
+  Light.cpp
+  MaterialManager.cpp
+  Mesh.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\mesh.cpp(65): warning C4018: '<': signed/unsigned mismatch
+  Object.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\shapes.h(58): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(62): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(218): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(227): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(233): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(239): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(245): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(270): warning C4305: 'initializing': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\shapes.h(273): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(303): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\object.cpp(49): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\object.cpp(64): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\object.cpp(112): warning C4018: '<': signed/unsigned mismatch
+  ObjectLight.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\shapes.h(58): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(62): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(218): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(227): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(233): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(239): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(245): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(270): warning C4305: 'initializing': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\shapes.h(273): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(303): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  Scene.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\shapes.h(58): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(62): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(218): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(227): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(233): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(239): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(245): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(270): warning C4305: 'initializing': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\shapes.h(273): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(303): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\scene.cpp(193): warning C4305: '=': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\scene.cpp(194): warning C4305: '=': truncation from 'double' to 'float'
+  Shaders.cpp
+  Shapes.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\shapes.h(58): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(62): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(218): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(227): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(233): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(239): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(245): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(270): warning C4305: 'initializing': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\shapes.h(273): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(303): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  SkyboxTexture.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\skyboxtexture.cpp(9): warning C4101: 'nrChannels': unreferenced local variable
+  Texture.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+  TextureManager.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+  main.cpp
+z:\gra\code\gra\windows\learning\external\single\soil.h(39): warning C4081: expected '('; found 'constant'
+z:\gra\code\gra\windows\learning\src\shapes.h(58): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(62): warning C4018: '<': signed/unsigned mismatch
+z:\gra\code\gra\windows\learning\src\shapes.h(218): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(227): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(233): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(239): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(245): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(270): warning C4305: 'initializing': truncation from 'double' to 'float'
+z:\gra\code\gra\windows\learning\src\shapes.h(273): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+z:\gra\code\gra\windows\learning\src\shapes.h(303): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+  Generating Code...
+  glad.c
+  libSOIL.lib(SOIL.obj) : MSIL .netmodule or module compiled with /GL found; restarting link with /LTCG; add /LTCG to the link command line to improve linker performance
+LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  Generating code
+  Finished generating code
+  Coursework2.vcxproj -> Z:\gra\code\gra\windows\learning\Debug\Coursework2.exe
