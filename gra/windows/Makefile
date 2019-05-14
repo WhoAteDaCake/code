@@ -4,15 +4,15 @@ TARGET=program.exe
 CC = g++
 
 #COMPILER_FLAGS specifies the additional compilation options we're using
-CFLAGS = -I./src -I./external -g -std=c++11 -DGL_GLEXT_PROTOTYPES -DGRA_DEBUG
+CFLAGS = -I./src -I./external/single -g -std=c++11 -DGL_GLEXT_PROTOTYPES -DGRA_DEBUG
 
 LINKER= g++
 #LINKER_FLAGS specifies the libraries we're linking against
 LFLAGS = -lGL -lGLU -lglut -lSOIL
 
 SRCDIR = src
-OBJDIR = obj
-BINDIR = bin
+OBJDIR = Debug
+BINDIR = Debug
 
 SOURCES  := $(wildcard $(SRCDIR)/*.cpp)
 INCLUDES := $(wildcard $(SRCDIR)/*.h)
