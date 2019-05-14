@@ -3,18 +3,6 @@
 
 Scene::Scene()
 {
-  // TMP
-  // this->light.diffuse = glm::vec3(1.f, 1.f, 1.f);
-  // this->light.position = glm::vec3(-10.f, 30.f, -15.4f);
-  // this->light.direction = glm::vec3(0.f, -1.f, 0.f);
-  // this->light.linear = 0.007f;
-  // this->light.constant = 0.0002f;
-  // this->light.specular = glm::vec3(1.f, 1.f, 1.f);
-  // this->light.ambient = glm::vec3(0.8f);
-  // this->light.cut_off = 30.f;
-  // this->light.outer_cut_off = 90.f;
-  // this->light.type = 2;
-
   this->shader = Shaders();
   this->sky_shader = SkyboxShaders();
   this->texture_manager = std::unique_ptr<TextureManager>(new TextureManager());
@@ -138,8 +126,7 @@ void Scene::create_lights()
       "outside",
       this->material_manager,
       glm::vec3(1.f),
-      // glm::vec3(2.f, 6.f, 6.f),
-      glm::vec3(-45.f, 47.f, 15.f),
+      glm::vec3(71.1f, 80.6f, -10.f),
       glm::vec3(0.f),
       glm::vec3(3.f));
 
@@ -155,7 +142,7 @@ void Scene::create_lights()
       "outside",
       this->material_manager,
       glm::vec3(1.f),
-      glm::vec3(-43.9f, 47.f, -49.f),
+      glm::vec3(71.1f, 80.6f, -66.5f),
       glm::vec3(0.f),
       glm::vec3(3.f));
 
@@ -165,7 +152,7 @@ void Scene::create_lights()
       "outside",
       this->material_manager,
       glm::vec3(1.f),
-      glm::vec3(22.5f, 47.f, -49.f),
+      glm::vec3(11.5f, 80.6f, -66.5f),
       glm::vec3(0.f),
       glm::vec3(3.f));
   cube3->light->copy_properties(cube1->light.get(), false);
@@ -174,7 +161,7 @@ void Scene::create_lights()
       "outside",
       this->material_manager,
       glm::vec3(1.f),
-      glm::vec3(22.5f, 47.f, 15.f),
+      glm::vec3(11.5f, 80.6f, -10.f),
       glm::vec3(0.f),
       glm::vec3(3.f));
   cube4->light->copy_properties(cube1->light.get(), false);
@@ -184,7 +171,7 @@ void Scene::create_lights()
       this->material_manager,
       glm::vec3(1.f),
       // Position
-      glm::vec3(-20.f, 60.f, -20.f),
+      glm::vec3(43.2f, 87.3f, -40.f),
       glm::vec3(0.f),
       // Scale
       glm::vec3(6.f));
@@ -197,7 +184,7 @@ void Scene::create_lights()
       "outside",
       this->material_manager,
       glm::vec3(1.f),
-      glm::vec3(-20.f, 40.f, -20.f),
+      glm::vec3(43.2f, 77.3f, -40.f),
       glm::vec3(0.f),
       glm::vec3(0.f));
   fan_light->light->copy_properties(fan->light.get(), false);
@@ -216,7 +203,7 @@ void Scene::create_lights()
 
 void Scene::create_objects()
 {
-  std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room-high.obj"), this->texture_manager, this->material_manager);
+  std::vector<std::unique_ptr<Object>> items = Object::from_file(std::string("room-sized.obj"), this->texture_manager, this->material_manager);
   std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 
   float limit = 255.f;
@@ -227,50 +214,13 @@ void Scene::create_objects()
       this->material_manager,
       pink,
       // Postion
-      glm::vec3(-30.f, 9.f, -27.4f),
+      glm::vec3(18.f, 47.6f, -33.2f),
       // Rotation
       glm::vec3(0.f, -90.f, 0.f),
       // Scale
       glm::vec3(3.f));
 
-  auto blue = glm::vec3(17.f / limit, 41.f / limit, 77.f / limit);
-  auto right_wall = make_cube(
-      std::string("right-wall"),
-      this->material_manager,
-      blue,
-      // Position
-      glm::vec3(-10.f, 33.5f, -69.f),
-      glm::vec3(0.f, 0.f, 0.f),
-      // Scale
-      glm::vec3(51.f, 35.f, 2.f));
-  auto back_wall = make_cube(
-      std::string("back-wall"),
-      this->material_manager,
-      blue,
-      // Position
-      glm::vec3(40.5f, 30.f, -15.f),
-      glm::vec3(0.f, 0.f, 0.f),
-      // Scale
-      glm::vec3(1.f, 35.f, 51.f));
-
-  auto roof = make_cube(
-      std::string("roof"),
-      this->material_manager,
-      blue,
-      // Position
-      glm::vec3(-10.5f, 65.5f, -16.f),
-      glm::vec3(0.f, 0.f, 0.f),
-      // Scale
-      glm::vec3(51.f, 2.f, 51.f));
-
-  // auto wall_tex = this->texture_manager->get("wall.png");
-  // right_wall->set_diffuse(wall_tex);
-  // back_wall->set_diffuse(wall_tex);
-
   this->objects.push_back(std::move(pig));
-  this->objects.push_back(std::move(right_wall));
-  this->objects.push_back(std::move(roof));
-  this->objects.push_back(std::move(back_wall));
 }
 
 void Scene::update(int delta)
