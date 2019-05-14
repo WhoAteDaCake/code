@@ -206,6 +206,13 @@ void Scene::create_objects()
   std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 
   items = Object::from_file(std::string("mars.obj"), this->texture_manager, this->material_manager);
+  items[0]->update_position(glm::vec3(20.f, 45.6f, -10.6f));
+  items[0]->update_scale(glm::vec3(2.5f));
+  // Because f
+  items[0]->get_material()->ambient = glm::vec3(0.f);
+  items[0]->get_material()->specular = glm::vec3(0.f);
+  // Round objects can cause issues with lights, so it's best to disable it
+  items[0]->get_material()->toggle_ignore_light(true);
   std::move(std::begin(items), std::end(items), std::back_inserter(this->objects));
 
   float limit = 255.f;
