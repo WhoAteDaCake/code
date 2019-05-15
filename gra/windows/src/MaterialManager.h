@@ -7,6 +7,9 @@
 #ifndef MATERIAL_MANAGER_H
 #define MATERIAL_MANAGER_H
 
+/**
+ * Used to manage all of the materials and create them
+ */
 class MaterialManager
 {
 private:

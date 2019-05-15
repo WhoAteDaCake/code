@@ -5,6 +5,7 @@
 
 #include "Shaders.h"
 
+/** Custom shaders used for skybox generation */
 class SkyboxShaders : public Shaders
 {
 protected:

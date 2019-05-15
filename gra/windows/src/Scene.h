@@ -15,22 +15,24 @@
 
 class Scene
 {
-  // TODO:CHANGE TO private
-public:
+private:
+  // Camera used by the scene
   Camera *camera;
+  // All of the lights used in the scene
   std::vector<std::unique_ptr<ObjectLight>> lights;
 
   Shaders shader;
-  // Skybox
+  /** Skybox properties */
   std::unique_ptr<SkyboxTexture> sky_tex;
   std::unique_ptr<SkyboxMesh> sky_mesh;
   SkyboxShaders sky_shader;
 
+  /** All of the data drawn in the scene */
   std::vector<std::unique_ptr<Object>> objects;
   std::unique_ptr<TextureManager> texture_manager;
   std::unique_ptr<MaterialManager> material_manager;
 
-  // Initiations
+  /** Initiations of the scene */
   void create_objects();
   void create_textures();
   void create_lights();
@@ -43,10 +45,15 @@ public:
   Scene &operator=(const Scene &) = delete; // non copyable
   Scene(const Scene &) = delete;            // non construction-copyable
 
+  /** Assign a camera */
   void set_camera(Camera *camera);
+  /** Draw the scene */
   void draw();
+  /** Call initialization functions */
   void initialize();
+  /** Cleanup the scene */
   void clear();
+  /** Update the objects within the scene */
   void update(int delta);
 };
 

@@ -9,16 +9,27 @@
 #include <string>
 #include "Log.h"
 
+/**
+ * Loads in images to be used as textures
+ * for mesh objects
+ */
 class Texture
 {
 protected:
+  /** Size of the texture */
   int width;
   int height;
+  /** OpenGL assigned id */
   GLuint id;
+  /** Texture type */
   GLenum type;
+  /**
+   * Which texture id is it, 0, 1, 2 etc
+   */
   GLuint unit;
   std::string file_name;
 
+  /** Loads texture in from a file and registers it */
   GLuint load_texture(std::string file, GLenum type);
 
 public:
@@ -40,19 +51,26 @@ public:
     Log::log("Texture:destructor");
 #endif // DEBUG
   }
-
+  /**
+   * Load in the texture
+   */
   virtual void load()
   {
     this->id = load_texture(this->file_name, this->type);
   }
 
+  /**
+   * Bind it so it can be used by shaders
+   */
   void bind()
   {
     glActiveTexture(GL_TEXTURE0 + this->unit);
     glBindTexture(this->type, this->id);
     Log::check_error("Failed to bind texture: " + this->id);
   }
-
+  /**
+   * Removes from OpenGL context
+   */
   void unbind()
   {
     // glActiveTexture(0);

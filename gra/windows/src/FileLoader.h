@@ -11,9 +11,19 @@
 #include "Vertex.h"
 #include "Mesh.h"
 
+/**
+ * Uses tinyobjloader to load:
+ * 	Mmaterials 
+ * 	Textures,
+ * 	Meshes
+ * From a give file
+ */
 class FileLoader
 {
 public:
+	/**
+	 * Location where the exports are stored
+	 */
   static std::string BASE_DIR;
   static std::vector<Mesh *> load(
       std::string file_name,

@@ -6,6 +6,9 @@
 #define M_PI 3.14159265358979323846  /* pi */
 #include "Mesh.h"
 
+/**
+ * Defines creation of a square mesh
+ */
 class Square : public Mesh
 {
 private:
@@ -69,6 +72,10 @@ public:
   }
 };
 
+
+/**
+ * Defines creation of a skybox
+ */
 class SkyboxMesh : public Mesh
 {
 protected:
@@ -154,6 +161,11 @@ public:
   }
 };
 
+
+
+/**
+ * Defines creation of a HalfSphere
+ */
 class HalfSphere : public Mesh
 {
 private:
@@ -166,6 +178,9 @@ private:
     this->vertices.push_back(Vertex(position, this->color, glm::vec2(0.f), glm::vec3(0.f)));
   }
 
+  /**
+   * Convert triangle point to a sphere point
+   */
   glm::vec3 curved_middle_point(glm::vec3 p1, glm::vec3 p2)
   {
     glm::vec3 mp = (p1 + p2) / 2.f;
@@ -179,6 +194,9 @@ private:
     return mp;
   }
 
+  /**
+   * Subdivide the triangle to create more detailed mesh
+   */
   void subdivide(int level, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
   {
     if (level == 0)
@@ -248,6 +266,9 @@ public:
   }
 };
 
+/**
+ * Creates a cylinder mesh
+ */
 class Cylinder : public Mesh
 {
 private:

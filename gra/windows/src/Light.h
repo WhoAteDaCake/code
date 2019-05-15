@@ -9,6 +9,12 @@
 class Light
 {
 public:
+  /**
+   * Each light will get a unique id
+   * WIll dictate, which light array index item
+   * is sent to the shaders
+   * Used to debug and track the number of lights
+   */
   static unsigned int ID;
   static unsigned int get_id();
 
@@ -19,21 +25,35 @@ public:
    */
   int type;
   unsigned int id;
+  // Whether blinn specular shading is used
   bool blinn;
 
+  /**
+   * Full property identifier name used
+   * to get uniform ids and send light properties
+   */
   std::string full;
+  /**
+   * Only need to calculate once
+   * and then reused when enabling light in shaders
+   * light[+ ID +].
+   */
   std::string prefix;
 
+  /**
+   * 3D properties used to calculate
+   * effects of the light in the environment
+   */
   glm::vec3 position;
   glm::vec3 ambient;
   glm::vec3 diffuse;
   glm::vec3 specular;
   glm::vec3 direction;
-  //
+  // Strength of the light
   float constant;
   float linear;
   float quadratic;
-  // Degrees
+  // Spotlight cutoff angles
   float cut_off;
   float outer_cut_off;
 
@@ -58,9 +78,18 @@ public:
   {
     this->prefix = std::string("lights[") + std::to_string(this->id) + std::string("].");
   }
-
+  /**
+   * Send all light properties to shader
+   */
   void send_to_shader(Shaders *program);
+  /**
+   * Will copy all light properties from another light
+   */
   void copy_properties(Light *light, bool copy_position);
+  /**
+   * Used to create const char* that's used
+   * in getUniformLocation
+   */
   const char *field(std::string name);
 };
 

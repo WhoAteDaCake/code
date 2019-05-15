@@ -6,6 +6,11 @@
 #include <iostream>
 #include "gl.h"
 
+/**
+ * Global logging class
+ * Used to quickly disable and enable
+ * specific parts of the logs
+ */
 class Log
 {
 public:

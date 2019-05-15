@@ -12,9 +12,13 @@ class Shaders
 protected:
   GLuint id;
 
+  /** Reads shader file into a string */
   std::string shader_src(std::string name);
+  /** Creates the shader inside OpenGL context */
   GLuint load_shader(std::string name, GLenum type);
+  /** Binds the order of data sent to shader */
   virtual void bind_attrib(GLuint program);
+  /** Link all of the different shaders */
   GLuint link_shaders(std::string vertex, std::string fragment, std::string geometry);
 
 public:
@@ -33,6 +37,9 @@ public:
     this->id = link_shaders(vertex, fragment, geometry);
   }
 
+  /**
+   * Allow shader to be used by OpenGL
+   */
   void use()
   {
     glUseProgram(this->id);
@@ -41,7 +48,9 @@ public:
     Log::check_error("Using shader");
 #endif // DEBUG
   }
-
+  /**
+   * Remove shader form openGL context
+   */
   void stop_use()
   {
     glUseProgram(0);
@@ -51,6 +60,9 @@ public:
 #endif // DEBUG
   }
 
+  /**
+   * Send different types of data to the shader
+   */
   void use1i(const GLchar *name, int i)
   {
     use();

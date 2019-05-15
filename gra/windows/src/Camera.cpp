@@ -25,6 +25,7 @@ void Camera::update_view()
   this->view_matrix = glm::lookAt(this->position, this->position + this->front, this->world_up);
 }
 
+
 void Camera::update_projection(int width, int height)
 {
   this->projection_matrix = glm::perspective(

@@ -12,14 +12,24 @@
 #include "Texture.h"
 #include "Material.h"
 
+/**
+ * Defines all of the vertices and indices used to 
+ * draw items on the screen
+ */
 class Mesh
 {
 protected:
   std::string name;
 
+  /**
+   * Used for aligning sent vertex data
+   */
   void set_pointers();
+  /**
+   * Binds data to VAO, VBO and EBO
+   */
   virtual void bind_buffers();
-
+  // Assigned ids
   GLuint VAO;
   GLuint VBO;
   GLuint EBO;
@@ -29,9 +39,14 @@ protected:
   // Transofrmations
   glm::mat4 model_matrix;
 
-  // Setup
+  /**
+   * Applies all 3d transformations to the matrix
+   */
   void calculate_matrix(glm::mat4 initial_matrix);
 
+  /**
+   * Used for creating log messages to indicate name of the mesh
+   */
   std::string message(std::string message)
   {
     std::string ending = ":" + message;
@@ -39,13 +54,23 @@ protected:
   }
 
 public:
+  /**
+   * Data drawn to the screen
+   */
   std::vector<Vertex> vertices;
   std::vector<GLuint> indices;
   std::string mat_name;
 
+  /**
+   * Transformations in 3d space
+   */
   glm::vec3 position;
   glm::vec3 rotation;
   glm::vec3 scale;
+  /**
+   * Allows to automatically calculate normals
+   * Using glm
+   */
   bool auto_normals;
   // For when we require to use transforms of a previous mesh
   // In the object
@@ -79,11 +104,22 @@ public:
 #endif // DEBUG
   }
 
-  // Setup
+  /**
+   * Bind to bufferes and calculate model matrix
+   */
   virtual void initialize(glm::mat4 initial_matrix);
+  /**
+   * Automatic normal calculation
+   */
   void calculate_normals();
-  // Actions
+  /**
+   * Draw to the screen
+   */
   virtual void draw(Shaders *program);
+  /**
+   * Update model matrix based on changes to
+   * 3d transforms
+   */
   void update(glm::mat4 initial_matrix);
 
   inline std::string get_name()

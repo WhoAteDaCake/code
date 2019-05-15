@@ -9,19 +9,30 @@
 class Material
 {
 private:
+  // Unit defined when a texture is registered
   GLint diffuse_tex;
   GLint specular_tex;
 
+  /**
+   * Allows to enable and disable
+   * specific properties of the material
+   */
   bool has_diffuse_tex;
   bool has_specular_tex;
   bool show_color;
   bool ignore_light;
 
 public:
+  /**
+   * Color properties
+   */
   glm::vec3 ambient;
   glm::vec3 diffuse;
   glm::vec3 specular;
   float shiness;
+  /**
+   * Used for identification
+   */
   std::string diffuse_tex_name;
 
   Material(glm::vec3 ambient,
@@ -55,15 +66,25 @@ public:
     Log::log("Material:destructor");
 #endif // DEBUG
   }
+  /**
+   * Allows to ignore light properties on
+   * specific materials
+   */
   void toggle_ignore_light(bool toggle)
   {
     this->ignore_light = toggle;
   }
+  /**
+   * Used to diable vertex defined color
+   */
   void toggle_color(bool show_color)
   {
     this->show_color = show_color;
   }
 
+  /**
+   * Set color properties
+   */
   void set_specs(glm::vec3 ambient,
                  glm::vec3 diffuse,
                  glm::vec3 specular)
@@ -72,7 +93,9 @@ public:
     this->diffuse = diffuse;
     this->specular = specular;
   }
-
+  /**
+   * Assign registered textures
+   */
   void set_textures(GLint diffuse_tex, GLint specular_tex)
   {
     this->diffuse_tex = diffuse_tex;
@@ -80,7 +103,9 @@ public:
     this->has_diffuse_tex = diffuse_tex != -1;
     this->has_specular_tex = specular_tex != -1;
   }
-
+  /**
+   * Send material to shaders for vertex to be drawn
+   */
   void send_to_shader(Shaders *program)
   {
     program->use3fv("material.ambient", this->ambient);

@@ -13,24 +13,39 @@
 #include "Shapes.h"
 #include "FileLoader.h"
 
+/**
+ * Container class used to store and group
+ * meshes and material
+ */
 class Object
 {
 protected:
   typedef std::shared_ptr<Texture> SharedTexture;
 
   std::string name;
+  /**
+   * Textures that are assigned to the material
+   */
   SharedTexture diffuse;
   SharedTexture specular;
+  /**
+   * Material definitions, that all of the meshes
+   * will use
+   */
   std::shared_ptr<Material> material;
+  /**
+   * Grouped mesh
+   */
   std::vector<Mesh *> mesh;
 
 public:
+  /**
+   * Load the whole object from an .obj file 
+   */
   static std::vector<std::unique_ptr<Object>> from_file(
       std::string file_name,
       std::unique_ptr<TextureManager> &tex_manager,
       std::unique_ptr<MaterialManager> &mat_manager);
-
-  std::shared_ptr<Material> secondary_mat;
 
   Object(
       std::string name,
@@ -67,16 +82,41 @@ public:
     Log::log(name + ":" + "destructor");
 #endif // DEBUG
   }
-
   bool has_diffuse();
   bool has_specular();
+  /**
+   * Set materials, textures
+   * and draw meshes to the screen
+   */
   void draw(Shaders *program);
+  /**
+   * Unbind textures
+   */
   void clear();
+  /**
+   * Recalculate model matrix of each mesh
+   * Using dependencies to create hierarchical models
+   */
   void update_matrices(bool initial);
+  /**
+   * Change where initial mesh is placed
+   * Combined with dependency indices allows
+   * to move the whole object
+   */
   void update_position(glm::vec3 position);
+  /**
+   * Change the scale of the initial mesh
+   * Combined with dependency indices allows
+   * to move the whole object
+   */
   void update_scale(glm::vec3 scale);
-
+  /**
+   * Initialize meshes, and materials 
+   */
   virtual void initialize();
+  /**
+   * Update for animations, usually defined by superclass
+   */
   virtual void update(int delta);
 
   inline std::shared_ptr<Material> get_material()
@@ -89,6 +129,9 @@ public:
     return this->mesh[0]->position;
   }
 
+  /**
+   * Sets the diffuse texture
+   */
   inline void set_diffuse(SharedTexture diffuse_tex)
   {
     this->diffuse = diffuse_tex;

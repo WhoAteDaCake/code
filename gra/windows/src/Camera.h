@@ -29,15 +29,42 @@ public:
   // For rotation
   float sensitivity;
 
+  /**
+   * Camera class is used to move around the scene
+   * as well as modify the view using zoom.
+   */
+
   Camera();
   ~Camera();
-
+  /**
+   * Recalculates the view matrix.
+   * Used when we move the camera around
+   */
   void update_view();
+  /**
+   * Recalculates projection
+   * This is called every time we resize the screen.
+   * If not done, the mesh in the screen would not resize
+   */
   void update_projection(int width, int height);
+  /**
+   * Modifies the direction that the camera is facing.
+   * Calls to update view afterwards
+   */
   void update_front();
+  /**
+   * Update camera location and recalculate the view
+   */
   void update_position(glm::vec3 position);
+  /**
+   * For debugging pusposes
+   */
   std::string to_string();
 
+  /**
+   * Control the zoom of the camera
+   * Limits in range of [1.f, 90.f]
+   */
   void add_to_fov(float offset, int width, int height)
   {
     if (fov >= 1.0f && fov <= 90.0f)
@@ -48,12 +75,16 @@ public:
       fov = 90.f;
     update_projection(width, height);
   }
-
+  /**
+   * Update the rotation on y axis
+   */
   inline void add_to_yaw(float value)
   {
     this->yaw += value;
   }
-
+  /**
+   * Update rotation on x axis
+   */
   inline void add_to_pitch(float value)
   {
     float new_pitch = this->pitch + value;
@@ -67,7 +98,7 @@ public:
     }
     this->pitch = new_pitch;
   }
-
+  
   inline glm::mat4 get_projection_matrix()
   {
     return this->projection_matrix;

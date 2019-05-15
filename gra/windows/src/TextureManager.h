@@ -13,12 +13,17 @@ private:
   std::map<std::string, std::shared_ptr<Texture>> textures;
 
 public:
+  /**
+   * Makes sure each texture has a unique id
+   * When registering in openGL context
+   */
   static unsigned int ID;
   static unsigned int get_id();
 
   TextureManager(){};
   ~TextureManager() {}
 
+  /** Create new texture */
   void add(std::string name, GLenum type)
   {
 #ifdef GRA_DEBUG

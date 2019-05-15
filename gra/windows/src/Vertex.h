@@ -3,6 +3,9 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
+/**
+ * Structure used to draw items on the screen
+ */
 struct Vertex
 {
   glm::vec3 position;

@@ -6,6 +6,9 @@
 #include "Light.h"
 #include "Object.h"
 
+/**
+ * Groups Object and Light class instances together
+ */
 class ObjectLight
 {
 public:
@@ -22,12 +25,23 @@ public:
                                       light(std::move(light))
   {
   }
-
+  /**
+   * Initialize object stored inside
+   */
   void initialize();
+  /**
+   * Send light and object to shaders
+   */
   void draw(Shaders *program);
+  /**
+   * Update object and light for animations
+   */
   void update(int delta);
+  /**
+   * Unsassign object and light from gl space
+   */
   void clear();
-
+  
   void set_position(glm::vec3 pos)
   {
     this->light->position = pos;
